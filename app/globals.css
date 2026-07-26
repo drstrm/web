@@ -1,26 +1,84 @@
 @import "tailwindcss";
 
+/*
+  디자인 콘셉트 (기획안 3): Clean · Trendy · Intuitive · 청량
+  메인 컬러: 스카이 블루, 화이트 / 포인트: 펄 네온 샴페인
+  팬덤 90%+ 모바일 → 모바일 퍼스트 반응형
+*/
+
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --background: #f7fbff;
+  --surface: #ffffff;
+  --foreground: #0f1b2d;
+  --muted: #5b6b82;
+
+  /* 스카이 블루 스케일 */
+  --sky-50: #eef8ff;
+  --sky-100: #d9efff;
+  --sky-300: #7dd3fc;
+  --sky-400: #38bdf8;
+  --sky-500: #0ea5e9;
+  --sky-600: #0284c7;
+
+  /* 펄 네온 샴페인 (포인트) */
+  --champagne: #f4e4bc;
+  --champagne-neon: #ffe9a8;
+  --champagne-deep: #d9c290;
+
+  --border: #e2ecf7;
+  --ring: #38bdf8;
 }
 
 @theme inline {
   --color-background: var(--background);
+  --color-surface: var(--surface);
   --color-foreground: var(--foreground);
-  --font-sans: var(--font-geist-sans);
-  --font-mono: var(--font-geist-mono);
+  --color-muted: var(--muted);
+  --color-sky-50: var(--sky-50);
+  --color-sky-100: var(--sky-100);
+  --color-sky-300: var(--sky-300);
+  --color-sky-400: var(--sky-400);
+  --color-sky-500: var(--sky-500);
+  --color-sky-600: var(--sky-600);
+  --color-champagne: var(--champagne);
+  --color-champagne-neon: var(--champagne-neon);
+  --color-champagne-deep: var(--champagne-deep);
+  --color-border: var(--border);
+  --font-sans: var(--font-noto-sans-kr), ui-sans-serif, system-ui, sans-serif;
 }
 
-@media (prefers-color-scheme: dark) {
-  :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
-  }
+* {
+  border-color: var(--border);
 }
 
 body {
-  background: var(--background);
+  background:
+    radial-gradient(120% 60% at 50% -10%, var(--sky-100) 0%, transparent 60%),
+    var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-sans);
+  -webkit-font-smoothing: antialiased;
+}
+
+/* 청량한 유리질감 카드 */
+.glass {
+  background: color-mix(in srgb, var(--surface) 82%, transparent);
+  backdrop-filter: blur(12px);
+  border: 1px solid var(--border);
+}
+
+/* 샴페인 포인트 그라디언트 */
+.accent-gradient {
+  background: linear-gradient(120deg, var(--champagne-neon), var(--champagne));
+}
+
+.sky-gradient {
+  background: linear-gradient(135deg, var(--sky-400), var(--sky-600));
+}
+
+/* 접근성: 포커스 링 */
+:where(a, button):focus-visible {
+  outline: 2px solid var(--ring);
+  outline-offset: 2px;
+  border-radius: 8px;
 }

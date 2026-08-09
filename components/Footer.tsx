@@ -1,3 +1,4 @@
+import SmartLink from "@/components/SmartLink";
 import { CONTACTS, SITE, SOCIALS } from "@/lib/site";
 
 export default function Footer() {
@@ -9,12 +10,12 @@ export default function Footer() {
             <p className="font-extrabold">{SITE.name}</p>
             <p className="mt-1 text-sm text-muted">{SITE.description}</p>
             {/* 팀 이메일 (운영진 구글 계정) */}
-            <a
+            <SmartLink
               href={`mailto:${SITE.email}`}
               className="mt-3 inline-block text-sm font-semibold text-sky-600"
             >
-              ✉ {SITE.email}
-            </a>
+              ✉️ {SITE.email}
+            </SmartLink>
           </div>
 
           <div className="flex flex-col gap-4">
@@ -24,15 +25,13 @@ export default function Footer() {
               </p>
               <div className="flex flex-wrap gap-2">
                 {SOCIALS.map((s) => (
-                  <a
+                  <SmartLink
                     key={s.label}
                     href={s.href}
-                    target="_blank"
-                    rel="noopener noreferrer"
                     className="rounded-full border px-3 py-1.5 text-xs font-semibold hover:bg-sky-50"
                   >
                     {s.label}
-                  </a>
+                  </SmartLink>
                 ))}
               </div>
             </div>
@@ -42,15 +41,13 @@ export default function Footer() {
               </p>
               <div className="flex flex-wrap gap-2">
                 {CONTACTS.map((c) => (
-                  <a
+                  <SmartLink
                     key={c.label}
                     href={c.href}
-                    target="_blank"
-                    rel="noopener noreferrer"
                     className="rounded-full accent-gradient px-3 py-1.5 text-xs font-bold text-[#5a4a1f] shadow-sm"
                   >
                     💬 {c.label}
-                  </a>
+                  </SmartLink>
                 ))}
               </div>
             </div>
@@ -58,7 +55,7 @@ export default function Footer() {
         </div>
 
         <p className="mt-8 text-center text-xs text-muted">
-          © {new Date().getFullYear()} {SITE.name} · 팬 운영 비공식 프로젝트
+          © {new Date().getFullYear()} {SITE.name}
         </p>
       </div>
     </footer>

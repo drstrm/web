@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import SmartLink from "@/components/SmartLink";
 import { findSmsVoteSlot, type SmsVoteSlot } from "@/lib/oneclick";
 
 /**
@@ -42,12 +43,12 @@ export default function SmsVote() {
       </div>
 
       {active ? (
-        <a
-          href={href}
+        <SmartLink
+          href={href!}
           className="mt-4 inline-flex w-full items-center justify-center gap-2 rounded-2xl sky-gradient px-5 py-3.5 text-sm font-bold text-white shadow-md transition-transform active:scale-[0.98]"
         >
           📱 원클릭 문자투표
-        </a>
+        </SmartLink>
       ) : (
         <button
           type="button"

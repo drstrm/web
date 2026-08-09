@@ -1,5 +1,5 @@
-import Link from "next/link";
 import type { ReactNode } from "react";
+import SmartLink from "@/components/SmartLink";
 
 /** 페이지 상단 타이틀 블록 */
 export function PageHeader({
@@ -61,16 +61,14 @@ export function Card({
   );
 }
 
-/** 링크형 큰 버튼 */
+/** 링크형 큰 버튼. 내부 · 외부 판단은 SmartLink 가 한다 */
 export function LinkButton({
   href,
   children,
-  external,
   tone = "sky",
 }: {
   href: string;
   children: ReactNode;
-  external?: boolean;
   tone?: "sky" | "champagne" | "ghost";
 }) {
   const styles =
@@ -81,16 +79,9 @@ export function LinkButton({
         : "border bg-surface hover:bg-sky-50";
   const cls = `inline-flex w-full items-center justify-center gap-2 rounded-2xl px-5 py-3.5 text-sm font-bold transition-transform active:scale-[0.98] ${styles}`;
 
-  if (external) {
-    return (
-      <a href={href} target="_blank" rel="noopener noreferrer" className={cls}>
-        {children}
-      </a>
-    );
-  }
   return (
-    <Link href={href} className={cls}>
+    <SmartLink href={href} className={cls}>
       {children}
-    </Link>
+    </SmartLink>
   );
 }

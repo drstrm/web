@@ -6,7 +6,9 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "eslint"
+    "lint": "eslint",
+    "webp": "./scripts/to-webp.sh",
+    "notion-check": "./scripts/notion-check.sh"
   },
   "dependencies": {
     "next": "16.2.10",

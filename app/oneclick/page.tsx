@@ -1,5 +1,5 @@
-import Link from "next/link";
 import type { Metadata } from "next";
+import SmartLink from "@/components/SmartLink";
 import { PageHeader } from "@/components/ui";
 
 export const metadata: Metadata = { title: "원클릭" };
@@ -35,7 +35,7 @@ export default function OneclickIndex() {
       />
       <div className="grid gap-4 sm:grid-cols-3">
         {CATEGORIES.map((c) => (
-          <Link
+          <SmartLink
             key={c.href}
             href={c.href}
             className="group rounded-2xl border bg-surface p-5 shadow-sm transition-all hover:-translate-y-0.5 hover:shadow-md"
@@ -45,7 +45,7 @@ export default function OneclickIndex() {
             </span>
             <h2 className="mt-3 font-extrabold group-hover:text-sky-600">{c.title}</h2>
             <p className="mt-1 text-sm text-muted">{c.desc}</p>
-          </Link>
+          </SmartLink>
         ))}
       </div>
     </div>

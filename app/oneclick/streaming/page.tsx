@@ -1,37 +1,27 @@
 import type { Metadata } from "next";
+import StreamingLists from "@/components/StreamingLists";
 import { PageHeader } from "@/components/ui";
-import { STREAMING_LISTS } from "@/lib/oneclick";
+import { getStreamingLists } from "@/lib/content";
 
 export const metadata: Metadata = { title: "스밍리스트 원클릭" };
 export const revalidate = 300;
 
-export default function OneclickStreamingPage() {
+export default async function OneclickStreamingPage() {
+  const lists = await getStreamingLists();
+
   return (
     <div>
       <PageHeader
         eyebrow="ONECLICK"
         title="스밍리스트"
-        description="누르면 각 플랫폼의 스트리밍 재생목록이 바로 열립니다."
+        description="플랫폼과 사용 중인 기기를 고르면 원클릭 스밍 링크가 바로 열립니다."
       />
-      <div className="grid gap-3 sm:grid-cols-2">
-        {STREAMING_LISTS.map((s) => (
-          <a
-            key={s.platform}
-            href={s.href}
-            target="_blank"
-            rel="noopener noreferrer"
-            className="flex items-center gap-3 rounded-2xl border bg-surface p-4 shadow-sm transition-transform active:scale-[0.98]"
-          >
-            <span className="grid h-11 w-11 place-items-center rounded-xl bg-sky-50 text-xl">
-              {s.emoji}
-            </span>
-            <span className="font-bold">{s.platform}</span>
-            <span className="ml-auto text-sky-500">▶</span>
-          </a>
-        ))}
-      </div>
+      <StreamingLists lists={lists} />
       <p className="mt-6 text-xs text-muted">
-        * 재생목록 링크는 컴백 시 최신 음원 기준으로 업데이트됩니다.
+        * 원클릭 링크는 플랫폼 · 기기(안드로이드 / iOS / PC)마다 다릅니다. 본인 기기에 맞는 링크를
+        눌러주세요.
+        <br />* 리스트가 여러 개인 경우 1~4번을 순서대로 돌려주시면 됩니다.
+        <br />* 링크는 컴백 시 최신 음원 기준으로 업데이트됩니다.
       </p>
     </div>
   );

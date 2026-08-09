@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import SmartLink from "@/components/SmartLink";
 import { PageHeader } from "@/components/ui";
 import { NOTION } from "@/lib/site";
 
@@ -33,14 +34,12 @@ export default function FaqPage() {
         <p className="mt-1 text-sm text-muted">
           아이디 기부·스트리밍·이벤트 관련 자주 묻는 질문을 확인하세요.
         </p>
-        <a
+        <SmartLink
           href={NOTION.faq}
-          target="_blank"
-          rel="noopener noreferrer"
           className="mt-5 inline-flex items-center justify-center gap-2 rounded-2xl sky-gradient px-6 py-3.5 text-sm font-bold text-white shadow-md"
         >
           FAQ 열기 ↗
-        </a>
+        </SmartLink>
       </div>
     </div>
   );

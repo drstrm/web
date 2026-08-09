@@ -1,74 +1,60 @@
-import Link from "next/link";
+import Image from "next/image";
 import BannerSlider from "@/components/BannerSlider";
+import Calendar from "@/components/Calendar";
+import SmartLink from "@/components/SmartLink";
+import TodoList from "@/components/TodoList";
 import { Card, SectionTitle } from "@/components/ui";
 import {
+  getBanners,
   getCalendarEvents,
   getMvStats,
   getPreorderShops,
+  getQuickLinks,
   getRealtimeChart,
   getTodoList,
 } from "@/lib/content";
-import { DREAM_OFFICIAL, QUICK_LINKS } from "@/lib/site";
+import { DREAM_OFFICIAL } from "@/lib/site";
 
 // ISR: PLAVE 레퍼런스와 동일하게 300초 재검증 (A안)
 export const revalidate = 300;
 
-/** 다가오는 일정 순서로 정렬 (연도 무시, 월-일 기준) */
-function upcoming(events: ReturnType<typeof getCalendarEvents>) {
-  const now = new Date();
-  const md = (d: string) => {
-    const [, m, day] = d.split("-").map(Number);
-    const cur = now.getMonth() * 100 + now.getDate();
-    const val = m * 100 + day;
-    return val >= cur ? val - cur : val - cur + 1231;
-  };
-  return [...events].sort((a, b) => md(a.date) - md(b.date)).slice(0, 5);
-}
-
-const TYPE_EMOJI: Record<string, string> = {
-  debut: "🎂",
-  birthday: "🎈",
-  vote: "🗳️",
-  chart: "📊",
-};
-
-export default function Home() {
+export default async function Home() {
   const chart = getRealtimeChart();
-  const events = upcoming(getCalendarEvents());
-  const todos = getTodoList();
+  // 배너 · 바로가기(노션) · 캘린더 · 할일(공용 schedules 테이블) 을 한 번에 병렬 조회
+  const [banners, quickLinks, events, todos] = await Promise.all([
+    getBanners(),
+    getQuickLinks(),
+    getCalendarEvents(),
+    getTodoList(),
+  ]);
   const mv = getMvStats();
   const preorders = getPreorderShops();
 
   return (
     <div className="space-y-10">
-      {/* 슬라이드 배너 */}
-      <BannerSlider />
+      {/* 슬라이드 배너 (노션 DB) */}
+      <BannerSlider banners={banners} />
 
-      {/* 바로가기 아이콘 */}
-      <section>
-        <SectionTitle>바로가기</SectionTitle>
-        <div className="grid grid-cols-3 gap-3 sm:grid-cols-5">
-          {QUICK_LINKS.map((q) => {
-            const inner = (
-              <div className="flex flex-col items-center gap-2 rounded-2xl border bg-surface p-4 shadow-sm transition-transform active:scale-95">
-                <span className="grid h-12 w-12 place-items-center rounded-2xl bg-sky-50 text-2xl">
-                  {q.emoji}
-                </span>
-                <span className="text-xs font-bold">{q.label}</span>
-              </div>
-            );
-            return q.external ? (
-              <a key={q.key} href={q.href} target="_blank" rel="noopener noreferrer">
-                {inner}
-              </a>
-            ) : (
-              <Link key={q.key} href={q.href}>
-                {inner}
-              </Link>
-            );
-          })}
-        </div>
-      </section>
+      {/* 바로가기 아이콘 (노션 DB) — 조회 실패 시 섹션째 감춘다 */}
+      {quickLinks.length > 0 && (
+        <section>
+          <SectionTitle>바로가기</SectionTitle>
+          <div className="grid grid-cols-3 gap-3 sm:grid-cols-5">
+            {quickLinks.map((q) => (
+              <SmartLink key={q.key} href={q.href}>
+                <div className="flex h-full flex-col items-center gap-2 rounded-2xl border bg-surface p-4 shadow-sm transition-transform active:scale-95">
+                  <span className="grid h-12 w-12 shrink-0 place-items-center rounded-2xl bg-sky-50 text-2xl">
+                    {q.emoji}
+                  </span>
+                  <span className="text-center text-xs font-bold text-balance">
+                    {q.label}
+                  </span>
+                </div>
+              </SmartLink>
+            ))}
+          </div>
+        </section>
+      )}
 
       {/* 유튜브 MV + 실시간 차트 */}
       <section className="grid gap-6 lg:grid-cols-2">
@@ -123,42 +109,14 @@ export default function Home() {
         <div>
           <SectionTitle>캘린더</SectionTitle>
           <Card>
-            <ul className="space-y-2.5">
-              {events.map((e) => (
-                <li key={e.label} className="flex items-center gap-3">
-                  <span className="text-lg">{TYPE_EMOJI[e.type]}</span>
-                  <span className="text-sm font-semibold">{e.label}</span>
-                  <span className="ml-auto text-xs text-muted">
-                    {e.date.slice(5).replace("-", ".")}
-                  </span>
-                </li>
-              ))}
-            </ul>
-            <p className="mt-4 text-[11px] text-muted">
-              * 음방 투표 기간 · 써클차트 마감일은 컴백일 확정 시 추가됩니다.
-            </p>
+            <Calendar events={events} />
           </Card>
         </div>
 
         <div>
           <SectionTitle>To Do List</SectionTitle>
           <Card>
-            <ul className="space-y-2">
-              {todos.map((t) => (
-                <li
-                  key={t.label}
-                  className="flex items-center gap-3 rounded-xl bg-sky-50/60 px-3 py-2.5"
-                >
-                  <span className="grid h-5 w-5 place-items-center rounded-md border bg-surface text-xs">
-                    {t.done ? "✓" : ""}
-                  </span>
-                  <span className="text-sm font-semibold">{t.label}</span>
-                </li>
-              ))}
-            </ul>
-            <p className="mt-4 text-[11px] text-muted">
-              * 컴백 기간 동안 매일 해야 하는 투표 · 스밍 리스트입니다.
-            </p>
+            <TodoList todos={todos} />
           </Card>
         </div>
       </section>
@@ -167,23 +125,29 @@ export default function Home() {
       <section>
         <SectionTitle>NCT DREAM</SectionTitle>
         <Card className="overflow-hidden !p-0">
-          <div className="grid aspect-[21/9] place-items-center sky-gradient text-white">
-            <div className="text-center">
-              <p className="text-2xl font-extrabold">NCT DREAM</p>
-              <p className="text-sm opacity-90">단체 이미지 (컴백 이후 교체 예정)</p>
-            </div>
+          {/*
+           * 원본(1024×874)은 위·아래에 남색 레터박스가 인화돼 있다.
+           * 16:9 로 잘라내며 object-position 을 60% 로 내려 그 여백만 정확히
+           * 걷어내고 멤버 얼굴은 모두 남긴다.
+           */}
+          <div className="relative aspect-[16/9] bg-[#12283c]">
+            <Image
+              src="/profile/dream_profile.png"
+              alt="NCT DREAM 단체 이미지"
+              fill
+              sizes="(max-width: 1024px) 100vw, 992px"
+              className="object-cover object-[center_60%]"
+            />
           </div>
           <div className="flex flex-wrap gap-2 p-5">
             {DREAM_OFFICIAL.map((s) => (
-              <a
+              <SmartLink
                 key={s.label}
                 href={s.href}
-                target="_blank"
-                rel="noopener noreferrer"
                 className="rounded-full border px-4 py-2 text-sm font-bold hover:bg-sky-50"
               >
                 {s.label}
-              </a>
+              </SmartLink>
             ))}
           </div>
         </Card>
@@ -205,16 +169,14 @@ export default function Home() {
           ) : (
             <div className="grid gap-3 sm:grid-cols-2">
               {preorders.map((p) => (
-                <a
+                <SmartLink
                   key={p.name}
                   href={p.href}
-                  target="_blank"
-                  rel="noopener noreferrer"
                   className="flex items-center justify-between rounded-xl border px-4 py-3 hover:bg-sky-50"
                 >
                   <span className="font-bold">{p.name}</span>
                   <span className="text-xs text-muted">{p.kind}</span>
-                </a>
+                </SmartLink>
               ))}
             </div>
           )}

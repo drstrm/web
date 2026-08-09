@@ -1,36 +1,100 @@
 /*
  * 콘텐츠 데이터 레이어 (A안 CMS 시임)
  * ------------------------------------------------------------------
- * 현재는 정적 데이터를 반환하지만, 운영 단계에서는 각 함수 내부를
- * Notion API 호출로 교체합니다. 페이지 컴포넌트는 이 함수 시그니처만
- * 바라보므로, Notion 연동 시 페이지 코드는 바뀌지 않습니다.
+ * 가이드는 노션 DB(lib/notion.ts), 일정 · 할일은 Supabase(schedules)에서 읽는다.
+ * 페이지 컴포넌트는 이 파일의 함수 시그니처만 바라본다.
  *
- * 예) 실제 Notion 연동 시:
- *   import { Client } from "@notionhq/client";
- *   const notion = new Client({ auth: process.env.NOTION_TOKEN });
- *   export async function getGuides() {
- *     const res = await notion.databases.query({ database_id: ... });
- *     return res.results.map(mapNotionPageToGuide);
- *   }
+ * 조회에 실패해도 페이지 전체를 죽이지 않고 해당 섹션만 비운다.
+ * 가이드가 잠깐 안 보이는 것이, 사이트가 500 을 뱉는 것보다 낫다.
  *
  * ISR: 각 페이지에서 `export const revalidate = 300;` (PLAVE 레퍼런스와 동일)
  */
 
+import { toSeoulDate } from "@/lib/datetime";
+import { toHref } from "@/lib/url";
+import {
+  getBanners as getNotionBanners,
+  getGuideSections,
+  getQuickLinks as getNotionQuickLinks,
+  getStreamingLists as getNotionStreamingLists,
+  SLUG_ID_LENGTH,
+  type GuidePage,
+  type NotionBanner,
+} from "@/lib/notion";
+import { sbGet } from "@/lib/supabase";
+
+export type { GuidePage };
+
+/* ---------------- HOME: 슬라이드 배너 (노션 DB) ---------------- */
+
+export type Banner = NotionBanner;
+
+/**
+ * 홈 배너 조회. 이미지 · 링크 · 문구 · 순서를 전부 노션에서 읽는다
+ * (스키마는 docs/notion-banner-db.md).
+ *
+ * 조회에 실패하면 배너 영역만 비운다 — 홈이 500 이 되는 것보다 낫다.
+ */
+export async function getBanners(): Promise<Banner[]> {
+  try {
+    return await getNotionBanners();
+  } catch (e) {
+    console.error("[banners] 노션 조회 실패:", e);
+    return [];
+  }
+}
+
+/* ---------------- HOME: 바로가기 아이콘 (노션 DB) ---------------- */
+
+export interface QuickLink {
+  /** 노션 page id. 목록 렌더링 key 로만 쓴다 */
+  key: string;
+  label: string;
+  /** 노션 `emoji` 열. 비어 있으면 🔗 */
+  emoji: string;
+  /** 내부 경로(`/oneclick/voting`) 또는 외부 주소. 새 탭 여부는 <SmartLink> 가 정한다 */
+  href: string;
+}
+
+/**
+ * 홈 바로가기 아이콘 조회 (스키마는 docs/notion-links-db.md).
+ * 조회에 실패하면 바로가기 영역만 비운다 — 헤더 내비게이션으로도 같은 곳에
+ * 갈 수 있으므로, 홈이 500 이 되는 것보다 낫다.
+ */
+export async function getQuickLinks(): Promise<QuickLink[]> {
+  try {
+    return await getNotionQuickLinks();
+  } catch (e) {
+    console.error("[quick-links] 노션 조회 실패:", e);
+    return [];
+  }
+}
+
 export type GuideStatus = "ready" | "coming-soon";
 
 export interface GuideImage {
-  /** Vercel Blob / Cloudinary 등에서 호스팅되는 원본 이미지 URL */
+  /**
+   * 이미지 프록시 주소 (`/api/guide-image?p=…&i=…&v=…`).
+   * 노션의 S3 서명 URL 은 1시간 뒤 만료되므로 클라이언트에 직접 내보내지 않는다.
+   * `v` 는 이미지가 교체될 때만 바뀌는 버전 토큰이다. 자세한 내용은 lib/notion.ts
+   */
   src: string;
   alt: string;
 }
 
 export interface GuideItem {
+  /** 상세 페이지 주소 조각 (`/guide/<page>/<slug>`). 생성 규칙은 lib/notion.ts */
   slug: string;
   title: string;
   summary?: string;
   status: GuideStatus;
-  /** 클릭 시 라이트박스로 크게 보기/다운로드 (기획안 4 필수 기능) */
+  /** 상세 페이지에서 화면 폭에 꽉 차게 표시 · 저장 (기획안 4 필수 기능) */
   images?: GuideImage[];
+  /**
+   * 이 가이드에서 쓰는 플랫폼 아이콘 키 (public/icons/<key>.png).
+   * 한 가이드가 앱 여러 개를 다루면 여러 개를 넣는다. 목록은 lib/platform-icons.ts
+   */
+  iconTypes?: string[];
 }
 
 export interface GuideSection {
@@ -39,98 +103,163 @@ export interface GuideSection {
   items: GuideItem[];
 }
 
-/* ---------------- GUIDE: 스트리밍 가이드 ---------------- */
-export function getStreamingGuides(): GuideSection[] {
-  return [
-    {
-      id: "audio",
-      title: "음원 스트리밍",
-      items: [
-        { slug: "melon", title: "멜론", status: "coming-soon", summary: "멜론 뮤직웨이브 스트리밍 가이드 (제작 후 업로드 예정)" },
-        { slug: "genie", title: "지니", status: "coming-soon" },
-        { slug: "bugs", title: "벅스", status: "coming-soon" },
-        { slug: "flo", title: "플로", status: "coming-soon" },
-        { slug: "spotify", title: "스포티파이", status: "coming-soon" },
-        { slug: "apple-music", title: "애플뮤직", status: "coming-soon" },
-        { slug: "youtube-music", title: "유튜브 뮤직", status: "coming-soon" },
-      ],
-    },
-    {
-      id: "mv",
-      title: "MV 스트리밍",
-      items: [{ slug: "mv", title: "MV 스트리밍 가이드", status: "coming-soon" }],
-    },
-    {
-      id: "tools",
-      title: "스트리밍 도구",
-      items: [
-        { slug: "station-head", title: "Station head", status: "coming-soon" },
-        { slug: "music-wave", title: "Music wave", status: "coming-soon" },
-        { slug: "sound-assistant", title: "Sound assistant 사용", status: "coming-soon" },
-        { slug: "samsung-music", title: "삼성 뮤직 스트리밍", status: "coming-soon" },
-      ],
-    },
-  ];
+/* ---------------- GUIDE (노션 DB) ---------------- */
+
+/**
+ * 가이드 섹션 조회.
+ *
+ * 운영진이 노션에서 행을 추가 · 수정 · 공개하면 ISR 주기(300초) 안에 반영된다.
+ * 항목이 하나도 없는 섹션은 lib/notion.ts 에서 걸러지므로,
+ * 아직 아무것도 안 올린 페이지는 빈 배열이 된다.
+ */
+async function getGuides(page: GuidePage): Promise<GuideSection[]> {
+  try {
+    return await getGuideSections(page);
+  } catch (e) {
+    // 조회 실패 시 해당 페이지의 목록만 비우고 페이지는 정상 렌더한다.
+    console.error(`[guides] 노션 조회 실패 (page=${page}):`, e);
+    return [];
+  }
 }
 
-/* ---------------- GUIDE: 투표 ---------------- */
-export function getVotingGuides(): GuideSection[] {
-  return [
-    {
-      id: "music-show",
-      title: "음악방송 투표",
-      items: [
-        { slug: "show-champion", title: "쇼챔피언 · 아이돌챔프", status: "coming-soon" },
-        { slug: "mcountdown", title: "엠카운트다운 · 엠넷플러스", status: "coming-soon" },
-        { slug: "music-bank", title: "뮤직뱅크 · 뮤빗", status: "coming-soon" },
-        { slug: "inkigayo-music-core", title: "쇼 음악중심 · 뮤빗/뮤니버스", status: "coming-soon" },
-        { slug: "inkigayo", title: "인기가요", status: "coming-soon" },
-      ],
-    },
-    {
-      id: "awards",
-      title: "시상식 투표",
-      items: [
-        { slug: "awards", title: "시상식 투표 가이드", status: "coming-soon", summary: "시상식 투표 시작 시 가이드 업로드 예정" },
-      ],
-    },
-  ];
+export const getStreamingGuides = () => getGuides("streaming");
+export const getIdGenerateGuides = () => getGuides("id-generate");
+export const getVotingGuides = () => getGuides("voting");
+export const getDownloadGuides = () => getGuides("download");
+export const getEtcGuides = () => getGuides("etc");
+
+/**
+ * 가이드 카테고리 정보.
+ * 가이드 허브(/guide)의 카드, 각 목록 페이지의 헤더, 상세 페이지의 「목록으로」
+ * 링크가 모두 여기를 본다 — 문구를 한 군데서만 고치면 된다.
+ */
+export interface GuidePageInfo {
+  page: GuidePage;
+  href: string;
+  emoji: string;
+  /** 페이지 제목 (허브 카드 · 헤더 · <title>) */
+  title: string;
+  /** 허브 카드의 한 줄 설명 */
+  summary: string;
+  /** 목록 페이지 헤더의 설명 */
+  description: string;
 }
 
-/* ---------------- GUIDE: 다운로드 ---------------- */
-export function getDownloadGuides(): GuideSection[] {
-  return [
-    {
-      id: "audio-dl",
-      title: "음원 다운로드",
-      items: [
-        { slug: "melon-dl", title: "멜론", status: "coming-soon" },
-        { slug: "genie-dl", title: "지니", status: "coming-soon" },
-        { slug: "bugs-dl", title: "벅스", status: "coming-soon" },
-        { slug: "kams-dl", title: "카뮤", status: "coming-soon" },
-      ],
-    },
-    {
-      id: "mv-dl",
-      title: "MV 다운로드",
-      items: [{ slug: "mv-dl", title: "MV 다운로드 가이드", status: "coming-soon" }],
-    },
-  ];
+export const GUIDE_PAGES: GuidePageInfo[] = [
+  {
+    page: "streaming",
+    href: "/guide/streaming",
+    emoji: "🎧",
+    title: "스트리밍 가이드",
+    summary: "멜론·지니·벅스·플로·스포티파이 등 플랫폼별 음원/MV 스트리밍",
+    description: "플랫폼을 고르면 가이드 이미지를 크게 볼 수 있어요.",
+  },
+  {
+    page: "id-generate",
+    href: "/guide/id-generate",
+    emoji: "🪪",
+    title: "아이디 생성 가이드",
+    summary: "멜론·지니·벅스·플로·바이브 등 플랫폼별 계정 만들기",
+    description: "플랫폼별 아이디 만드는 방법입니다. 스밍 전에 계정부터 준비해 주세요.",
+  },
+  {
+    page: "voting",
+    href: "/guide/voting",
+    emoji: "🗳️",
+    title: "투표 가이드",
+    summary: "음악방송 · 시상식 투표 앱 가이드",
+    description: "방송사별 음악방송 투표 앱과 시상식 투표 방법을 안내합니다.",
+  },
+  {
+    page: "download",
+    href: "/guide/download",
+    emoji: "⬇️",
+    title: "다운로드 가이드",
+    summary: "플랫폼별 음원 · MV 다운로드",
+    description: "플랫폼을 고르면 가이드 이미지를 크게 볼 수 있어요.",
+  },
+  {
+    page: "etc",
+    href: "/guide/etc",
+    emoji: "✨",
+    title: "기타 가이드",
+    summary: "컬러링·벨 설정, 숏폼 제작, 이용권 추천",
+    description: "컬러링·벨 설정, 숏폼 제작, 이용권 추천 가이드입니다.",
+  },
+];
+
+export const getGuidePageInfo = (page: GuidePage): GuidePageInfo =>
+  GUIDE_PAGES.find((p) => p.page === page)!;
+
+/** 상세 페이지가 필요로 하는 한 항목과, 그 항목이 속한 섹션 */
+export interface GuideEntry {
+  section: GuideSection;
+  item: GuideItem;
 }
 
-/* ---------------- GUIDE: 기타 ---------------- */
-export function getEtcGuides(): GuideSection[] {
-  return [
-    {
-      id: "etc",
-      title: "기타 가이드",
-      items: [
-        { slug: "coloring", title: "컬러링 · 벨소리 설정", status: "coming-soon" },
-        { slug: "shortform", title: "숏폼 제작 가이드", status: "coming-soon" },
-        { slug: "pass", title: "이용권 추천 가이드", status: "coming-soon" },
-      ],
-    },
-  ];
+/**
+ * 슬러그 끝에 붙은 노션 id 조각(lib/notion.ts).
+ * 슬러그 형태가 아니면 빈 문자열 — 엉뚱한 값이 넓게 매칭되지 않게 한다.
+ */
+function slugIdTail(slug: string): string {
+  const tail = slug.slice(slug.lastIndexOf("-") + 1);
+  return tail.length === SLUG_ID_LENGTH ? tail : "";
+}
+
+/**
+ * 상세 페이지용 단일 가이드 조회. 없으면 null (호출부에서 notFound()).
+ *
+ * 제목이 바뀌면 슬러그 앞부분도 바뀌므로, 정확히 일치하는 항목이 없으면
+ * 끝의 id 조각으로 한 번 더 찾는다 — 이미 공유된 링크가 제목 수정만으로
+ * 죽지 않도록 하기 위해서다.
+ */
+export async function getGuideEntry(
+  page: GuidePage,
+  slug: string,
+): Promise<GuideEntry | null> {
+  const sections = await getGuides(page);
+  const entries = sections.flatMap((section) =>
+    section.items.map((item) => ({ section, item })),
+  );
+
+  const exact = entries.find((e) => e.item.slug === slug);
+  if (exact) return exact;
+
+  const tail = slugIdTail(slug);
+  return (tail && entries.find((e) => slugIdTail(e.item.slug) === tail)) || null;
+}
+
+/* ---------------- ONECLICK: 스밍리스트 (노션 DB) ---------------- */
+
+/** 한 플랫폼 안에서 같은 링크를 쓰는 기기 묶음 */
+export interface StreamingTarget {
+  /**
+   * 운영체제 · 기기 (안드로이드 / iOS / 아이패드 / PC).
+   * 링크가 같은 기기끼리 한 줄로 묶여 있다 (플로 = 안드로이드 · iOS).
+   */
+  os: string[];
+  /** 링크가 여러 개면 노션 `순서` 열대로 1, 2, 3… */
+  links: string[];
+}
+
+export interface StreamingList {
+  platform: string;
+  /** public/icons/<key>.png 의 key. 아이콘이 없는 플랫폼은 비어 있다 */
+  iconType?: string;
+  targets: StreamingTarget[];
+}
+
+/**
+ * 스밍리스트 원클릭 조회 (스키마는 docs/notion-streaming-db.md).
+ * 조회에 실패하면 목록만 비운다 — 페이지가 500 이 되는 것보다 낫다.
+ */
+export async function getStreamingLists(): Promise<StreamingList[]> {
+  try {
+    return await getNotionStreamingLists();
+  } catch (e) {
+    console.error("[streaming-lists] 노션 조회 실패:", e);
+    return [];
+  }
 }
 
 /* ---------------- HOME: 실시간 차트 (X 계정과 동일) ---------------- */
@@ -153,34 +282,138 @@ export function getRealtimeChart(): { updatedAt: string; rows: ChartRow[] } {
   };
 }
 
-/* ---------------- HOME: 캘린더 / To Do ---------------- */
-export interface CalendarEvent {
-  date: string; // YYYY-MM-DD
-  label: string;
-  type: "debut" | "birthday" | "vote" | "chart";
-}
-export function getCalendarEvents(): CalendarEvent[] {
-  // 컴백 관련(투표 기간/써클차트 마감)은 컴백일 확정 시 기재
-  return [
-    { date: "2016-08-25", label: "NCT DREAM 데뷔일", type: "debut" },
-    { date: "2000-02-25", label: "마크 생일", type: "birthday" },
-    { date: "2002-08-06", label: "런쥔 생일", type: "birthday" },
-    { date: "2000-08-01", label: "제노 생일", type: "birthday" },
-    { date: "2000-09-23", label: "해찬 생일", type: "birthday" },
-    { date: "2001-06-28", label: "재민 생일", type: "birthday" },
-    { date: "2002-08-05", label: "천러 생일", type: "birthday" },
-    { date: "2002-03-28", label: "지성 생일", type: "birthday" },
-  ];
+/* ---------------- 공용 일정 테이블 (Supabase `schedules`) ---------------- */
+
+/**
+ * Supabase `schedules` 원본 행 (스키마: supabase/schedules.sql)
+ * 캘린더 · To Do · 투표 등 여러 뷰가 공유하는 테이블이므로,
+ * 각 뷰는 이 행을 자기 화면에 맞는 형태로 매핑해서 쓴다.
+ */
+export interface ScheduleRow {
+  id: number;
+  kind: string;
+  title: string;
+  description: string | null;
+  starts_at: string;
+  ends_at: string | null;
+  all_day: boolean;
+  recurring_yearly: boolean;
+  url: string | null;
+  guide_url: string | null;
+  /** 플랫폼 아이콘 키 (public/icons/<key>.png) */
+  icon_type: string | null;
+  emoji: string | null;
+  sort_order: number;
 }
 
-export function getTodoList(): { label: string; done?: boolean }[] {
-  // 컴백 기간 동안 매일 해야 하는 투표/스밍 (컴백일 확정 시 활성화)
-  return [
-    { label: "멜론 24시간 스트리밍 돌리기" },
-    { label: "유튜브 MV 시청 (로그인 상태)" },
-    { label: "음악방송 사전투표 참여" },
-    { label: "실시간 문자투표 (쇼! 음악중심 #0505)" },
-  ];
+const SCHEDULE_COLUMNS =
+  "id,kind,title,description,starts_at,ends_at,all_day,recurring_yearly," +
+  "url,guide_url,icon_type,emoji,sort_order";
+
+/**
+ * 특정 화면(surface)에 노출할 일정을 조회한다.
+ * @param surface schedules.surfaces 배열에 담긴 값 (calendar · todo · vote …)
+ * @param query   추가 PostgREST 쿼리 (정렬 · 기간 필터 등)
+ */
+export async function getSchedules(
+  surface: string,
+  query = "&order=starts_at",
+): Promise<ScheduleRow[]> {
+  try {
+    return await sbGet<ScheduleRow[]>(
+      `schedules?select=${SCHEDULE_COLUMNS}` +
+        `&published=is.true&surfaces=cs.%7B${encodeURIComponent(surface)}%7D${query}`,
+      { revalidate: 300 },
+    );
+  } catch (e) {
+    // 조회 실패 시 해당 섹션만 비우고 페이지는 정상 렌더한다.
+    console.error(`[schedules] Supabase 조회 실패 (surface=${surface}):`, e);
+    return [];
+  }
+}
+
+/* ---------------- HOME: 캘린더 ---------------- */
+export interface CalendarEvent {
+  id: number;
+  /** 시작일 YYYY-MM-DD (KST). recurring 일정은 연도를 무시하고 월-일만 사용 */
+  date: string;
+  /** 기간 일정의 종료일. 없으면 하루짜리 일정 */
+  endDate?: string;
+  label: string;
+  /** schedules.kind — 이모지 매핑에 사용 */
+  type: string;
+  /** 데뷔일 · 생일처럼 매년 반복되는 기념일 여부 */
+  recurring: boolean;
+  /** 운영진이 지정한 이모지 (없으면 kind 기본값) */
+  emoji?: string;
+  /** 플랫폼 아이콘 키. 아이콘이 있으면 이모지 대신 표시 */
+  iconType?: string;
+  url?: string;
+}
+
+/**
+ * 홈 캘린더 일정 조회.
+ * 컴백 관련 일정(투표 기간 · 써클차트 마감)도 코드 배포 없이 DB에서 추가한다.
+ */
+export async function getCalendarEvents(): Promise<CalendarEvent[]> {
+  const rows = await getSchedules("calendar");
+  return rows.map((r) => ({
+    id: r.id,
+    date: toSeoulDate(r.starts_at),
+    endDate: r.ends_at ? toSeoulDate(r.ends_at) : undefined,
+    label: r.title,
+    type: r.kind,
+    recurring: r.recurring_yearly,
+    emoji: r.emoji ?? undefined,
+    iconType: r.icon_type ?? undefined,
+    // 노션과 마찬가지로 사람이 손으로 적는 칸이라 보정해서 내보낸다 (lib/url.ts)
+    url: toHref(r.url) ?? undefined,
+  }));
+}
+
+/* ---------------- HOME: To Do ---------------- */
+export interface TodoItem {
+  id: number;
+  label: string;
+  description?: string;
+  /** 바로가기 링크 (투표 · 스밍) */
+  url?: string;
+  /** 관련 가이드 페이지 */
+  guideUrl?: string;
+  /** 플랫폼 아이콘 키 */
+  iconType?: string;
+  emoji?: string;
+  kind: string;
+  startsAt: string;
+  endsAt?: string;
+  allDay: boolean;
+}
+
+/**
+ * 지금 진행중인 할일 조회 (surfaces 에 'todo' 가 포함된 일정).
+ * 기간 판단은 DB의 starts_at / ends_at 으로만 한다 —
+ * PostgREST 의 'now' 리터럴을 쓰면 URL이 매번 바뀌지 않아 ISR 캐시가 유지된다.
+ * ends_at 이 없는 상시 할일도 포함되도록 or 조건을 건다.
+ */
+export async function getTodoList(): Promise<TodoItem[]> {
+  const rows = await getSchedules(
+    "todo",
+    "&starts_at=lte.now&or=(ends_at.is.null,ends_at.gt.now)&order=sort_order,ends_at",
+  );
+  return rows.map((r) => ({
+    id: r.id,
+    label: r.title,
+    description: r.description ?? undefined,
+    // 손으로 적는 칸이라 보정해서 내보낸다 (lib/url.ts)
+    url: toHref(r.url) ?? undefined,
+    guideUrl: toHref(r.guide_url) ?? undefined,
+    iconType: r.icon_type ?? undefined,
+    emoji: r.emoji ?? undefined,
+    kind: r.kind,
+    startsAt: r.starts_at,
+    endsAt: r.ends_at ?? undefined,
+    allDay: r.all_day,
+  }));
 }
 
 /* ---------------- HOME: 유튜브 MV ---------------- */

@@ -1,18 +1,18 @@
 import type { Metadata } from "next";
 import GuideList from "@/components/GuideList";
 import { PageHeader } from "@/components/ui";
-import { getDownloadGuides, getGuidePageInfo } from "@/lib/content";
+import { getIdGenerateGuides, getGuidePageInfo } from "@/lib/content";
 
-const INFO = getGuidePageInfo("download");
+const INFO = getGuidePageInfo("id-generate");
 
 export const metadata: Metadata = { title: INFO.title };
 export const revalidate = 300;
 
-export default async function DownloadGuidePage() {
+export default async function IdGenerateGuidePage() {
   return (
     <div>
       <PageHeader eyebrow="GUIDE" title={INFO.title} description={INFO.description} />
-      <GuideList sections={await getDownloadGuides()} basePath={INFO.href} />
+      <GuideList sections={await getIdGenerateGuides()} basePath={INFO.href} />
     </div>
   );
 }

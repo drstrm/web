@@ -1,20 +1,18 @@
 import type { Metadata } from "next";
 import GuideList from "@/components/GuideList";
 import { PageHeader } from "@/components/ui";
-import { getVotingGuides } from "@/lib/content";
+import { getVotingGuides, getGuidePageInfo } from "@/lib/content";
 
-export const metadata: Metadata = { title: "투표 가이드" };
+const INFO = getGuidePageInfo("voting");
+
+export const metadata: Metadata = { title: INFO.title };
 export const revalidate = 300;
 
-export default function VotingGuidePage() {
+export default async function VotingGuidePage() {
   return (
     <div>
-      <PageHeader
-        eyebrow="GUIDE"
-        title="투표 가이드"
-        description="방송사별 음악방송 투표 앱과 시상식 투표 방법을 안내합니다."
-      />
-      <GuideList sections={getVotingGuides()} />
+      <PageHeader eyebrow="GUIDE" title={INFO.title} description={INFO.description} />
+      <GuideList sections={await getVotingGuides()} basePath={INFO.href} />
     </div>
   );
 }

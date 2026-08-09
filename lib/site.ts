@@ -19,7 +19,7 @@ export const SITE = {
 
 /** 팀 공식 SNS · 소셜 위젯 (기획안 4: 소셜 위젯 연동) */
 export const SOCIALS: { label: string; href: string; handle?: string }[] = [
-  { label: "X (Twitter)", href: "https://x.com/", handle: "@nctdream_strm" },
+  { label: "X (Twitter)", href: "https://x.com/", handle: "@NCTDREAM_STRM_" },
   { label: "Instagram", href: "https://instagram.com/" },
   { label: "Weverse", href: "https://weverse.io/" },
   { label: "YouTube", href: "https://youtube.com/" },
@@ -28,8 +28,8 @@ export const SOCIALS: { label: string; href: string; handle?: string }[] = [
 
 /** 문의 채널 (기획안 4: 카카오 오픈프로필) */
 export const CONTACTS: { label: string; href: string }[] = [
-  { label: "스트리밍팀 문의", href: "https://open.kakao.com/" },
-  { label: "이벤트팀 문의", href: "https://open.kakao.com/" },
+  { label: "스트리밍팀 문의", href: "https://pf.kakao.com/_dxdwxbxj" },
+  { label: "이벤트팀 문의", href: "https://pf.kakao.com/_hFlxkxj" },
 ];
 
 /** DREAM 공식 SNS (홈 프로필 카드) */
@@ -40,53 +40,20 @@ export const DREAM_OFFICIAL: { label: string; href: string }[] = [
   { label: "YouTube", href: "https://youtube.com/@NCTDREAM" },
 ];
 
-/**
- * 홈 바로가기 아이콘 (기획안 2 · 4: 필수 구현 - 바로가기 기능)
- * 투표 / 스트리밍 / 라디오신청 / 폼 / 헬퍼신청
+/*
+ * 홈 슬라이드 배너 · 바로가기 아이콘은 여기 있지 않다.
+ * 운영진이 노션 DB 에서 직접 관리한다 — lib/content.ts 의 getBanners() ·
+ * getQuickLinks(), 스키마는 docs/notion-banner-db.md · docs/notion-links-db.md 참고.
+ *
+ * 바로가기(기획안 2 · 4 필수 구현)의 기본값을 여기 남겨두지 않는 이유:
+ * 노션에서 버튼을 지웠는데 코드의 기본값이 되살아나면 운영진이 손쓸 방법이 없다.
+ * 조회에 실패하면 섹션째 감춘다 (헤더 내비게이션으로 같은 곳에 갈 수 있다).
  */
-export const QUICK_LINKS: {
-  key: string;
-  label: string;
-  emoji: string;
-  href: string;
-  external?: boolean;
-}[] = [
-  { key: "vote", label: "투표", emoji: "🗳️", href: "/oneclick/voting" },
-  { key: "streaming", label: "스트리밍", emoji: "🎧", href: "/oneclick/streaming" },
-  { key: "radio", label: "라디오 신청", emoji: "📻", href: "/oneclick/radio" },
-  { key: "form", label: "폼 바로가기", emoji: "📝", href: "https://forms.google.com/", external: true },
-  { key: "helper", label: "헬퍼 신청", emoji: "🙋", href: "https://forms.google.com/", external: true },
-];
-
-/** 홈 슬라이드 배너 (기획안: 현재는 DREAM x 공계 배너 사진으로만 설정) */
-export const BANNERS: { id: string; title: string; subtitle?: string; href?: string; tone: "sky" | "champagne" }[] = [
-  {
-    id: "b1",
-    title: "NCT DREAM 컴백",
-    subtitle: "스트리밍으로 함께해요",
-    href: "/guide/streaming",
-    tone: "sky",
-  },
-  {
-    id: "b2",
-    title: "음악방송 투표 가이드",
-    subtitle: "원클릭으로 간편하게",
-    href: "/guide/voting",
-    tone: "champagne",
-  },
-  {
-    id: "b3",
-    title: "앨범 사전 판매 정리",
-    subtitle: "각 앨범사 · 팬덤 공구 링크",
-    href: "/#preorder",
-    tone: "sky",
-  },
-];
 
 /** COMMUNITY - Notion 공개 페이지 링크 (기획안 IA) */
 export const NOTION = {
-  notice: "#",
-  faq: "#",
+  notice: "https://app.notion.com/p/nctdreamstrm/393dec8e2bf080b4b0f1deb2ac946d5a",
+  faq: "https://app.notion.com/p/nctdreamstrm/FAQ-392dec8e2bf080fd8db0e297d73336a5",
 };
 
 /** 전역 내비게이션 구조 (기획안 2: IA) */
@@ -101,6 +68,7 @@ export const NAV: {
     href: "/guide",
     children: [
       { label: "스트리밍 가이드", href: "/guide/streaming" },
+      { label: "아이디 생성 가이드", href: "/guide/id-generate" },
       { label: "투표", href: "/guide/voting" },
       { label: "다운로드 가이드", href: "/guide/download" },
       { label: "기타 가이드", href: "/guide/etc" },

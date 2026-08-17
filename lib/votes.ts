@@ -6,7 +6,7 @@
  *   daily_todos.end_date    → schedules.ends_at
  *   투표 위젯 노출 여부      → schedules.surfaces 에 'vote' 포함
  *
- * icon_type 은 VOTE_APPS 의 key(fancast · mnetplus …) 및 public/icons 아이콘 파일명과 1:1 대응.
+ * icon_type 은 VOTE_APPS 의 key(coogoong · mnetplus …) 및 public/icons 아이콘 파일명과 1:1 대응.
  * 투표 기간은 DB의 starts_at / ends_at(UTC)로만 판단하고 코드에는 두지 않는다.
  */
 

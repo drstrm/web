@@ -11,7 +11,8 @@
 export const PLATFORM_ICONS: Record<string, string> = {
   applemusic: "애플뮤직",
   bugs: "벅스",
-  fancast: "팬캐스트",
+  // fancast: "팬캐스트",
+  coogoong: "쿠궁",
   flo: "플로",
   genie: "지니",
   higher: "하이어",

@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
-import Image from "next/image";
 import { notFound } from "next/navigation";
+import LoadingImage from "@/components/LoadingImage";
 import PlatformIcon from "@/components/PlatformIcon";
 import SmartLink from "@/components/SmartLink";
 import { getGuideEntry, getGuidePageInfo, type GuidePage } from "@/lib/content";
@@ -72,7 +72,7 @@ export default async function GuideDetail({
         <div className="-mx-4 space-y-6 sm:mx-0">
           {images.map((img, i) => (
             <figure key={img.src}>
-              <Image
+              <LoadingImage
                 src={img.src}
                 alt={img.alt}
                 width={1200}
@@ -80,7 +80,8 @@ export default async function GuideDetail({
                 sizes="(max-width: 1024px) 100vw, 1024px"
                 // 첫 장은 화면에 바로 보이므로 지연 없이 받는다.
                 priority={i === 0}
-                className="h-auto w-full bg-sky-50 sm:rounded-2xl sm:border"
+                wrapperClassName="bg-sky-50 sm:rounded-2xl sm:border"
+                className="block h-auto w-full"
               />
               <figcaption className="mt-2 flex items-center justify-between gap-2 px-4 sm:px-0">
                 <span className="text-xs text-muted">

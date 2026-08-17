@@ -1,6 +1,6 @@
 "use client";
 
-import Image from "next/image";
+import LoadingImage from "@/components/LoadingImage";
 import { useState } from "react";
 
 type RadioScheduleImage = {
@@ -83,14 +83,15 @@ export default function RadioSchedule() {
             {expanded && (
               <div id={panelId} className="border-t bg-background">
                 <figure>
-                  <Image
+                  <LoadingImage
                     src={image.src}
                     alt={`${image.broadcaster} 라디오 신청 가이드`}
                     width={image.width}
                     height={image.height}
                     sizes="(max-width: 1024px) 100vw, 1024px"
                     priority={index === 0}
-                    className="h-auto w-full bg-sky-50"
+                    wrapperClassName="bg-sky-50"
+                    className="block h-auto w-full"
                   />
                   <figcaption className="flex justify-end px-4 py-3">
                     <a

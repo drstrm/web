@@ -1,6 +1,6 @@
 "use client";
 
-import Image from "next/image";
+import LoadingImage from "@/components/LoadingImage";
 import SmartLink from "@/components/SmartLink";
 import { useCallback, useEffect, useRef, useState } from "react";
 import type { Banner } from "@/lib/content";
@@ -182,7 +182,7 @@ export default function BannerSlider({ banners }: { banners: Banner[] }) {
               style={b.image ? undefined : { backgroundColor: b.background }}
             >
               {b.image && (
-                <Image
+                <LoadingImage
                   src={b.image}
                   alt={b.alt}
                   fill

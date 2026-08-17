@@ -1,6 +1,6 @@
-import Image from "next/image";
 import BannerSlider from "@/components/BannerSlider";
 import Calendar from "@/components/Calendar";
+import LoadingImage from "@/components/LoadingImage";
 import SmartLink from "@/components/SmartLink";
 import TodoList from "@/components/TodoList";
 import { Card, SectionTitle } from "@/components/ui";
@@ -131,7 +131,7 @@ export default async function Home() {
            * 걷어내고 멤버 얼굴은 모두 남긴다.
            */}
           <div className="relative aspect-[16/9] bg-[#12283c]">
-            <Image
+            <LoadingImage
               src="/profile/dream_profile.png"
               alt="NCT DREAM 단체 이미지"
               fill

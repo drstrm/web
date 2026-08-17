@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import RadioOneclick from "@/components/RadioOneclick";
 import RadioSchedule from "@/components/RadioSchedule";
 import { PageHeader, SectionTitle } from "@/components/ui";
+import { RADIO_MESSAGE_NOTICE } from "@/lib/radio";
 
 export const metadata: Metadata = { title: "라디오 원클릭" };
 
@@ -16,6 +17,9 @@ export default function OneclickRadioPage() {
 
       <section>
         <SectionTitle>라디오 신청 원클릭</SectionTitle>
+        <p className="mb-3 text-xs text-muted">
+          채널을 누르면 지금 방송에 맞춘 사연이 뜹니다. {RADIO_MESSAGE_NOTICE}.
+        </p>
         <RadioOneclick />
       </section>
 

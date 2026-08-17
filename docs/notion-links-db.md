@@ -33,6 +33,7 @@
 | 적는 값 | 동작 |
 |---|---|
 | `/oneclick/voting` | 사이트 안 이동 (`next/link`, 새로고침 없음) |
+| `/forms` · `/helper` | 폼 · 헬퍼 목록 페이지 ([notion-forms-db.md](./notion-forms-db.md)) |
 | `https://forms.google.com/…` | 새 탭으로 열림 |
 | `tinyurl.com/xxxx` | `https://` 를 코드가 붙여서 새 탭 |
 | `oneclick/voting` | 맨 앞 `/` 를 빠뜨린 것으로 보고 내부 경로로 고친다 |

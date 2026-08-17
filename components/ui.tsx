@@ -26,12 +26,18 @@ export function PageHeader({
 }
 
 /** 오픈 예정 안내 (기획안 3: '오픈 예정입니다' 문구) */
-export function ComingSoon({ label = "오픈 예정입니다" }: { label?: string }) {
+export function ComingSoon({
+  label = "오픈 예정입니다",
+  description = "가이드가 준비되는 대로 업데이트됩니다.",
+}: {
+  label?: string;
+  description?: string;
+}) {
   return (
     <div className="flex flex-col items-center justify-center rounded-2xl border border-dashed border-champagne-deep/60 bg-champagne/15 px-6 py-10 text-center">
       <span className="text-3xl">🚧</span>
       <p className="mt-2 font-bold text-[#5a4a1f]">{label}</p>
-      <p className="mt-1 text-xs text-muted">가이드가 준비되는 대로 업데이트됩니다.</p>
+      <p className="mt-1 text-xs text-muted">{description}</p>
     </div>
   );
 }

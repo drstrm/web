@@ -15,6 +15,9 @@
  */
 
 import type {
+  FormKind,
+  FormLink,
+  FormStatus,
   GuideImage,
   GuideItem,
   GuideSection,
@@ -32,7 +35,7 @@ const NOTION_VERSION = "2026-03-11";
 const TOKEN = process.env.NOTION_TOKEN;
 
 /** 코드가 아는 노션 DB 목록. 행(row)은 전부 조회 결과로만 다룬다. */
-type DbKey = "guide" | "banner" | "streaming" | "links";
+type DbKey = "guide" | "banner" | "streaming" | "links" | "forms";
 
 const DATABASES: Record<DbKey, { env: string; db?: string; ds?: string }> = {
   guide: {
@@ -54,6 +57,11 @@ const DATABASES: Record<DbKey, { env: string; db?: string; ds?: string }> = {
     env: "NOTION_LINKS_DB_ID",
     db: process.env.NOTION_LINKS_DB_ID,
     ds: process.env.NOTION_LINKS_DS_ID,
+  },
+  forms: {
+    env: "NOTION_FORMS_DB_ID",
+    db: process.env.NOTION_FORMS_DB_ID,
+    ds: process.env.NOTION_FORMS_DS_ID,
   },
 };
 
@@ -277,6 +285,17 @@ function normalized(page: NotionPage): Record<string, NotionProperty> {
 
 const text = (parts?: { plain_text: string }[]) =>
   (parts ?? []).map((t) => t.plain_text).join("").trim();
+
+/**
+ * 제목(Title) 열 값. **열 이름이 아니라 타입으로** 찾는다.
+ *
+ * 노션이 새 DB 에 만들어 주는 제목 열 이름은 UI 언어에 따라 `이름` 이기도 `Name`
+ * 이기도 하고, 운영진이 `폼 이름` 처럼 고쳐 쓰기도 한다. 제목 열은 DB 마다 하나뿐이라
+ * 타입으로 찾으면 그 셋을 전부 흡수한다 (이름을 못 맞춰 목록이 통째로 비는 사고 방지).
+ */
+function titleOf(props: Record<string, NotionProperty>): string {
+  return text(Object.values(props).find((v) => v.type === "title")?.title);
+}
 
 const fileUrl = (f: NotionFile): string | null =>
   (f.type === "file" ? f.file?.url : f.external?.url) ?? null;
@@ -682,6 +701,82 @@ export async function getQuickLinks(revalidate = 300): Promise<QuickLink[]> {
           emoji: text(p["emoji"]?.rich_text) || "🔗",
           href,
         } satisfies QuickLink,
+      },
+    ];
+  });
+
+  return rows.sort((a, b) => a.order - b.order).map((r) => r.link);
+}
+
+/* ---------------- 폼 · 헬퍼 목록 ---------------- */
+
+/**
+ * 노션 `구분` 선택지 → 페이지 (`/forms` · `/helper`).
+ * 여기 없는 값을 적은 행은 어느 페이지에도 나오지 않는다.
+ */
+const FORM_KIND_BY_LABEL: Record<string, FormKind> = {
+  폼: "form",
+  form: "form",
+  헬퍼: "helper",
+  helper: "helper",
+};
+
+/** 노션 `상태` 선택지 → 화면 상태. 비어 있으면 신청 가능으로 본다 */
+const FORM_STATUS_BY_LABEL: Record<string, FormStatus> = {
+  진행중: "open",
+  모집중: "open",
+  신청중: "open",
+  마감: "closed",
+  종료: "closed",
+  예정: "upcoming",
+  오픈예정: "upcoming",
+  준비중: "upcoming",
+};
+
+/**
+ * 폼 · 헬퍼 목록 조회 (스키마는 docs/notion-forms-db.md).
+ *
+ * 폼과 헬퍼는 **한 DB** 를 `구분` 열로 나눠 쓴다. 운영 방식(폼 링크 하나 + 기간 +
+ * 마감 여부)이 같아서 열도 같고, DB 를 둘로 나누면 연결(Connection) · 환경변수 ·
+ * 문서가 통째로 두 벌이 된다.
+ *
+ * 표시 순서는 노션이 쥔다 — `순서` 숫자 열, 없거나 비면 행을 추가한 순서.
+ */
+export async function getFormLinks(
+  kind: FormKind,
+  revalidate = 300,
+): Promise<FormLink[]> {
+  const pages = await queryRows("forms", revalidate);
+
+  const rows = pages.flatMap((page) => {
+    const p = normalized(page);
+
+    const title = titleOf(p);
+    const rowKind = FORM_KIND_BY_LABEL[p["구분"]?.select?.name?.trim() ?? ""];
+    // 제목이 비었거나(노션 기본 빈 행) 다른 페이지의 행이면 건너뛴다
+    if (!title || rowKind !== kind) return [];
+
+    const href = toHref(p["URL"]?.url) ?? undefined;
+    const marked = FORM_STATUS_BY_LABEL[p["상태"]?.select?.name?.trim() ?? ""] ?? "open";
+    /*
+     * 링크가 없으면 눌러도 갈 곳이 없다 — 「신청하기」 버튼을 띄우지 않고 준비 중으로
+     * 내린다. 마감은 링크 유무와 무관하게 마감이다(폼을 닫아 두고 링크만 남기는 경우).
+     */
+    const status: FormStatus = marked === "closed" ? "closed" : href ? marked : "upcoming";
+
+    return [
+      {
+        order: p["순서"]?.number ?? Number.MAX_SAFE_INTEGER,
+        link: {
+          key: page.id,
+          title,
+          status,
+          // 마감 · 준비 중이면 주소를 아예 내보내지 않는다 (화면에서 링크가 안 생긴다)
+          ...(status === "open" && href ? { href } : {}),
+          ...(text(p["설명"]?.rich_text) ? { summary: text(p["설명"]?.rich_text) } : {}),
+          ...(text(p["기간"]?.rich_text) ? { period: text(p["기간"]?.rich_text) } : {}),
+          ...(text(p["emoji"]?.rich_text) ? { emoji: text(p["emoji"]?.rich_text) } : {}),
+        } satisfies FormLink,
       },
     ];
   });

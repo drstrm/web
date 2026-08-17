@@ -50,6 +50,16 @@ const DATABASES = [
     optional: ["emoji", "순서"],
     orderBy: "순서",
   },
+  {
+    // 제목 열은 이름을 안 본다(타입으로 찾는다) — lib/notion.ts 의 titleOf()
+    label: "폼 · 헬퍼",
+    env: "FORMS",
+    required: ["구분", "URL"],
+    optional: ["설명", "상태", "기간", "emoji", "순서"],
+    orderBy: "순서",
+    // 아직 안 만들었을 수 있다. 없으면 /forms · /helper 가 「준비 중」으로 나온다
+    optionalDb: true,
+  },
 ];
 
 /* ---------------- .env ---------------- */
@@ -111,7 +121,12 @@ for (const db of DATABASES) {
   console.log(`■ ${db.label}  (NOTION_${db.env}_DB_ID)`);
 
   if (!dbId) {
-    note(false, `.env 에 NOTION_${db.env}_DB_ID 가 없습니다`);
+    // 아직 안 만든 DB 는 문제로 세지 않는다 (해당 화면만 「준비 중」으로 나온다)
+    if (db.optionalDb) {
+      console.log(`   · .env 에 NOTION_${db.env}_DB_ID 가 없습니다 — 아직 DB 를 안 만들었다면 정상입니다`);
+    } else {
+      note(false, `.env 에 NOTION_${db.env}_DB_ID 가 없습니다`);
+    }
     console.log();
     continue;
   }

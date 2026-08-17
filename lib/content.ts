@@ -14,6 +14,7 @@ import { toSeoulDate } from "@/lib/datetime";
 import { toHref } from "@/lib/url";
 import {
   getBanners as getNotionBanners,
+  getFormLinks as getNotionFormLinks,
   getGuideSections,
   getQuickLinks as getNotionQuickLinks,
   getStreamingLists as getNotionStreamingLists,
@@ -258,6 +259,80 @@ export async function getStreamingLists(): Promise<StreamingList[]> {
     return await getNotionStreamingLists();
   } catch (e) {
     console.error("[streaming-lists] 노션 조회 실패:", e);
+    return [];
+  }
+}
+
+/* ---------------- FORM · HELPER (노션 DB) ---------------- */
+
+/** 폼 목록이 나뉘는 두 페이지 (= /forms · /helper) */
+export type FormKind = "form" | "helper";
+
+/**
+ * 폼 하나의 상태.
+ *  - open      신청 가능 (링크가 열린다)
+ *  - closed    마감 (남겨두되 누를 수 없다)
+ *  - upcoming  준비 중 · 링크가 아직 없음
+ */
+export type FormStatus = "open" | "closed" | "upcoming";
+
+export interface FormLink {
+  /** 노션 page id. 목록 렌더링 key 로만 쓴다 */
+  key: string;
+  title: string;
+  summary?: string;
+  /** 신청 폼 주소. 마감 · 준비 중이면 비어 있다 */
+  href?: string;
+  status: FormStatus;
+  /** 접수 기간 표기 (자유 텍스트 — "~ 8/24 23:59") */
+  period?: string;
+  /** 노션 `emoji` 열. 비어 있으면 페이지 기본 이모지 */
+  emoji?: string;
+}
+
+/** 폼 · 헬퍼 페이지의 고정 문구. 두 페이지가 이 값만 바꿔 쓴다 */
+export interface FormPageInfo {
+  kind: FormKind;
+  href: string;
+  emoji: string;
+  /** 페이지 제목 (헤더 · <title>) */
+  title: string;
+  description: string;
+  /** 목록이 비었을 때(아직 없거나 조회 실패) 보여줄 문구 */
+  empty: string;
+}
+
+export const FORM_PAGES: Record<FormKind, FormPageInfo> = {
+  form: {
+    kind: "form",
+    href: "/forms",
+    emoji: "📝",
+    title: "폼 바로가기",
+    description: "스밍팀에서 진행 중인 신청 · 설문 폼을 한곳에 모았어요.",
+    empty: "진행 중인 폼이 없어요",
+  },
+  helper: {
+    kind: "helper",
+    href: "/helper",
+    emoji: "🙋",
+    title: "헬퍼 신청하기",
+    description: "총공 · 이벤트를 함께 준비할 헬퍼를 모집하는 폼입니다.",
+    empty: "모집 중인 헬퍼 폼이 없어요",
+  },
+};
+
+/**
+ * 폼 · 헬퍼 목록 조회 (스키마는 docs/notion-forms-db.md).
+ *
+ * 한 노션 DB 를 `구분`(폼 · 헬퍼) 열로 나눠 두 페이지가 나눠 쓴다.
+ * 조회에 실패하거나 DB 를 아직 안 만들었으면 목록만 비운다 —
+ * 페이지는 「준비 중」 안내와 함께 정상 렌더된다.
+ */
+export async function getFormLinks(kind: FormKind): Promise<FormLink[]> {
+  try {
+    return await getNotionFormLinks(kind);
+  } catch (e) {
+    console.error(`[form-links] 노션 조회 실패 (kind=${kind}):`, e);
     return [];
   }
 }

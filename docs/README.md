@@ -7,8 +7,10 @@
 | [가이드 관리하기](./guide-admin-manual.md) | 플랫폼별 가이드 이미지 · 목록 | `/guide/…` |
 | [홈 배너 관리하기](./banner-admin-manual.md) | 메인 상단 슬라이드 배너 | 홈 최상단 |
 | [스밍리스트 원클릭 관리하기](./streaming-admin-manual.md) | 플랫폼 · 기기별 원클릭 스밍 링크 | `/oneclick/streaming` |
+| [폼 · 헬퍼 목록](./notion-forms-db.md) | 신청 · 설문 폼과 헬퍼 모집 폼 | `/forms` · `/helper` |
 
-세 문서 모두 노션만 알면 되고, 개발 지식은 필요 없습니다.
+앞의 세 문서는 노션만 알면 되고, 개발 지식은 필요 없습니다.
+(폼 · 헬퍼는 DB 를 처음 만드는 절차가 섞여 있어 스키마 문서 하나로 합쳐 두었습니다.)
 바꾼 내용은 **최대 5분** 뒤에 사이트에 반영됩니다.
 
 > DB마다 순서를 정하는 방법이 다릅니다. 헷갈릴 때 여기를 보세요.
@@ -30,6 +32,7 @@
 - [notion-banner-db.md](./notion-banner-db.md) — 배너 DB 스키마
 - [notion-streaming-db.md](./notion-streaming-db.md) — 스밍리스트 DB 스키마
 - [notion-links-db.md](./notion-links-db.md) — 홈 바로가기 아이콘 DB 스키마
+- [notion-forms-db.md](./notion-forms-db.md) — 폼 · 헬퍼 목록 DB 스키마 (`/forms` · `/helper`)
 
 ### 링크 처리
 

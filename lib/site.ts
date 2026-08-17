@@ -20,10 +20,8 @@ export const SITE = {
 /** 팀 공식 SNS · 소셜 위젯 (기획안 4: 소셜 위젯 연동) */
 export const SOCIALS: { label: string; href: string; handle?: string }[] = [
   { label: "X (Twitter)", href: "https://x.com/", handle: "@NCTDREAM_STRM_" },
-  { label: "Instagram", href: "https://instagram.com/" },
   { label: "Weverse", href: "https://weverse.io/" },
-  { label: "YouTube", href: "https://youtube.com/" },
-  { label: "다음 카페", href: "https://cafe.daum.net/" },
+  { label: "다음 카페", href: "https://m.cafe.daum.net/NCTDREAMstreaming" },
 ];
 
 /** 문의 채널 (기획안 4: 카카오 오픈프로필) */

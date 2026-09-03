@@ -1,6 +1,6 @@
 /*
  * ONECLICK 데이터 (기획안 2 · 4: 원클릭 필수 기능)
- * 자주 교체되는 링크는 노션 DB · Supabase 로 뺐다. 여기 남은 건 표기용 상수다.
+ * 자주 교체되는 링크는 전부 노션 DB 로 뺐다. 여기 남은 건 표기용 상수다.
  */
 
 import { hhmmToMinutes, kstNow } from "@/lib/datetime";
@@ -25,9 +25,9 @@ export const OS_EMOJI: Record<string, string> = {
 
 /**
  * 앱 투표 원클릭
- * 투표 기간과 실제 투표 URL은 Supabase 공용 `schedules` 테이블에서 가져온다(lib/votes.ts).
+ * 투표 기간과 실제 투표 URL은 노션 공용 일정 DB 에서 가져온다(lib/votes.ts).
  * 여기 href는 진행중 투표가 없을 때 연결되는 기본 링크(앱/사이트 홈).
- * key는 DB의 icon_type 과 일치해야 매칭된다(= public/icons 아이콘 파일명).
+ * key는 노션 `플랫폼` 값과 일치해야 매칭된다(= public/icons 아이콘 파일명).
  */
 export type VoteAppSlot = {
   key: string;

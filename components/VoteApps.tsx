@@ -8,8 +8,9 @@ import { fetchActiveVotes, formatVotePeriod, type ActiveVote } from "@/lib/votes
 
 /**
  * 앱 투표 원클릭
- * 버튼은 항상 모두 노출. Supabase에 진행중 투표가 있으면 그 URL로,
+ * 버튼은 항상 모두 노출. 노션 일정 DB 에 진행중 투표가 있으면 그 URL로,
  * 없으면 대기중(흐린) 디자인 그대로 기본 링크(VOTE_APPS.href)로 연결한다.
+ * 목록은 /api/votes 에서 1분마다 새로 받는다 (lib/votes.ts).
  */
 export default function VoteApps() {
   const [votes, setVotes] = useState<Record<string, ActiveVote>>({});
@@ -46,7 +47,7 @@ export default function VoteApps() {
             className="flex items-center justify-between rounded-2xl border bg-surface p-4 shadow-sm transition-transform active:scale-[0.98]"
           >
             <div className="flex min-w-0 items-center gap-3">
-              {/* app.key = schedules.icon_type = public/icons 파일명 */}
+              {/* app.key = 노션 `플랫폼` 값 = public/icons 파일명 */}
               <span className="grid h-10 w-10 shrink-0 place-items-center overflow-hidden rounded-xl bg-sky-50">
                 <PlatformIcon iconType={app.key} size={40} />
               </span>

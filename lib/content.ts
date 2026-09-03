@@ -22,6 +22,7 @@ import {
   type NotionBanner,
   type NotionSchedule,
 } from "@/lib/notion";
+import type { ActiveVote } from "@/lib/votes";
 
 export type { GuidePage };
 
@@ -491,6 +492,44 @@ export async function getTodoList(): Promise<TodoItem[]> {
       allDay: r.allDay,
       daily: r.daily,
     }));
+}
+
+/* ---------------- ONECLICK: 진행중 투표 ---------------- */
+
+/**
+ * 지금 열려 있는 투표 (`노출 위치` 에 vote 가 있는 일정). 마감이 빠른 순.
+ *
+ * **서버에서만 부른다** (app/api/votes). 노션 토큰은 서버 전용이라 투표 버튼
+ * (components/VoteApps.tsx)이 노션을 직접 부를 수 없어서, 라우트가 한 겹 선다.
+ */
+export async function getActiveVotes(): Promise<ActiveVote[]> {
+  // 투표는 열리고 닫히는 순간이 중요하다. 홈(300초)보다 짧게 잡는다.
+  const rows = await getSchedules("vote", 60);
+  const now = Date.now();
+
+  const open = rows.flatMap((r) => {
+    // 링크 · 아이콘 · 기간이 다 있어야 「투표하기」 버튼이 성립한다
+    if (!r.url || !r.iconType || !r.startsAt || !r.endsAt) return [];
+    if (!isOngoing(r, now)) return [];
+
+    return [
+      {
+        endMs: r.endMs ?? Number.MAX_SAFE_INTEGER,
+        vote: {
+          id: r.id,
+          title: r.title,
+          url: r.url,
+          iconType: r.iconType,
+          startsAt: r.startsAt,
+          endsAt: r.endsAt,
+          allDay: r.allDay,
+        } satisfies ActiveVote,
+      },
+    ];
+  });
+
+  // 같은 앱에 여러 건이 걸리면 화면이 첫 건을 쓴다 — 마감이 빠른 쪽을 앞에 둔다
+  return open.sort((a, b) => a.endMs - b.endMs).map((o) => o.vote);
 }
 
 /* ---------------- HOME: 유튜브 MV ---------------- */

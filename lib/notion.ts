@@ -1,9 +1,8 @@
 /*
- * 노션 DB 조회 (공식 API) — 가이드 · 홈 배너
+ * 노션 DB 조회 (공식 API) — 가이드 · 홈 배너 · 일정
  * ------------------------------------------------------------------
- * SDK(@notionhq/client) 없이 fetch만 사용 — lib/supabase.ts 와 같은 방침이다.
- * 여기서는 실익도 있다: Next 의 데이터 캐시는 fetch() 에만 붙으므로,
- * SDK 를 쓰면 ISR 을 쓰려고 unstable_cache 로 한 겹 더 감싸야 한다.
+ * SDK(@notionhq/client) 없이 fetch만 사용한다. Next 의 데이터 캐시는 fetch() 에만
+ * 붙으므로, SDK 를 쓰면 ISR 을 쓰려고 unstable_cache 로 한 겹 더 감싸야 한다.
  *
  * 스키마 · 셋업은 docs/notion-guide-db.md · docs/notion-banner-db.md 참고.
  *
@@ -26,6 +25,7 @@ import type {
   StreamingList,
   StreamingTarget,
 } from "@/lib/content";
+import { toSeoulDate } from "@/lib/datetime";
 import { PLATFORM_ICONS } from "@/lib/platform-icons";
 import { toHref } from "@/lib/url";
 
@@ -35,7 +35,7 @@ const NOTION_VERSION = "2026-03-11";
 const TOKEN = process.env.NOTION_TOKEN;
 
 /** 코드가 아는 노션 DB 목록. 행(row)은 전부 조회 결과로만 다룬다. */
-type DbKey = "guide" | "banner" | "streaming" | "links" | "forms";
+type DbKey = "guide" | "banner" | "streaming" | "links" | "forms" | "schedule";
 
 const DATABASES: Record<DbKey, { env: string; db?: string; ds?: string }> = {
   guide: {
@@ -62,6 +62,11 @@ const DATABASES: Record<DbKey, { env: string; db?: string; ds?: string }> = {
     env: "NOTION_FORMS_DB_ID",
     db: process.env.NOTION_FORMS_DB_ID,
     ds: process.env.NOTION_FORMS_DS_ID,
+  },
+  schedule: {
+    env: "NOTION_SCHEDULE_DB_ID",
+    db: process.env.NOTION_SCHEDULE_DB_ID,
+    ds: process.env.NOTION_SCHEDULE_DS_ID,
   },
 };
 
@@ -117,7 +122,17 @@ interface NotionProperty {
   number?: number | null;
   url?: string | null;
   checkbox?: boolean;
+  date?: NotionDate;
 }
+
+/**
+ * 노션 `기간`(date) 값.
+ *
+ * 시각까지 적으면 오프셋이 붙은 ISO(`2026-08-27T19:00:00.000+09:00`)로, 날짜만
+ * 적으면 `2026-08-27` 로 온다 — `T` 유무가 곧 「하루 종일」 여부다. 끝을 안 적으면
+ * `end` 가 null 이다.
+ */
+type NotionDate = { start: string; end?: string | null } | null;
 
 interface NotionPage {
   id: string;
@@ -782,4 +797,168 @@ export async function getFormLinks(
   });
 
   return rows.sort((a, b) => a.order - b.order).map((r) => r.link);
+}
+
+/* ---------------- 일정 (캘린더 · To Do · 투표 공용) ---------------- */
+
+/**
+ * 일정 한 건 (스키마는 docs/notion-schedule-db.md).
+ *
+ * 캘린더 · To Do · 투표가 **한 DB** 를 `노출 위치` 열로 나눠 쓴다. 셋 다 같은 컴백
+ * 일정을 각자 다르게 보여줄 뿐이라, DB 를 나누면 운영진이 같은 일정을 세 번 적게 된다.
+ *
+ * 노션 `기간` 열 하나가 시작 · 종료 · 「하루 종일」 셋을 함께 담는다(NotionDate).
+ */
+export interface NotionSchedule {
+  /** 노션 page id. 목록 렌더링 key 로만 쓴다 */
+  id: string;
+  title: string;
+  description?: string;
+  /** `종류` 선택지. 기본 이모지가 여기서 갈린다 (lib/kind-emoji.ts) */
+  kind: string;
+  /** `노출 위치` 다중 선택 (calendar · todo · vote) */
+  surfaces: string[];
+  /** 노션에 시각을 안 적은 일정 (= 하루 종일) */
+  allDay: boolean;
+  /** KST `YYYY-MM-DD`. `기간` 을 통째로 비우면 null (= 기한 없는 상시 할일) */
+  startDate: string | null;
+  endDate: string | null;
+  /** 노션 원본 값. 마감 시각 표시에 쓴다 (lib/datetime.ts) */
+  startsAt: string | null;
+  endsAt: string | null;
+  /** 기간 판정용 절대시각(ms). null 이면 그쪽 끝이 열려 있다는 뜻 */
+  startMs: number | null;
+  endMs: number | null;
+  /** 데뷔일 · 생일처럼 매년 같은 날 돌아오는 일정 */
+  recurringYearly: boolean;
+  /** 기간 내내 매일 해야 하는 할일 — 마감 대신 「매일」로 표시한다 */
+  daily: boolean;
+  /** 운영진이 지정한 이모지 (없으면 kind 기본값) */
+  emoji?: string;
+  /** public/icons/<key>.png 의 key */
+  iconType?: string;
+  url?: string;
+  guideUrl?: string;
+  /**
+   * `순서` 숫자 열. 비어 있으면 맨 뒤(Number.MAX_SAFE_INTEGER).
+   * 이 배열은 이미 order 순으로 정렬돼 있지만, To Do 처럼 2차 정렬 키를 더 붙이는
+   * 화면이 있어서 값 자체를 남겨 둔다 (lib/content.ts 의 getTodoList).
+   */
+  order: number;
+}
+
+const DAY_MS = 86_400_000;
+
+/** 시각 없이 날짜만 적힌 값 (`2026-08-27`) */
+const dateOnly = (value: string) => !value.includes("T");
+
+/** 날짜만 적힌 값은 KST 자정으로 읽는다 — 서버가 UTC 여도 결과가 같아야 한다 */
+const toMs = (value: string) =>
+  Date.parse(dateOnly(value) ? `${value}T00:00:00+09:00` : value);
+
+/** 노션 `기간` 값을 캘린더(날짜)와 To Do · 투표(절대시각)가 각각 쓸 형태로 편다 */
+function parsePeriod(date: NotionDate | undefined) {
+  const start = date?.start;
+  // 기간을 안 적은 행은 기한이 없다는 뜻이다. 달력에는 놓을 자리가 없고 To Do 에만 남는다.
+  if (!start) {
+    return {
+      allDay: true,
+      startDate: null,
+      endDate: null,
+      startsAt: null,
+      endsAt: null,
+      startMs: null,
+      endMs: null,
+    };
+  }
+
+  const end = date?.end ?? null;
+
+  return {
+    allDay: dateOnly(start),
+    startDate: dateOnly(start) ? start : toSeoulDate(start),
+    endDate: end === null ? null : dateOnly(end) ? end : toSeoulDate(end),
+    startsAt: start,
+    endsAt: end,
+    startMs: toMs(start),
+    /*
+     * 하루 종일 일정의 종료일은 「그 날 끝까지」다. 운영진이 `8/1 → 8/7` 로 적으면
+     * 8/7 하루를 포함하겠다는 뜻이므로 다음 날 자정까지 살려 둔다 —
+     * 값을 그대로 읽으면 8/7 00:00 이 되어 할일이 하루 일찍 사라진다.
+     */
+    endMs: end === null ? null : dateOnly(end) ? toMs(end) + DAY_MS : toMs(end),
+  };
+}
+
+/**
+ * 노션 `플랫폼` 값 → public/icons 의 key.
+ *
+ * 일정 DB 는 key 를 그대로 적고(`mnetplus`), 가이드 DB 는 표시명을 적는다(`엠넷플러스`).
+ * 어느 쪽으로 적어도 아이콘이 나오도록 둘 다 받는다.
+ */
+function platformKey(name: string): string | undefined {
+  const value = name.trim();
+  return value in PLATFORM_ICONS ? value : PLATFORM_KEY_BY_LABEL[value];
+}
+
+/**
+ * 일정 전체 조회. 화면별로 거르는 일은 호출부(lib/content.ts)가 한다.
+ *
+ * 기간 필터를 노션에 넘기지 않는 것은 의도적이다. 노션에는 PostgREST 의 `now` 같은
+ * 리터럴이 없어서 「지금」을 넣으려면 조회 body 에 현재 시각을 박아야 하는데,
+ * Next 의 fetch 캐시는 body 까지 키로 잡으므로 매 렌더가 캐시 미스가 된다.
+ * 행이 많아야 수백 건이라, 전부 받아 두고 시각 판단은 렌더 시점에 하는 편이 싸다.
+ *
+ * `revalidate` 는 호출부가 정한다. Next 는 페이지의 ISR 과 그 안에서 부른 fetch 중
+ * **더 짧은 쪽**을 쓰므로, 여기서 60 을 기본으로 두면 홈 전체가 1분마다 다시 그려진다.
+ * 그래서 기본은 다른 DB 와 같은 300 이고, 투표 라우트만 60 을 넘긴다.
+ *
+ * 표시 순서는 노션이 쥔다. `순서` 숫자 열이 있으면 그 값, 없으면 행을 추가한
+ * 순서다(queryRows 의 BY_CREATED). 화면이 여기에 2차 키를 더 붙이기도 한다.
+ */
+export async function getSchedules(revalidate = 300): Promise<NotionSchedule[]> {
+  const pages = await queryRows("schedule", revalidate);
+
+  const rows = pages.flatMap((page) => {
+    const p = normalized(page);
+
+    const title = titleOf(p);
+    const surfaces = (p["노출 위치"]?.multi_select ?? [])
+      .map((o) => o.name.trim())
+      .filter(Boolean);
+    // 제목이 비었거나(노션 기본 빈 행) 노출 위치를 안 고르면 어느 화면에도 못 놓는다
+    if (!title || surfaces.length === 0) return [];
+
+    // 아이콘은 한 칸에 하나만 쓴다. 여러 개를 골랐으면 아는 것 중 첫 번째.
+    const iconType = (p["플랫폼"]?.multi_select ?? [])
+      .map((o) => platformKey(o.name))
+      .find((key): key is string => Boolean(key));
+
+    // 열 이름을 `url` 로 적은 DB 도, `URL` 로 적은 DB 도 있다 (다른 DB 와 맞춤)
+    const url = linkValue(p["url"] ?? p["URL"]);
+    const guideUrl = linkValue(p["guide_url"] ?? p["가이드"]);
+    const description = text(p["설명"]?.rich_text);
+    const emoji = text(p["emoji"]?.rich_text);
+
+    return [
+      {
+        id: page.id,
+        title,
+        kind: p["종류"]?.select?.name?.trim() || "etc",
+        surfaces,
+        ...parsePeriod(p["기간"]?.date),
+        recurringYearly: p["매년 반복 여부"]?.checkbox ?? false,
+        daily: p["매일 반복 여부"]?.checkbox ?? false,
+        ...(description ? { description } : {}),
+        ...(emoji ? { emoji } : {}),
+        ...(iconType ? { iconType } : {}),
+        ...(url ? { url } : {}),
+        ...(guideUrl ? { guideUrl } : {}),
+        // 비어 있으면 맨 뒤로
+        order: p["순서"]?.number ?? Number.MAX_SAFE_INTEGER,
+      } satisfies NotionSchedule,
+    ];
+  });
+
+  return rows.sort((a, b) => a.order - b.order);
 }

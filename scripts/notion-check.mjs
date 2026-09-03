@@ -52,6 +52,27 @@ const DATABASES = [
   },
   {
     // 제목 열은 이름을 안 본다(타입으로 찾는다) — lib/notion.ts 의 titleOf()
+    label: "일정 (캘린더 · To Do · 투표)",
+    env: "SCHEDULE",
+    // `기간` 은 필수가 아니다 — 비우면 기한 없는 상시 할일이 된다
+    required: ["노출 위치"],
+    optional: [
+      "기간",
+      "종류",
+      "플랫폼",
+      "매년 반복 여부",
+      "매일 반복 여부",
+      "url",
+      "guide_url",
+      "설명",
+      "emoji",
+      "순서",
+    ],
+    // 아래 출력은 `순서` 열 기준이다. To Do 는 여기에 마감 임박 순이 2차 키로 더 붙는다
+    orderBy: "순서",
+  },
+  {
+    // 제목 열은 이름을 안 본다(타입으로 찾는다) — lib/notion.ts 의 titleOf()
     label: "폼 · 헬퍼",
     env: "FORMS",
     required: ["구분", "URL"],

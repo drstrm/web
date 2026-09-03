@@ -37,6 +37,7 @@ DBS=(
   "BANNER|홈 배너 슬라이더|docs/notion-banner-db.md"
   "STREAMING|스밍리스트 원클릭|docs/notion-streaming-db.md"
   "LINKS|메인화면 바로가기 링크|docs/notion-links-db.md"
+  "SCHEDULE|캘린더 · To Do · 투표 공용 일정|docs/notion-schedule-db.md"
 )
 
 usage() {

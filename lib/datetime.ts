@@ -1,8 +1,9 @@
 /*
  * KST(Asia/Seoul) 표시 변환
  * ------------------------------------------------------------------
- * Supabase 의 timestamptz 는 절대시각(UTC)으로 저장·조회된다.
- * "한국 시간"으로 보여주는 건 전적으로 앱의 몫이므로 변환을 여기 모아둔다.
+ * 노션 날짜 칸은 시각을 적으면 오프셋이 붙은 ISO(`2026-08-27T19:00:00.000+09:00`),
+ * 날짜만 적으면 `2026-08-27` 로 온다. 어느 쪽이든 "한국 시간"으로 보여주는 건
+ * 전적으로 앱의 몫이므로 변환을 여기 모아둔다.
  * 서버 컴포넌트(UTC)와 브라우저(로컬 시간대)가 같은 결과를 내야 하므로
  * 항상 timeZone 을 명시한다.
  */
@@ -41,7 +42,7 @@ export function hhmmToMinutes(hhmm: string): number {
   return h * 60 + m;
 }
 
-/** timestamptz → KST 기준 "YYYY-MM-DD" (달력은 날짜 단위로만 다룬다) */
+/** 노션 ISO → KST 기준 "YYYY-MM-DD" (달력은 날짜 단위로만 다룬다) */
 export function toSeoulDate(iso: string): string {
   return new Intl.DateTimeFormat("en-CA", {
     timeZone: "Asia/Seoul",
@@ -51,7 +52,7 @@ export function toSeoulDate(iso: string): string {
   }).format(new Date(iso));
 }
 
-/** timestamptz → KST "03.05 18:10" */
+/** 노션 ISO → KST "03.05 18:10" */
 export function formatKstDateTime(iso: string): string {
   return new Intl.DateTimeFormat("ko-KR", {
     timeZone: "Asia/Seoul",
@@ -66,7 +67,7 @@ export function formatKstDateTime(iso: string): string {
     .replace(/\.$/, "");
 }
 
-/** timestamptz → KST "03.05" (하루 종일 일정용) */
+/** 노션 ISO → KST "03.05" (하루 종일 일정용) */
 export function formatKstDate(iso: string): string {
   return new Intl.DateTimeFormat("ko-KR", {
     timeZone: "Asia/Seoul",

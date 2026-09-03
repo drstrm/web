@@ -4,7 +4,7 @@ import { PLATFORM_ICONS } from "@/lib/platform-icons";
 /**
  * 플랫폼 아이콘 (멜론 · 팬캐스트 · 뮤빗 …)
  * ------------------------------------------------------------------
- * iconType 은 schedules.icon_type 값이자 public/icons/<key>.png 의 파일명이다.
+ * iconType 은 노션 일정 DB 의 `플랫폼` 값이자 public/icons/<key>.png 의 파일명이다.
  * 정적 파일이라 CDN 캐시 · next/image 최적화를 그대로 받는다.
  *
  * 이미지는 감싸는 요소(span 등)를 꽉 채운다. 부모에 크기 · 모서리 · overflow-hidden 을

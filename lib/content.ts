@@ -1,7 +1,7 @@
 /*
  * 콘텐츠 데이터 레이어 (A안 CMS 시임)
  * ------------------------------------------------------------------
- * 가이드는 노션 DB(lib/notion.ts), 일정 · 할일은 Supabase(schedules)에서 읽는다.
+ * 가이드 · 일정 · 할일 모두 노션 DB 에서 읽는다(lib/notion.ts).
  * 페이지 컴포넌트는 이 파일의 함수 시그니처만 바라본다.
  *
  * 조회에 실패해도 페이지 전체를 죽이지 않고 해당 섹션만 비운다.
@@ -10,19 +10,18 @@
  * ISR: 각 페이지에서 `export const revalidate = 300;` (PLAVE 레퍼런스와 동일)
  */
 
-import { toSeoulDate } from "@/lib/datetime";
-import { toHref } from "@/lib/url";
 import {
   getBanners as getNotionBanners,
   getFormLinks as getNotionFormLinks,
   getGuideSections,
   getQuickLinks as getNotionQuickLinks,
+  getSchedules as getNotionSchedules,
   getStreamingLists as getNotionStreamingLists,
   SLUG_ID_LENGTH,
   type GuidePage,
   type NotionBanner,
+  type NotionSchedule,
 } from "@/lib/notion";
-import { sbGet } from "@/lib/supabase";
 
 export type { GuidePage };
 
@@ -357,65 +356,53 @@ export function getRealtimeChart(): { updatedAt: string; rows: ChartRow[] } {
   };
 }
 
-/* ---------------- 공용 일정 테이블 (Supabase `schedules`) ---------------- */
+/* ---------------- 공용 일정 DB (노션) ---------------- */
 
 /**
- * Supabase `schedules` 원본 행 (스키마: supabase/schedules.sql)
- * 캘린더 · To Do · 투표 등 여러 뷰가 공유하는 테이블이므로,
- * 각 뷰는 이 행을 자기 화면에 맞는 형태로 매핑해서 쓴다.
+ * 화면(surface) 하나에 나갈 일정만 골라 온다.
+ * @param surface    노션 `노출 위치` 값 (calendar · todo · vote)
+ * @param revalidate 노션 조회 캐시(초)
+ *
+ * 홈이 캘린더 · To Do 를 병렬로 불러도 노션 왕복은 한 번이다 — 같은 조회라
+ * Next 의 fetch 캐시가 하나로 합친다. 투표만 주기가 짧아 따로 한 벌을 더 쓴다.
  */
-export interface ScheduleRow {
-  id: number;
-  kind: string;
-  title: string;
-  description: string | null;
-  starts_at: string;
-  ends_at: string | null;
-  all_day: boolean;
-  recurring_yearly: boolean;
-  url: string | null;
-  guide_url: string | null;
-  /** 플랫폼 아이콘 키 (public/icons/<key>.png) */
-  icon_type: string | null;
-  emoji: string | null;
-  sort_order: number;
-}
-
-const SCHEDULE_COLUMNS =
-  "id,kind,title,description,starts_at,ends_at,all_day,recurring_yearly," +
-  "url,guide_url,icon_type,emoji,sort_order";
-
-/**
- * 특정 화면(surface)에 노출할 일정을 조회한다.
- * @param surface schedules.surfaces 배열에 담긴 값 (calendar · todo · vote …)
- * @param query   추가 PostgREST 쿼리 (정렬 · 기간 필터 등)
- */
-export async function getSchedules(
+async function getSchedules(
   surface: string,
-  query = "&order=starts_at",
-): Promise<ScheduleRow[]> {
+  revalidate?: number,
+): Promise<NotionSchedule[]> {
   try {
-    return await sbGet<ScheduleRow[]>(
-      `schedules?select=${SCHEDULE_COLUMNS}` +
-        `&published=is.true&surfaces=cs.%7B${encodeURIComponent(surface)}%7D${query}`,
-      { revalidate: 300 },
-    );
+    const rows = await getNotionSchedules(revalidate);
+    return rows.filter((r) => r.surfaces.includes(surface));
   } catch (e) {
     // 조회 실패 시 해당 섹션만 비우고 페이지는 정상 렌더한다.
-    console.error(`[schedules] Supabase 조회 실패 (surface=${surface}):`, e);
+    console.error(`[schedules] 노션 조회 실패 (surface=${surface}):`, e);
     return [];
   }
 }
 
+/**
+ * 지금 이 시각에 기간이 열려 있는가.
+ * 시작을 안 적었으면 이미 시작한 것으로, 끝을 안 적었으면 안 끝나는 것으로 본다.
+ */
+const isOngoing = (r: NotionSchedule, now: number) =>
+  (r.startMs === null || r.startMs <= now) && (r.endMs === null || r.endMs > now);
+
+/**
+ * 마감 임박 순 정렬용 키. 기한이 없는 상시 할일은 맨 뒤로 보낸다.
+ * MAX_SAFE_INTEGER 로 두면 상시끼리 뺐을 때 0 이라, Infinity 와 달리 NaN 이 안 난다.
+ */
+const deadlineRank = (r: NotionSchedule) => r.endMs ?? Number.MAX_SAFE_INTEGER;
+
 /* ---------------- HOME: 캘린더 ---------------- */
 export interface CalendarEvent {
-  id: number;
+  /** 노션 page id. 목록 렌더링 key 로만 쓴다 */
+  id: string;
   /** 시작일 YYYY-MM-DD (KST). recurring 일정은 연도를 무시하고 월-일만 사용 */
   date: string;
   /** 기간 일정의 종료일. 없으면 하루짜리 일정 */
   endDate?: string;
   label: string;
-  /** schedules.kind — 이모지 매핑에 사용 */
+  /** 노션 `종류` — 이모지 매핑에 사용 */
   type: string;
   /** 데뷔일 · 생일처럼 매년 반복되는 기념일 여부 */
   recurring: boolean;
@@ -428,27 +415,35 @@ export interface CalendarEvent {
 
 /**
  * 홈 캘린더 일정 조회.
- * 컴백 관련 일정(투표 기간 · 써클차트 마감)도 코드 배포 없이 DB에서 추가한다.
+ * 컴백 관련 일정(투표 기간 · 써클차트 마감)도 코드 배포 없이 노션에서 추가한다.
  */
 export async function getCalendarEvents(): Promise<CalendarEvent[]> {
   const rows = await getSchedules("calendar");
-  return rows.map((r) => ({
-    id: r.id,
-    date: toSeoulDate(r.starts_at),
-    endDate: r.ends_at ? toSeoulDate(r.ends_at) : undefined,
-    label: r.title,
-    type: r.kind,
-    recurring: r.recurring_yearly,
-    emoji: r.emoji ?? undefined,
-    iconType: r.icon_type ?? undefined,
-    // 노션과 마찬가지로 사람이 손으로 적는 칸이라 보정해서 내보낸다 (lib/url.ts)
-    url: toHref(r.url) ?? undefined,
-  }));
+
+  return rows.flatMap((r) =>
+    // 기간을 안 적은 일정은 달력에 놓을 자리가 없다 (To Do 에는 상시 할일로 나온다)
+    r.startDate === null
+      ? []
+      : [
+          {
+            id: r.id,
+            date: r.startDate,
+            ...(r.endDate ? { endDate: r.endDate } : {}),
+            label: r.title,
+            type: r.kind,
+            recurring: r.recurringYearly,
+            ...(r.emoji ? { emoji: r.emoji } : {}),
+            ...(r.iconType ? { iconType: r.iconType } : {}),
+            ...(r.url ? { url: r.url } : {}),
+          },
+        ],
+  );
 }
 
 /* ---------------- HOME: To Do ---------------- */
 export interface TodoItem {
-  id: number;
+  /** 노션 page id. 목록 렌더링 key 로만 쓴다 */
+  id: string;
   label: string;
   description?: string;
   /** 바로가기 링크 (투표 · 스밍) */
@@ -459,36 +454,43 @@ export interface TodoItem {
   iconType?: string;
   emoji?: string;
   kind: string;
-  startsAt: string;
+  /** 마감 시각. 없으면 기한 없는 할일 */
   endsAt?: string;
+  /** 노션에 시각 없이 날짜만 적은 일정 — 마감 표시에서 시각을 뗀다 */
   allDay: boolean;
+  /** 기간 내내 매일 해야 하는 할일 — 마감 대신 「매일」로 표시 */
+  daily: boolean;
 }
 
 /**
- * 지금 진행중인 할일 조회 (surfaces 에 'todo' 가 포함된 일정).
- * 기간 판단은 DB의 starts_at / ends_at 으로만 한다 —
- * PostgREST 의 'now' 리터럴을 쓰면 URL이 매번 바뀌지 않아 ISR 캐시가 유지된다.
- * ends_at 이 없는 상시 할일도 포함되도록 or 조건을 건다.
+ * 지금 진행중인 할일 조회 (`노출 위치` 에 todo 가 있는 일정).
+ *
+ * 기간 판단은 노션 `기간` 열로만 한다. 「지금」은 렌더 시점에 계산하므로 정확도의
+ * 상한은 페이지 ISR 주기(300초)다 — 마감 직후 몇 분간은 끝난 할일이 남아 보인다.
+ *
+ * 정렬은 `순서` 열 → 마감 임박 순. `순서` 열이 없으면(현재 상태) 값이 전부 같아서
+ * 사실상 마감 임박 순이 된다 — 오늘 안에 해야 하는 일이 위로 올라온다.
  */
 export async function getTodoList(): Promise<TodoItem[]> {
-  const rows = await getSchedules(
-    "todo",
-    "&starts_at=lte.now&or=(ends_at.is.null,ends_at.gt.now)&order=sort_order,ends_at",
-  );
-  return rows.map((r) => ({
-    id: r.id,
-    label: r.title,
-    description: r.description ?? undefined,
-    // 손으로 적는 칸이라 보정해서 내보낸다 (lib/url.ts)
-    url: toHref(r.url) ?? undefined,
-    guideUrl: toHref(r.guide_url) ?? undefined,
-    iconType: r.icon_type ?? undefined,
-    emoji: r.emoji ?? undefined,
-    kind: r.kind,
-    startsAt: r.starts_at,
-    endsAt: r.ends_at ?? undefined,
-    allDay: r.all_day,
-  }));
+  const rows = await getSchedules("todo");
+  const now = Date.now();
+
+  return rows
+    .filter((r) => isOngoing(r, now))
+    .sort((a, b) => a.order - b.order || deadlineRank(a) - deadlineRank(b))
+    .map((r) => ({
+      id: r.id,
+      label: r.title,
+      ...(r.description ? { description: r.description } : {}),
+      ...(r.url ? { url: r.url } : {}),
+      ...(r.guideUrl ? { guideUrl: r.guideUrl } : {}),
+      ...(r.iconType ? { iconType: r.iconType } : {}),
+      ...(r.emoji ? { emoji: r.emoji } : {}),
+      kind: r.kind,
+      ...(r.endsAt ? { endsAt: r.endsAt } : {}),
+      allDay: r.allDay,
+      daily: r.daily,
+    }));
 }
 
 /* ---------------- HOME: 유튜브 MV ---------------- */

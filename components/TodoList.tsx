@@ -7,13 +7,17 @@ import { emojiOf } from "@/lib/kind-emoji";
 /**
  * 홈 To Do List
  * ------------------------------------------------------------------
- * 공용 `schedules` 테이블에서 surfaces 에 'todo' 가 포함되고
- * 지금 기간 안에 있는 일정만 내려온다(lib/content.ts getTodoList).
- * 정렬은 sort_order → 마감 임박 순.
+ * 공용 일정 DB(노션)에서 `노출 위치` 에 todo 가 있고 지금 기간 안에 있는 일정만
+ * 내려온다(lib/content.ts getTodoList). 정렬은 `순서` 열 → 마감 임박 순.
  */
 
-/** 마감 표시. 하루 종일 일정은 시각을 떼고, 종료일이 없으면 상시 할일 */
+/**
+ * 마감 표시.
+ * · 매일 반복 할일은 마감이 의미가 없다 — 오늘 하면 내일 또 해야 한다.
+ * · 하루 종일 일정은 시각을 떼고, 기간을 안 적었으면 상시 할일.
+ */
 function deadline(t: TodoItem): string {
+  if (t.daily) return "매일";
   if (!t.endsAt) return "상시";
   return `마감 ${t.allDay ? formatKstDate(t.endsAt) : formatKstDateTime(t.endsAt)}`;
 }

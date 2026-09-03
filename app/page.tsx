@@ -20,7 +20,7 @@ export const revalidate = 300;
 
 export default async function Home() {
   const chart = getRealtimeChart();
-  // 배너 · 바로가기(노션) · 캘린더 · 할일(공용 schedules 테이블) 을 한 번에 병렬 조회
+  // 배너 · 바로가기 · 캘린더 · 할일(공용 일정 DB) — 전부 노션이고 한 번에 병렬 조회
   const [banners, quickLinks, events, todos] = await Promise.all([
     getBanners(),
     getQuickLinks(),

@@ -38,6 +38,7 @@ DBS=(
   "STREAMING|스밍리스트 원클릭|docs/notion-streaming-db.md"
   "LINKS|메인화면 바로가기 링크|docs/notion-links-db.md"
   "SCHEDULE|캘린더 · To Do · 투표 공용 일정|docs/notion-schedule-db.md"
+  "FORMS|폼 · 헬퍼 목록|docs/notion-forms-db.md"
 )
 
 usage() {

@@ -771,7 +771,7 @@ export async function getFormLinks(
     // 제목이 비었거나(노션 기본 빈 행) 다른 페이지의 행이면 건너뛴다
     if (!title || rowKind !== kind) return [];
 
-    const href = toHref(p["URL"]?.url) ?? undefined;
+    const href = linkValue(p["URL"] ?? p["url"]);
     const marked = FORM_STATUS_BY_LABEL[p["상태"]?.select?.name?.trim() ?? ""] ?? "open";
     /*
      * 링크가 없으면 눌러도 갈 곳이 없다 — 「신청하기」 버튼을 띄우지 않고 준비 중으로

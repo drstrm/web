@@ -27,7 +27,7 @@ export default function FormLinks({
   }
 
   return (
-    <div className="grid gap-3 sm:grid-cols-2">
+    <div className="grid gap-3">
       {links.map((link) => (
         <FormRow key={link.key} link={link} fallbackEmoji={info.emoji} />
       ))}
@@ -46,13 +46,15 @@ function FormRow({ link, fallbackEmoji }: { link: FormLink; fallbackEmoji: strin
 
   const body = (
     <>
-      <span className="grid h-11 w-11 shrink-0 place-items-center rounded-2xl bg-sky-50 text-xl">
+      <span className="grid h-10 w-10 shrink-0 place-items-center rounded-lg bg-sky-50 text-lg">
         {link.emoji || fallbackEmoji}
       </span>
 
       <div className="min-w-0 flex-1">
-        <div className="flex items-start justify-between gap-2">
-          <h3 className="font-bold group-hover:text-sky-600">{link.title}</h3>
+        <div className="flex items-center gap-2">
+          <h3 className="min-w-0 flex-1 truncate font-bold group-hover:text-sky-600">
+            {link.title}
+          </h3>
           {badge && (
             <span
               className={`shrink-0 rounded-full px-2 py-0.5 text-[11px] font-bold ${badge.className}`}
@@ -62,28 +64,33 @@ function FormRow({ link, fallbackEmoji }: { link: FormLink; fallbackEmoji: strin
           )}
         </div>
 
-        {link.summary && <p className="mt-1.5 text-xs text-muted">{link.summary}</p>}
-        {link.period && (
-          <p className="mt-1.5 flex items-center gap-1 text-xs text-muted">
-            <span aria-hidden="true">🗓</span>
-            {link.period}
-          </p>
-        )}
-        {link.href && <p className="mt-1.5 text-xs font-bold text-sky-500">신청하러 가기</p>}
+        <div className="mt-1.5 grid h-9 content-start gap-1 overflow-hidden">
+          {link.summary ? (
+            <p className="truncate text-xs text-muted">{link.summary}</p>
+          ) : (
+            <span className="h-4" aria-hidden />
+          )}
+          {link.period ? (
+            <p className="flex min-w-0 items-center gap-1 text-xs text-muted">
+              <span aria-hidden="true">🗓</span>
+              <span className="min-w-0 truncate">{link.period}</span>
+            </p>
+          ) : (
+            <span className="h-4" aria-hidden />
+          )}
+        </div>
       </div>
 
       {link.href && (
-        <span
-          aria-hidden
-          className="self-center text-lg text-sky-400 transition-transform group-hover:translate-x-0.5"
-        >
-          ›
+        <span className="ml-2 shrink-0 self-center rounded-full bg-sky-50 px-3 py-1.5 text-xs font-bold text-sky-600">
+          신청
         </span>
       )}
     </>
   );
 
-  const shell = "flex items-start gap-3 rounded-2xl border bg-surface p-4 shadow-sm";
+  const shell =
+    "flex h-24 items-center gap-3 rounded-xl border bg-surface px-4 py-3 shadow-sm";
 
   if (!link.href) {
     return <article className={`${shell} opacity-70`}>{body}</article>;
@@ -92,7 +99,7 @@ function FormRow({ link, fallbackEmoji }: { link: FormLink; fallbackEmoji: strin
   return (
     <SmartLink
       href={link.href}
-      className={`group ${shell} transition-all hover:-translate-y-0.5 hover:border-sky-300 hover:shadow-md`}
+      className={`group ${shell} transition-colors hover:border-sky-300 hover:bg-sky-50/60`}
     >
       {body}
     </SmartLink>

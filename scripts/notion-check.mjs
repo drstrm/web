@@ -75,7 +75,7 @@ const DATABASES = [
     // 제목 열은 이름을 안 본다(타입으로 찾는다) — lib/notion.ts 의 titleOf()
     label: "폼 · 헬퍼",
     env: "FORMS",
-    required: ["구분", "URL"],
+    required: ["구분", ["URL", "url"]],
     optional: ["설명", "상태", "기간", "emoji", "순서"],
     orderBy: "순서",
     // 아직 안 만들었을 수 있다. 없으면 /forms · /helper 가 「준비 중」으로 나온다
@@ -183,8 +183,11 @@ for (const db of DATABASES) {
   const schema = await call(`data_sources/${dsId}`);
   const names = Object.keys(schema.body.properties ?? {});
   const trimmed = new Set(names.map((n) => n.trim()));
-  for (const name of db.required) {
-    note(trimmed.has(name), `필수 열 \`${name}\`${trimmed.has(name) ? "" : " 없음 — 이 DB 는 화면에 안 나옵니다"}`);
+  for (const req of db.required) {
+    const allowed = Array.isArray(req) ? req : [req];
+    const found = allowed.some((name) => trimmed.has(name));
+    const label = allowed.map((name) => `\`${name}\``).join(" 또는 ");
+    note(found, `필수 열 ${label}${found ? "" : " 없음 — 이 DB 는 화면에 안 나옵니다"}`);
   }
   const missingOptional = db.optional.filter((n) => !trimmed.has(n));
   if (missingOptional.length) {

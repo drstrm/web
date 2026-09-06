@@ -45,9 +45,8 @@ export const ROUTE_ICON: Record<string, LucideIcon> = {
   "/community": MessagesSquare,
   "/community/notice": Megaphone,
   "/community/faq": CircleQuestionMark,
-
-  "/forms": ClipboardList,
-  "/helper": HandHeart,
+  "/community/forms": ClipboardList,
+  "/community/helper": HandHeart,
 };
 
 /** 등록되지 않은 경로는 Sparkles 로 둔다 (화면이 비지 않게) */

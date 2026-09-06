@@ -726,7 +726,7 @@ export async function getQuickLinks(revalidate = 300): Promise<QuickLink[]> {
 /* ---------------- 폼 · 헬퍼 목록 ---------------- */
 
 /**
- * 노션 `구분` 선택지 → 페이지 (`/forms` · `/helper`).
+ * 노션 `구분` 선택지 → 페이지 (`/community/forms` · `/community/helper`).
  * 여기 없는 값을 적은 행은 어느 페이지에도 나오지 않는다.
  */
 const FORM_KIND_BY_LABEL: Record<string, FormKind> = {

@@ -262,7 +262,7 @@ export async function getStreamingLists(): Promise<StreamingList[]> {
 
 /* ---------------- FORM · HELPER (노션 DB) ---------------- */
 
-/** 폼 목록이 나뉘는 두 페이지 (= /forms · /helper) */
+/** 폼 목록이 나뉘는 두 페이지 (= /community/forms · /community/helper) */
 export type FormKind = "form" | "helper";
 
 /**
@@ -301,14 +301,14 @@ export interface FormPageInfo {
 export const FORM_PAGES: Record<FormKind, FormPageInfo> = {
   form: {
     kind: "form",
-    href: "/forms",
+    href: "/community/forms",
     title: "폼 바로가기",
     description: "스밍팀에서 진행 중인 신청 · 설문 폼을 한곳에 모았어요.",
     empty: "진행 중인 폼이 없어요",
   },
   helper: {
     kind: "helper",
-    href: "/helper",
+    href: "/community/helper",
     title: "헬퍼 신청하기",
     description: "총공 · 이벤트를 함께 준비할 헬퍼를 모집하는 폼입니다.",
     empty: "모집 중인 헬퍼 폼이 없어요",

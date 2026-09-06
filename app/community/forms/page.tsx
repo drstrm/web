@@ -1,30 +1,31 @@
 import type { Metadata } from "next";
 import FormLinks from "@/components/FormLinks";
-import { Notice, PageHeader } from "@/components/ui";
+import { PageHeader } from "@/components/ui";
 import { iconForRoute } from "@/lib/nav-icons";
 import { FORM_PAGES, getFormLinks } from "@/lib/content";
 
 /*
- * 헬퍼 신청하기 (/helper)
- * 홈 바로가기 「헬퍼 신청하기」 버튼이 여기로 온다. 폼 페이지(app/forms/page.tsx)와
- * 같은 노션 DB 를 `구분` 열로 나눠 쓴다 (docs/notion-forms-db.md).
+ * 폼 바로가기 (/community/forms)
+ * 홈 바로가기 「폼 바로가기」 버튼이 여기로 온다. 목록은 노션 DB 에서 읽는다
+ * (docs/notion-forms-db.md). 헬퍼 페이지(app/community/helper/page.tsx)와 같은 DB · 같은
+ * 화면을 쓰고 `구분` 열로만 갈린다.
  */
 
-const INFO = FORM_PAGES.helper;
+const INFO = FORM_PAGES.form;
 
 export const metadata: Metadata = { title: INFO.title };
 export const revalidate = 300;
 
-export default async function HelperPage() {
+export default async function FormsPage() {
   const links = await getFormLinks(INFO.kind);
 
   return (
     <div>
       <PageHeader
-        eyebrow="HELPER"
+        eyebrow="FORM"
         title={INFO.title}
         description={INFO.description}
-        icon={iconForRoute("/helper")}
+        icon={iconForRoute("/community/forms")}
       />
       <FormLinks links={links} info={INFO} />
     </div>

@@ -87,6 +87,8 @@ export const NAV: {
     children: [
       { label: "공지사항", href: "/community/notice" },
       { label: "FAQ", href: "/community/faq" },
+      { label: "폼 바로가기", href: "/community/forms" },
+      { label: "헬퍼 신청하기", href: "/community/helper" },
     ],
   },
 ];

@@ -1,7 +1,8 @@
-import { ArrowUpRight, Heart, Link2, Package, Play, TrendingUp } from "lucide-react";
+import { ArrowUpRight, Link2, Package, TrendingUp } from "lucide-react";
 import BannerSlider from "@/components/BannerSlider";
 import Calendar from "@/components/Calendar";
 import LoadingImage from "@/components/LoadingImage";
+import MvCard from "@/components/MvCard";
 import SmartLink from "@/components/SmartLink";
 import TodoList from "@/components/TodoList";
 import { Card, EmptyState, IconTile, SectionTitle } from "@/components/ui";
@@ -53,40 +54,7 @@ export default async function Home() {
       <section className="grid gap-6 lg:grid-cols-2">
         <div>
           <SectionTitle>유튜브 MV</SectionTitle>
-          <Card className="overflow-hidden p-0">
-            {mv.map((m) => (
-              <div key={m.title}>
-                <div className="grid aspect-video place-items-center bg-sky-50 text-sm text-muted">
-                  {m.youtubeId ? (
-                    <iframe
-                      className="h-full w-full"
-                      src={`https://www.youtube.com/embed/${m.youtubeId}`}
-                      title={m.title}
-                      allowFullScreen
-                    />
-                  ) : (
-                    <span className="flex flex-col items-center gap-2 text-xs">
-                      <Play className="size-6 text-sky-300" strokeWidth={2} />
-                      MV 임베드 연동 예정
-                    </span>
-                  )}
-                </div>
-                <div className="flex items-center justify-between gap-3 px-5 py-4">
-                  <span className="min-w-0 truncate font-bold">{m.title}</span>
-                  <span className="flex shrink-0 items-center gap-3 text-xs font-semibold text-muted">
-                    <span className="inline-flex items-center gap-1">
-                      <Play className="size-3 shrink-0" strokeWidth={2.5} />
-                      {m.views}
-                    </span>
-                    <span className="inline-flex items-center gap-1">
-                      <Heart className="size-3 shrink-0" strokeWidth={2.5} />
-                      {m.likes}
-                    </span>
-                  </span>
-                </div>
-              </div>
-            ))}
-          </Card>
+          <MvCard mv={mv} />
         </div>
 
         <div>

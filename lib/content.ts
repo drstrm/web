@@ -529,14 +529,23 @@ export async function getActiveVotes(): Promise<ActiveVote[]> {
 /* ---------------- HOME: 유튜브 MV ---------------- */
 export interface MvStat {
   title: string;
+  /** 전체 URL 이 아니라 영상 id — youtube.com/watch?v= 뒤에 붙는 그 토막 */
   youtubeId: string;
+  /** 값이 도착하기 전 · 조회 실패 시의 표시값 */
   views?: string;
   likes?: string;
 }
+
+/*
+ * 여기서 정하는 건 "어떤 영상을 걸 것인가" 뿐이다.
+ *
+ * 조회수 · 좋아요는 접속 · 새로고침마다 /api/mv-stats 가 유튜브 watch 페이지에서
+ * 새로 긁어 덮어쓴다(lib/youtube.ts · components/MvCard.tsx). 아래 "—" 는 그 값이
+ * 도착하기 전과 조회에 실패했을 때 남는 자리표시다.
+ */
 export function getMvStats(): MvStat[] {
-  // 운영 시: YouTube Data API로 조회수/좋아요 갱신 (ISR)
   return [
-    { title: "최신 MV", youtubeId: "", views: "—", likes: "—" },
+    { title: "최신 MV", youtubeId: "wvtNmMmcAYw", views: "—", likes: "—" },
   ];
 }
 

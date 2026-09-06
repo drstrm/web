@@ -1,7 +1,15 @@
 "use client";
 
+import { ImageDown, Radio } from "lucide-react";
 import LoadingImage from "@/components/LoadingImage";
-import { useState } from "react";
+import {
+  Accordion,
+  AccordionContent,
+  AccordionItem,
+  AccordionTrigger,
+  Button,
+  IconTile,
+} from "@/components/ui";
 
 type RadioScheduleImage = {
   broadcaster: string;
@@ -33,81 +41,54 @@ const RADIO_SCHEDULE_IMAGES: RadioScheduleImage[] = [
 
 /** public/radio 에 등록된 방송사별 편성표 이미지를 그대로 보여준다. */
 export default function RadioSchedule() {
-  const [open, setOpen] = useState<string>(RADIO_SCHEDULE_IMAGES[0].broadcaster);
-
   return (
-    <div className="space-y-3">
-      {RADIO_SCHEDULE_IMAGES.map((image, index) => {
-        const expanded = open === image.broadcaster;
-        const panelId = `radio-guide-${image.broadcaster.toLowerCase()}`;
-
-        return (
-          <section
-            key={image.src}
-            className="overflow-hidden rounded-2xl border bg-surface shadow-sm"
-          >
-            <button
-              type="button"
-              onClick={() => setOpen(expanded ? "" : image.broadcaster)}
-              aria-expanded={expanded}
-              aria-controls={panelId}
-              className="flex w-full items-center gap-3 p-4 text-left"
-            >
-              <span className="grid h-11 w-11 shrink-0 place-items-center rounded-xl bg-sky-50 text-xl">
-                📻
+    <Accordion
+      type="single"
+      collapsible
+      defaultValue={RADIO_SCHEDULE_IMAGES[0].broadcaster}
+      className="space-y-3"
+    >
+      {RADIO_SCHEDULE_IMAGES.map((image, index) => (
+        <AccordionItem key={image.src} value={image.broadcaster}>
+          <AccordionTrigger>
+            <IconTile tone="sky" size="lg">
+              <Radio strokeWidth={2.2} />
+            </IconTile>
+            <span className="min-w-0 flex-1">
+              <span className="block font-display font-extrabold tracking-tight">
+                {image.broadcaster}
               </span>
-              <span className="min-w-0 flex-1">
-                <span className="block font-bold">{image.broadcaster}</span>
-                <span className="block truncate text-xs text-muted">
-                  라디오 신청 가이드 이미지
-                </span>
+              <span className="block truncate text-xs text-muted">
+                라디오 신청 가이드 이미지
               </span>
-              <svg
-                viewBox="0 0 20 20"
-                aria-hidden="true"
-                className={`h-5 w-5 shrink-0 text-sky-500 transition-transform ${
-                  expanded ? "rotate-180" : ""
-                }`}
-              >
-                <path
-                  d="M5 8l5 5 5-5"
-                  fill="none"
-                  stroke="currentColor"
-                  strokeWidth="2"
-                  strokeLinecap="round"
-                  strokeLinejoin="round"
-                />
-              </svg>
-            </button>
+            </span>
+          </AccordionTrigger>
 
-            {expanded && (
-              <div id={panelId} className="border-t bg-background">
-                <figure>
-                  <LoadingImage
-                    src={image.src}
-                    alt={`${image.broadcaster} 라디오 신청 가이드`}
-                    width={image.width}
-                    height={image.height}
-                    sizes="(max-width: 1024px) 100vw, 1024px"
-                    priority={index === 0}
-                    wrapperClassName="bg-sky-50"
-                    className="block h-auto w-full"
-                  />
-                  <figcaption className="flex justify-end px-4 py-3">
-                    <a
-                      href={image.src}
-                      download
-                      className="rounded-full accent-gradient px-3 py-1.5 text-xs font-bold text-[#5a4a1f]"
-                    >
-                      이미지 저장
-                    </a>
-                  </figcaption>
-                </figure>
-              </div>
-            )}
-          </section>
-        );
-      })}
-    </div>
+          <AccordionContent>
+            <figure>
+              <LoadingImage
+                src={image.src}
+                alt={`${image.broadcaster} 라디오 신청 가이드`}
+                width={image.width}
+                height={image.height}
+                sizes="(max-width: 1024px) 100vw, 1024px"
+                priority={index === 0}
+                wrapperClassName="bg-sky-50"
+                className="block h-auto w-full"
+              />
+              <figcaption className="flex justify-end px-4 py-3">
+                {/* 이동이 아니라 파일 저장이라 SmartLink 를 쓰지 않는다 */}
+                <Button asChild variant="accent" size="sm">
+                  <a href={image.src} download>
+                    <ImageDown strokeWidth={2.4} />
+                    이미지 저장
+                  </a>
+                </Button>
+              </figcaption>
+            </figure>
+          </AccordionContent>
+        </AccordionItem>
+      ))}
+    </Accordion>
   );
 }

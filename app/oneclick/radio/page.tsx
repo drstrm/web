@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import RadioOneclick from "@/components/RadioOneclick";
 import RadioSchedule from "@/components/RadioSchedule";
 import { PageHeader, SectionTitle } from "@/components/ui";
+import { iconForRoute } from "@/lib/nav-icons";
 import { RADIO_MESSAGE_NOTICE } from "@/lib/radio";
 
 export const metadata: Metadata = { title: "라디오 원클릭" };
@@ -13,6 +14,7 @@ export default function OneclickRadioPage() {
         eyebrow="ONECLICK"
         title="라디오"
         description="지금 방송 중인 프로그램에 맞춰 사연을 만들어 드려요. 버튼 하나로 문자 신청까지."
+        icon={iconForRoute("/oneclick/radio")}
       />
 
       <section>

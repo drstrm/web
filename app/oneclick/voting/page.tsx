@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import SmsVote from "@/components/SmsVote";
 import VoteApps from "@/components/VoteApps";
 import { PageHeader, SectionTitle } from "@/components/ui";
+import { iconForRoute } from "@/lib/nav-icons";
 
 export const metadata: Metadata = { title: "투표 원클릭" };
 export const revalidate = 300;
@@ -13,6 +14,7 @@ export default function OneclickVotingPage() {
         eyebrow="ONECLICK"
         title="투표 원클릭"
         description="투표 앱 바로가기와 문자 투표를 한 번에."
+        icon={iconForRoute("/oneclick/voting")}
       />
 
       <section>

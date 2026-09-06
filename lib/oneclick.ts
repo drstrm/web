@@ -3,6 +3,7 @@
  * 자주 교체되는 링크는 전부 노션 DB 로 뺐다. 여기 남은 건 표기용 상수다.
  */
 
+import { AppWindow, Bot, Monitor, Smartphone, Tablet, type LucideIcon } from "lucide-react";
 import { hhmmToMinutes, kstNow } from "@/lib/datetime";
 
 /**
@@ -12,15 +13,18 @@ import { hhmmToMinutes, kstNow } from "@/lib/datetime";
  */
 
 /**
- * 운영체제 뱃지 이모지. 키는 노션 `운영체제` 선택지(iOS 는 lib/notion.ts 에서 표기 보정).
- * 여기 없는 선택지를 노션에서 추가해도 이모지만 빠질 뿐 링크는 정상 노출된다.
+ * 운영체제 뱃지 아이콘. 키는 노션 `운영체제` 선택지(iOS 는 lib/notion.ts 에서 표기 보정).
+ * 여기 없는 선택지를 노션에서 추가해도 아이콘만 빠질 뿐 링크는 정상 노출된다.
+ *
+ * 이모지(🤖 🍎 💻)를 쓰지 않는 이유: 안드로이드와 iOS 에서 그림이 서로 달라
+ * 「내 기기를 고르는 화면」인데 정작 기기마다 다르게 보였다.
  */
-export const OS_EMOJI: Record<string, string> = {
-  안드로이드: "🤖",
-  iOS: "🍎",
-  아이패드: "📱",
-  PC: "💻",
-  앱: "📲",
+export const OS_ICON: Record<string, LucideIcon> = {
+  안드로이드: Bot,
+  iOS: Smartphone,
+  아이패드: Tablet,
+  PC: Monitor,
+  앱: AppWindow,
 };
 
 /**

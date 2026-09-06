@@ -1,8 +1,17 @@
 "use client";
 
+import { Pencil, Radio, RefreshCw, SendHorizontal } from "lucide-react";
 import { useCallback, useEffect, useState, type MouseEvent } from "react";
 import RadioPossibility from "@/components/RadioPossibility";
 import SmartLink from "@/components/SmartLink";
+import {
+  Button,
+  Dialog,
+  DialogCloseButton,
+  DialogContent,
+  DialogTitle,
+  IconTile,
+} from "@/components/ui";
 import {
   RADIO_DEFAULT_MESSAGE,
   RADIO_MESSAGE_NOTICE,
@@ -30,6 +39,8 @@ import {
  *
  * 첫 진입에도 한 번 받는데, 그건 사연 때문이 아니라 버튼에 지금 방송 중인 프로그램을
  * 띄우기 위한 것이다.
+ *
+ * 팝업은 Radix Dialog 라 포커스 가둠 · Esc 닫기 · 배경 스크롤 잠금이 따라온다.
  */
 export default function RadioOneclick() {
   const [now, setNow] = useState<Record<string, RadioNow>>({});
@@ -86,11 +97,14 @@ export default function RadioOneclick() {
   const selectedInfo = selectedNumber ? now[selectedNumber] : undefined;
 
   return (
-    <div className="space-y-5">
+    <div className="space-y-6">
       {groupStations().map(({ group, stations }) => (
         <div key={group}>
-          <p className="mb-2 border-l-[3px] border-sky-300 pl-2 text-xs font-bold tracking-widest text-muted">
-            {group}
+          <p className="mb-2.5 flex items-center gap-2">
+            <span aria-hidden className="brand-gradient-y h-3.5 w-1 shrink-0 rounded-full" />
+            <span className="font-display text-xs font-bold uppercase tracking-[0.14em] text-muted">
+              {group}
+            </span>
           </p>
           <div className="grid gap-3 sm:grid-cols-2">
             {stations.map((station) => (
@@ -106,18 +120,24 @@ export default function RadioOneclick() {
         </div>
       ))}
 
-      {selectedStation && (
-        <MessageModal
-          /* 채널이 바뀌면 고쳐 쓰던 사연이 따라가지 않도록 새로 만든다 */
-          key={selectedStation.number}
-          station={selectedStation}
-          info={selectedInfo}
-          loading={loading}
-          onClose={() => setSelectedNumber(null)}
-          onRefresh={reload}
-          onSend={reload}
-        />
-      )}
+      <Dialog
+        open={selectedStation !== null}
+        onOpenChange={(open) => {
+          if (!open) setSelectedNumber(null);
+        }}
+      >
+        {selectedStation && (
+          <MessageModal
+            /* 채널이 바뀌면 고쳐 쓰던 사연이 따라가지 않도록 새로 만든다 */
+            key={selectedStation.number}
+            station={selectedStation}
+            info={selectedInfo}
+            loading={loading}
+            onRefresh={reload}
+            onSend={reload}
+          />
+        )}
+      </Dialog>
     </div>
   );
 }
@@ -143,7 +163,7 @@ function StationButton({
     <button
       type="button"
       onClick={onOpen}
-      className="block w-full rounded-2xl border bg-surface p-4 text-left shadow-sm transition-all hover:-translate-y-0.5 hover:shadow-md active:scale-[0.99]"
+      className="block w-full rounded-2xl border border-border bg-surface p-4 text-left shadow-card transition-all hover:-translate-y-0.5 hover:border-sky-200 hover:shadow-lift active:scale-[0.99]"
     >
       <span className="flex items-center gap-2">
         <span className="font-bold">{station.name}</span>
@@ -155,12 +175,12 @@ function StationButton({
         )}
       </span>
 
-      <span className="mt-0.5 block text-xs text-muted">
+      <span className="mt-1 block font-display text-xs font-semibold text-muted">
         {station.frequency} · {station.number}
       </span>
 
-      <span className="mt-2 flex items-center gap-1.5 rounded-xl bg-sky-50 px-3 py-2 text-xs font-bold text-sky-600">
-        <span aria-hidden="true">📻</span>
+      <span className="mt-2.5 flex items-center gap-1.5 rounded-xl bg-sky-50 px-3 py-2 text-xs font-bold text-sky-700">
+        <Radio className="size-3 shrink-0" strokeWidth={2.4} />
         <span className="truncate">{ready ? onAir : "확인 중..."}</span>
       </span>
     </button>
@@ -171,14 +191,12 @@ function MessageModal({
   station,
   info,
   loading,
-  onClose,
   onRefresh,
   onSend,
 }: {
   station: RadioStation;
   info?: RadioNow;
   loading: boolean;
-  onClose: () => void;
   onRefresh: () => void;
   onSend: () => void;
 }) {
@@ -229,116 +247,77 @@ function MessageModal({
     onSend();
   };
 
-  useEffect(() => {
-    const onKeyDown = (event: KeyboardEvent) => {
-      if (event.key === "Escape") onClose();
-    };
-
-    window.addEventListener("keydown", onKeyDown);
-    return () => window.removeEventListener("keydown", onKeyDown);
-  }, [onClose]);
-
   return (
-    <div className="fixed inset-0 z-50 flex items-end justify-center bg-black/45 p-4 sm:items-center">
-      <button
-        type="button"
-        aria-label="팝업 닫기"
-        onClick={onClose}
-        className="absolute inset-0 cursor-default"
-      />
-
-      <section
-        role="dialog"
-        aria-modal="true"
-        aria-labelledby="radio-message-title"
-        className="relative flex max-h-[88vh] w-full max-w-lg flex-col overflow-hidden rounded-2xl bg-surface shadow-2xl"
-      >
-        <header className="border-b p-4">
-          <div className="flex items-start gap-3">
-            <span className="grid h-11 w-11 shrink-0 place-items-center rounded-xl bg-sky-50 text-xl">
-              📻
-            </span>
-            <div className="min-w-0 flex-1">
-              <h3 id="radio-message-title" className="font-extrabold">
-                {station.name}
-              </h3>
-              <p className="mt-0.5 truncate text-xs text-muted">
-                {station.frequency} · {station.number}
-              </p>
-            </div>
-            <button
-              type="button"
-              onClick={onClose}
-              aria-label="닫기"
-              className="grid h-9 w-9 shrink-0 place-items-center rounded-xl border text-sm font-bold hover:bg-sky-50"
-            >
-              ✕
-            </button>
+    <DialogContent aria-describedby={undefined}>
+      <header className="border-b border-border p-4">
+        <div className="flex items-start gap-3">
+          <IconTile tone="sky" size="lg">
+            <Radio strokeWidth={2.2} />
+          </IconTile>
+          <div className="min-w-0 flex-1">
+            <DialogTitle className="font-extrabold">{station.name}</DialogTitle>
+            <p className="mt-0.5 truncate font-display text-xs font-semibold text-muted">
+              {station.frequency} · {station.number}
+            </p>
           </div>
-
-          <div className="mt-3 flex items-center gap-2 rounded-xl bg-sky-50 px-3 py-2 text-xs font-bold text-sky-600">
-            <span aria-hidden="true">ON AIR</span>
-            <span className="min-w-0 truncate">{loading ? "확인 중..." : onAir}</span>
-          </div>
-        </header>
-
-        <div className="overflow-y-auto p-4">
-          <p className="mb-3 flex gap-2 rounded-xl bg-champagne/25 px-3 py-2.5 text-xs leading-6 text-[#5a4a1f]">
-            <span aria-hidden="true">✏️</span>
-            <span>
-              <b>{RADIO_MESSAGE_NOTICE}.</b>
-              <br />
-              아래 칸을 눌러 자유롭게 고칠 수 있고, 고친 그대로 문자에 담깁니다.
-            </span>
-          </p>
-
-          <label htmlFor="radio-message" className="sr-only">
-            보낼 사연
-          </label>
-          <textarea
-            id="radio-message"
-            value={pending ? "" : message}
-            onChange={(e) => setDraft(e.target.value)}
-            disabled={pending}
-            rows={7}
-            placeholder={
-              pending ? "사연을 불러오는 중입니다." : "보낼 사연을 적어주세요."
-            }
-            className="w-full resize-y rounded-2xl border bg-background p-4 text-sm leading-7 text-foreground outline-none focus:border-sky-300 focus:ring-2 focus:ring-sky-100 disabled:text-muted"
-          />
-          <p className="mt-1.5 text-right text-xs text-muted">
-            {pending ? " " : `${message.length}자`}
-          </p>
+          <DialogCloseButton />
         </div>
 
-        <footer className="grid gap-2 border-t bg-surface p-4 sm:grid-cols-2">
-          {/* 고쳐 쓴 내용은 여기서 버려지고 자동 생성 문장이 새로 들어온다 */}
-          <button
-            type="button"
-            onClick={handleRefresh}
-            className="rounded-xl border px-4 py-3 text-sm font-bold hover:bg-sky-50"
-          >
-            사연 새로 받기
-          </button>
-          {canSend ? (
-            <SmartLink
-              href={smsHref(station.number, message, false)}
-              onClick={handleSend}
-              className="rounded-xl sky-gradient px-4 py-3 text-center text-sm font-bold text-white"
-            >
+        <div className="mt-3 flex items-center gap-2 rounded-xl bg-sky-50 px-3 py-2.5 text-xs font-bold text-sky-700">
+          <span aria-hidden className="pulse-dot size-2 shrink-0 rounded-full bg-champagne-400" />
+          <span className="font-display shrink-0 tracking-wide">ON AIR</span>
+          <span className="min-w-0 truncate font-sans">{loading ? "확인 중..." : onAir}</span>
+        </div>
+      </header>
+
+      <div className="overflow-y-auto p-4">
+        <p className="mb-3 flex gap-2.5 rounded-xl border border-champagne-200 bg-champagne-50 px-3.5 py-3 text-xs leading-6 text-champagne-800">
+          <Pencil className="mt-0.5 size-3.5 shrink-0" strokeWidth={2.3} />
+          <span>
+            <b>{RADIO_MESSAGE_NOTICE}.</b>
+            <br />
+            아래 칸을 눌러 자유롭게 고칠 수 있고, 고친 그대로 문자에 담깁니다.
+          </span>
+        </p>
+
+        <label htmlFor="radio-message" className="sr-only">
+          보낼 사연
+        </label>
+        <textarea
+          id="radio-message"
+          value={pending ? "" : message}
+          onChange={(e) => setDraft(e.target.value)}
+          disabled={pending}
+          rows={7}
+          placeholder={pending ? "사연을 불러오는 중입니다." : "보낼 사연을 적어주세요."}
+          className="w-full resize-y rounded-2xl border border-border bg-background p-4 text-sm leading-7 text-foreground outline-none transition-colors focus:border-sky-300 focus:ring-4 focus:ring-sky-100 disabled:text-muted"
+        />
+        <p className="mt-1.5 text-right text-xs font-semibold text-muted">
+          {pending ? " " : `${message.length}자`}
+        </p>
+      </div>
+
+      <footer className="grid gap-2 border-t border-border bg-surface p-4 sm:grid-cols-2">
+        {/* 고쳐 쓴 내용은 여기서 버려지고 자동 생성 문장이 새로 들어온다 */}
+        <Button variant="outline" size="lg" onClick={handleRefresh}>
+          <RefreshCw strokeWidth={2.4} />
+          사연 새로 받기
+        </Button>
+        {canSend ? (
+          <Button asChild variant="accent" size="lg">
+            <SmartLink href={smsHref(station.number, message, false)} onClick={handleSend}>
+              <SendHorizontal strokeWidth={2.4} />
               보내기
             </SmartLink>
-          ) : (
-            <span
-              aria-disabled="true"
-              className="cursor-not-allowed rounded-xl sky-gradient px-4 py-3 text-center text-sm font-bold text-white opacity-50"
-            >
-              보내기
-            </span>
-          )}
-        </footer>
-      </section>
-    </div>
+          </Button>
+        ) : (
+          <Button variant="accent" size="lg" disabled>
+            <SendHorizontal strokeWidth={2.4} />
+            보내기
+          </Button>
+        )}
+      </footer>
+    </DialogContent>
   );
 }
 

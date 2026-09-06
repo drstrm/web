@@ -1,8 +1,9 @@
-import { ArrowUpRight, Link2, Package, TrendingUp } from "lucide-react";
+import { ArrowUpRight, Link2, Music4, Package, TrendingUp } from "lucide-react";
 import BannerSlider from "@/components/BannerSlider";
 import Calendar from "@/components/Calendar";
 import LoadingImage from "@/components/LoadingImage";
 import MvCard from "@/components/MvCard";
+import PlatformIcon from "@/components/PlatformIcon";
 import SmartLink from "@/components/SmartLink";
 import TodoList from "@/components/TodoList";
 import { Card, EmptyState, IconTile, SectionTitle } from "@/components/ui";
@@ -66,8 +67,14 @@ export default async function Home() {
             </p>
             <ul className="divide-y divide-border">
               {chart.rows.map((r) => (
-                <li key={r.platform} className="flex items-center justify-between gap-3 py-2.5">
-                  <span className="min-w-0 truncate text-sm font-semibold">{r.platform}</span>
+                <li key={r.platform} className="flex items-center gap-2.5 py-2.5">
+                  {/* 플랫폼 아이콘 (public/icons). 앱 PNG 라 타일을 꽉 채운다 */}
+                  <IconTile tone="sky" size="sm" className="size-5 [&>svg]:size-3">
+                    <PlatformIcon iconType={r.iconType} size={28} fallback={<Music4 />} />
+                  </IconTile>
+                  <span className="min-w-0 flex-1 truncate text-sm font-semibold">
+                    {r.platform}
+                  </span>
                   {/*
                    * 순위가 들어오면 샴페인으로 강조한다. 아직 값이 없는 "—" 는
                    * 옅게 두어 「데이터 대기 중」임이 한눈에 보이게 한다.

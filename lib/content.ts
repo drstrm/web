@@ -334,6 +334,8 @@ export async function getFormLinks(kind: FormKind): Promise<FormLink[]> {
 /* ---------------- HOME: 실시간 차트 (X 계정과 동일) ---------------- */
 export interface ChartRow {
   platform: string;
+  /** public/icons/<key>.png 의 key. 아이콘이 없는 플랫폼은 비어 있다 */
+  iconType?: string;
   rank: number | string;
   note?: string;
 }
@@ -342,11 +344,12 @@ export function getRealtimeChart(): { updatedAt: string; rows: ChartRow[] } {
   return {
     updatedAt: "업데이트 대기 중",
     rows: [
-      { platform: "멜론 TOP100", rank: "—" },
-      { platform: "지니", rank: "—" },
-      { platform: "벅스", rank: "—" },
-      { platform: "플로", rank: "—" },
-      { platform: "써클차트", rank: "—" },
+      { platform: "멜론 TOP100", iconType: "melon", rank: "—" },
+      { platform: "멜론 HOT100", iconType: "melon", rank: "—" },
+      { platform: "지니", iconType: "genie", rank: "—" },
+      { platform: "벅스", iconType: "bugs", rank: "—" },
+      { platform: "플로", iconType: "flo", rank: "—" },
+      { platform: "바이브", iconType: "vibe", rank: "—" },
     ],
   };
 }

@@ -28,11 +28,6 @@ export default async function FormsPage() {
         icon={iconForRoute("/forms")}
       />
       <FormLinks links={links} info={INFO} />
-      <Notice>
-        폼을 누르면 구글폼 등 외부 페이지가 새 탭으로 열립니다.
-        <br />
-        마감된 폼은 회색으로 남겨 두고, 새 폼이 열리면 목록 위쪽에 올라옵니다.
-      </Notice>
     </div>
   );
 }

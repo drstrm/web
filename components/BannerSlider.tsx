@@ -1,5 +1,6 @@
 "use client";
 
+import { ChevronLeft, ChevronRight } from "lucide-react";
 import LoadingImage from "@/components/LoadingImage";
 import SmartLink from "@/components/SmartLink";
 import { useCallback, useEffect, useRef, useState } from "react";
@@ -157,7 +158,10 @@ export default function BannerSlider({ banners }: { banners: Banner[] }) {
   const active = loop ? (i - 1 + n) % n : i;
 
   return (
-    <div ref={rootRef} className="relative overflow-hidden rounded-3xl border shadow-sm">
+    <div
+      ref={rootRef}
+      className="relative overflow-hidden rounded-3xl border border-border shadow-card"
+    >
       <div
         className={`flex select-none touch-pan-y ${
           loop ? "cursor-grab active:cursor-grabbing" : ""
@@ -250,17 +254,17 @@ export default function BannerSlider({ banners }: { banners: Banner[] }) {
             type="button"
             aria-label="이전 배너"
             onClick={() => go(-1)}
-            className="absolute left-2 top-1/2 z-10 grid h-9 w-9 -translate-y-1/2 place-items-center rounded-full bg-white/70 text-lg font-bold text-[#0f1b2d] shadow-sm backdrop-blur transition hover:bg-white sm:left-4 sm:h-11 sm:w-11"
+            className="absolute left-2 top-1/2 z-10 grid size-9 -translate-y-1/2 place-items-center rounded-full bg-white/75 text-foreground shadow-card backdrop-blur transition hover:bg-white active:scale-95 sm:left-4 sm:size-11"
           >
-            <span aria-hidden>‹</span>
+            <ChevronLeft className="size-4 sm:size-5" strokeWidth={2.5} />
           </button>
           <button
             type="button"
             aria-label="다음 배너"
             onClick={() => go(1)}
-            className="absolute right-2 top-1/2 z-10 grid h-9 w-9 -translate-y-1/2 place-items-center rounded-full bg-white/70 text-lg font-bold text-[#0f1b2d] shadow-sm backdrop-blur transition hover:bg-white sm:right-4 sm:h-11 sm:w-11"
+            className="absolute right-2 top-1/2 z-10 grid size-9 -translate-y-1/2 place-items-center rounded-full bg-white/75 text-foreground shadow-card backdrop-blur transition hover:bg-white active:scale-95 sm:right-4 sm:size-11"
           >
-            <span aria-hidden>›</span>
+            <ChevronRight className="size-4 sm:size-5" strokeWidth={2.5} />
           </button>
 
           {/* 페이지네이션: 현재 위치 표시 전용 (클릭 동작 없음) */}
@@ -273,7 +277,7 @@ export default function BannerSlider({ banners }: { banners: Banner[] }) {
               <span
                 key={b.id}
                 className={`h-1.5 rounded-full transition-all ${
-                  idx === active ? "w-5 bg-white" : "w-1.5 bg-white/60"
+                  idx === active ? "w-5 bg-champagne-400" : "w-1.5 bg-white/60"
                 }`}
               />
             ))}

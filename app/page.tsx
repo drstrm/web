@@ -1,9 +1,10 @@
+import { ArrowUpRight, Heart, Link2, Package, Play, TrendingUp } from "lucide-react";
 import BannerSlider from "@/components/BannerSlider";
 import Calendar from "@/components/Calendar";
 import LoadingImage from "@/components/LoadingImage";
 import SmartLink from "@/components/SmartLink";
 import TodoList from "@/components/TodoList";
-import { Card, SectionTitle } from "@/components/ui";
+import { Card, EmptyState, IconTile, SectionTitle } from "@/components/ui";
 import {
   getBanners,
   getCalendarEvents,
@@ -12,6 +13,7 @@ import {
   getQuickLinks,
   getRealtimeChart,
   getTodoList,
+  type QuickLink,
 } from "@/lib/content";
 import { DREAM_OFFICIAL } from "@/lib/site";
 
@@ -31,7 +33,7 @@ export default async function Home() {
   const preorders = getPreorderShops();
 
   return (
-    <div className="space-y-10">
+    <div className="space-y-12">
       {/* 슬라이드 배너 (노션 DB) */}
       <BannerSlider banners={banners} />
 
@@ -39,18 +41,9 @@ export default async function Home() {
       {quickLinks.length > 0 && (
         <section>
           <SectionTitle>바로가기</SectionTitle>
-          <div className="grid grid-cols-3 gap-3 sm:grid-cols-5">
+          <div className="grid grid-cols-3 gap-2.5 sm:grid-cols-5 sm:gap-3">
             {quickLinks.map((q) => (
-              <SmartLink key={q.key} href={q.href}>
-                <div className="flex h-full flex-col items-center gap-2 rounded-2xl border bg-surface p-4 shadow-sm transition-transform active:scale-95">
-                  <span className="grid h-12 w-12 shrink-0 place-items-center rounded-2xl bg-sky-50 text-2xl">
-                    {q.emoji}
-                  </span>
-                  <span className="text-center text-xs font-bold text-balance">
-                    {q.label}
-                  </span>
-                </div>
-              </SmartLink>
+              <QuickLinkTile key={q.key} link={q} />
             ))}
           </div>
         </section>
@@ -60,25 +53,35 @@ export default async function Home() {
       <section className="grid gap-6 lg:grid-cols-2">
         <div>
           <SectionTitle>유튜브 MV</SectionTitle>
-          <Card>
+          <Card className="overflow-hidden p-0">
             {mv.map((m) => (
-              <div key={m.title} className="space-y-3">
-                <div className="grid aspect-video place-items-center rounded-xl bg-sky-50 text-sm text-muted">
+              <div key={m.title}>
+                <div className="grid aspect-video place-items-center bg-sky-50 text-sm text-muted">
                   {m.youtubeId ? (
                     <iframe
-                      className="h-full w-full rounded-xl"
+                      className="h-full w-full"
                       src={`https://www.youtube.com/embed/${m.youtubeId}`}
                       title={m.title}
                       allowFullScreen
                     />
                   ) : (
-                    "MV 임베드 연동 예정"
+                    <span className="flex flex-col items-center gap-2 text-xs">
+                      <Play className="size-6 text-sky-300" strokeWidth={2} />
+                      MV 임베드 연동 예정
+                    </span>
                   )}
                 </div>
-                <div className="flex items-center justify-between text-sm">
-                  <span className="font-bold">{m.title}</span>
-                  <span className="text-muted">
-                    ▶ {m.views} · ♥ {m.likes}
+                <div className="flex items-center justify-between gap-3 px-5 py-4">
+                  <span className="min-w-0 truncate font-bold">{m.title}</span>
+                  <span className="flex shrink-0 items-center gap-3 text-xs font-semibold text-muted">
+                    <span className="inline-flex items-center gap-1">
+                      <Play className="size-3 shrink-0" strokeWidth={2.5} />
+                      {m.views}
+                    </span>
+                    <span className="inline-flex items-center gap-1">
+                      <Heart className="size-3 shrink-0" strokeWidth={2.5} />
+                      {m.likes}
+                    </span>
                   </span>
                 </div>
               </div>
@@ -89,12 +92,25 @@ export default async function Home() {
         <div>
           <SectionTitle>실시간 차트</SectionTitle>
           <Card>
-            <p className="mb-3 text-xs text-muted">업데이트: {chart.updatedAt}</p>
-            <ul className="divide-y">
+            <p className="mb-3 inline-flex items-center gap-1.5 rounded-full bg-surface-soft px-2.5 py-1 text-[11px] font-semibold text-muted">
+              <TrendingUp className="size-3 shrink-0 text-sky-500" strokeWidth={2.5} />
+              {chart.updatedAt}
+            </p>
+            <ul className="divide-y divide-border">
               {chart.rows.map((r) => (
-                <li key={r.platform} className="flex items-center justify-between py-2.5">
-                  <span className="text-sm font-semibold">{r.platform}</span>
-                  <span className="rounded-full bg-sky-100 px-2.5 py-0.5 text-sm font-bold text-sky-600">
+                <li key={r.platform} className="flex items-center justify-between gap-3 py-2.5">
+                  <span className="min-w-0 truncate text-sm font-semibold">{r.platform}</span>
+                  {/*
+                   * 순위가 들어오면 샴페인으로 강조한다. 아직 값이 없는 "—" 는
+                   * 옅게 두어 「데이터 대기 중」임이 한눈에 보이게 한다.
+                   */}
+                  <span
+                    className={`inline-flex h-6 min-w-11 shrink-0 items-center justify-center rounded-full px-2.5 text-xs font-extrabold leading-none ${
+                      r.rank === "—"
+                        ? "bg-surface-soft text-muted-soft"
+                        : "champagne-gradient text-champagne-ink"
+                    }`}
+                  >
                     {r.rank}
                   </span>
                 </li>
@@ -124,7 +140,7 @@ export default async function Home() {
       {/* NCT DREAM 프로필 */}
       <section>
         <SectionTitle>NCT DREAM</SectionTitle>
-        <Card className="overflow-hidden !p-0">
+        <Card className="overflow-hidden p-0">
           {/*
            * 원본(1024×874)은 위·아래에 남색 레터박스가 인화돼 있다.
            * 16:9 로 잘라내며 object-position 을 60% 로 내려 그 여백만 정확히
@@ -144,9 +160,10 @@ export default async function Home() {
               <SmartLink
                 key={s.label}
                 href={s.href}
-                className="rounded-full border px-4 py-2 text-sm font-bold hover:bg-sky-50"
+                className="inline-flex items-center gap-1.5 rounded-full border border-border bg-surface px-4 py-2 text-sm font-bold transition-colors hover:border-sky-300 hover:bg-sky-50 hover:text-sky-700"
               >
                 {s.label}
+                <ArrowUpRight className="size-3 shrink-0 text-muted-soft" strokeWidth={2.5} />
               </SmartLink>
             ))}
           </div>
@@ -154,34 +171,66 @@ export default async function Home() {
       </section>
 
       {/* 앨범 사전 판매 정리 */}
-      <section id="preorder" className="scroll-mt-20">
+      <section id="preorder" className="scroll-mt-24">
         <SectionTitle>앨범 사전 판매 · 공구 정리</SectionTitle>
-        <Card>
-          {preorders.length === 0 ? (
-            <div className="rounded-xl bg-champagne/15 py-6 text-center">
-              <span className="text-3xl">📦</span>
-              <p className="mt-2 font-bold text-[#5a4a1f]">오픈 예정입니다</p>
-              <p className="mt-1 text-xs text-muted">
-                사전 예약 판매 시작 시 각 앨범사 · 팬덤 공구 링크를 정리해 업데이트합니다.
-                (공구주분 동의 후)
-              </p>
-            </div>
-          ) : (
-            <div className="grid gap-3 sm:grid-cols-2">
-              {preorders.map((p) => (
-                <SmartLink
-                  key={p.name}
-                  href={p.href}
-                  className="flex items-center justify-between rounded-xl border px-4 py-3 hover:bg-sky-50"
-                >
-                  <span className="font-bold">{p.name}</span>
-                  <span className="text-xs text-muted">{p.kind}</span>
-                </SmartLink>
-              ))}
-            </div>
-          )}
-        </Card>
+        {preorders.length === 0 ? (
+          <EmptyState
+            icon={Package}
+            tone="accent"
+            title="오픈 예정입니다"
+            description="사전 예약 판매가 시작되면 앨범사 · 팬덤 공구 링크를 정리해 올려드릴게요. (공구주분 동의 후)"
+          />
+        ) : (
+          <div className="grid gap-3 sm:grid-cols-2">
+            {preorders.map((p) => (
+              <SmartLink
+                key={p.name}
+                href={p.href}
+                className="flex items-center justify-between gap-3 rounded-2xl border border-border bg-surface px-4 py-3.5 shadow-card transition-all hover:-translate-y-0.5 hover:border-sky-200 hover:shadow-lift"
+              >
+                <span className="min-w-0 truncate font-bold">{p.name}</span>
+                <span className="inline-flex h-6 shrink-0 items-center rounded-full bg-sky-100 px-2.5 text-[11px] font-bold leading-none text-sky-700">
+                  {p.kind}
+                </span>
+              </SmartLink>
+            ))}
+          </div>
+        )}
       </section>
     </div>
+  );
+}
+
+/**
+ * 바로가기 타일 한 칸.
+ * ------------------------------------------------------------------
+ * 아이콘은 운영진이 노션 `emoji` 열에 적은 이모지를 그대로 쓴다. 어떤 버튼을
+ * 어떤 그림으로 둘지는 코드가 아니라 노션에서 정하는 값이라, 배포 없이 바꿀 수
+ * 있어야 한다. (열이 비어 있으면 노션 조회 단계에서 🔗 이 들어온다)
+ *
+ * 이모지는 폰트마다 글자 상자보다 크게 그려지므로, `leading-none` 을 준
+ * IconTile(grid place-items-center) 안에 넣어 타일 정중앙에 놓는다.
+ */
+function QuickLinkTile({ link }: { link: QuickLink }) {
+  return (
+    <SmartLink href={link.href} className="group">
+      <div className="flex h-full flex-col items-center gap-2.5 rounded-2xl border border-border bg-surface p-3.5 shadow-card transition-all group-hover:-translate-y-0.5 group-hover:border-champagne-300 group-hover:shadow-lift active:scale-95">
+        <IconTile
+          size="lg"
+          className="transition-colors group-hover:bg-champagne-400 group-hover:text-champagne-ink"
+        >
+          {link.emoji ? (
+            <span aria-hidden className="text-xl leading-none">
+              {link.emoji}
+            </span>
+          ) : (
+            <Link2 strokeWidth={2.2} />
+          )}
+        </IconTile>
+        <span className="text-center text-xs font-bold leading-snug text-balance">
+          {link.label}
+        </span>
+      </div>
+    </SmartLink>
   );
 }

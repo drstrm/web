@@ -1,10 +1,12 @@
 "use client";
 
+import { CalendarX2, ChevronLeft, ChevronRight } from "lucide-react";
 import { useMemo, useState } from "react";
-import PlatformIcon from "@/components/PlatformIcon";
+import KindIcon from "@/components/KindIcon";
 import SmartLink from "@/components/SmartLink";
+import { Badge, IconTile } from "@/components/ui";
 import type { CalendarEvent } from "@/lib/content";
-import { emojiOf } from "@/lib/kind-emoji";
+import { cn } from "@/lib/utils";
 
 /**
  * 홈 캘린더 (월간 그리드)
@@ -14,9 +16,6 @@ import { emojiOf } from "@/lib/kind-emoji";
  * · recurring = false (투표 기간 · 차트 마감): 연도까지 일치할 때만 표시하며,
  *   endDate 가 있으면 시작~종료일 사이의 모든 날짜에 표시
  */
-
-/** kind 별 기본 이모지는 To Do 리스트와 공유한다(lib/kind-emoji.ts) */
-const emoji = (e: CalendarEvent) => emojiOf(e.type, e.emoji);
 
 const WEEKDAYS = ["일", "월", "화", "수", "목", "금", "토"];
 
@@ -125,19 +124,19 @@ export default function Calendar({ events }: { events: CalendarEvent[] }) {
           type="button"
           onClick={() => moveMonth(-1)}
           aria-label="이전 달"
-          className="grid h-8 w-8 place-items-center rounded-full border text-sm hover:bg-sky-50"
+          className="grid size-9 place-items-center rounded-full border border-border text-muted transition-colors hover:border-sky-300 hover:bg-sky-50 hover:text-sky-700"
         >
-          ‹
+          <ChevronLeft className="size-3.5" strokeWidth={2.5} />
         </button>
         <div className="flex items-center gap-2">
-          <span className="text-base font-extrabold">
+          <span className="font-display text-base font-extrabold tracking-tight">
             {cursor.y}년 {cursor.m}월
           </span>
           {!isThisMonth && (
             <button
               type="button"
               onClick={goToday}
-              className="rounded-full bg-sky-50 px-2.5 py-1 text-[11px] font-bold text-sky-600 hover:bg-sky-100"
+              className="champagne-gradient inline-flex h-6 items-center rounded-full px-2.5 text-[11px] font-bold leading-none text-champagne-ink transition-transform active:scale-95"
             >
               오늘
             </button>
@@ -147,9 +146,9 @@ export default function Calendar({ events }: { events: CalendarEvent[] }) {
           type="button"
           onClick={() => moveMonth(1)}
           aria-label="다음 달"
-          className="grid h-8 w-8 place-items-center rounded-full border text-sm hover:bg-sky-50"
+          className="grid size-9 place-items-center rounded-full border border-border text-muted transition-colors hover:border-sky-300 hover:bg-sky-50 hover:text-sky-700"
         >
-          ›
+          <ChevronRight className="size-3.5" strokeWidth={2.5} />
         </button>
       </div>
 
@@ -182,31 +181,52 @@ export default function Calendar({ events }: { events: CalendarEvent[] }) {
               onClick={() => setSelected(isSelected ? null : day)}
               aria-label={`${cursor.m}월 ${day}일${dayEvents.length ? `, 일정 ${dayEvents.length}건` : ""}`}
               aria-pressed={isSelected}
-              className={`flex aspect-square flex-col items-center justify-center gap-0.5 rounded-xl border text-xs transition-colors ${
+              className={cn(
+                "flex aspect-square flex-col items-center justify-center gap-1 rounded-xl border text-xs transition-colors",
                 isSelected
                   ? "border-sky-400 bg-sky-50"
                   : dayEvents.length
                     ? "border-transparent bg-sky-50/60 hover:bg-sky-50"
-                    : "border-transparent hover:bg-sky-50/50"
-              }`}
+                    : "border-transparent hover:bg-sky-50/50",
+              )}
             >
               <span
-                className={`grid h-6 w-6 place-items-center rounded-full font-bold ${
+                className={cn(
+                  "grid size-6 place-items-center rounded-full font-bold leading-none",
                   isToday
-                    ? "sky-gradient text-white"
+                    ? "sky-gradient text-white shadow-[0_2px_8px_-2px_rgb(2_132_199/0.6)]"
                     : weekday === 0
                       ? "text-rose-400"
                       : weekday === 6
                         ? "text-sky-500"
-                        : ""
-                }`}
+                        : "",
+                )}
               >
                 {day}
               </span>
-              <span className="flex h-3 items-center gap-px text-[9px] leading-none">
-                {dayEvents.slice(0, 3).map((e) => (
-                  <span key={e.id}>{emoji(e)}</span>
-                ))}
+              {/*
+               * 최대 3개까지 표시하고 나머지는 아래 목록에서 본다.
+               * 운영진이 노션 `emoji` 열을 적어 둔 일정은 그 이모지를 그대로 쓰고,
+               * 비워 둔 일정만 점으로 찍는다 — 무슨 일정인지 달력에서 바로 알아보게
+               * 하려고 적는 값이라 코드 아이콘으로 덮어쓰지 않는다.
+               * 상자 높이는 h-3.5 로 고정해, 이모지가 있든 없든 칸이 흔들리지 않는다.
+               */}
+              <span className="flex h-3.5 items-center gap-[3px] leading-none">
+                {dayEvents.slice(0, 3).map((e) =>
+                  e.emoji ? (
+                    <span key={e.id} aria-hidden className="text-[11px] leading-none">
+                      {e.emoji}
+                    </span>
+                  ) : (
+                    <span
+                      key={e.id}
+                      className={cn(
+                        "size-1.5 rounded-full",
+                        isSelected ? "bg-sky-500" : "bg-champagne-400",
+                      )}
+                    />
+                  ),
+                )}
               </span>
             </button>
           );
@@ -217,30 +237,35 @@ export default function Calendar({ events }: { events: CalendarEvent[] }) {
       <div className="mt-4 border-t pt-4">
         {selected ? (
           <>
-            <p className="mb-2 text-xs font-bold text-sky-600">
-              {cursor.m}월 {selected}일
+            <p className="mb-2.5">
+              <Badge variant="sky" size="md">
+                {cursor.m}월 {selected}일
+              </Badge>
             </p>
             {selectedEvents.length === 0 ? (
-              <p className="text-xs text-muted">등록된 일정이 없습니다.</p>
+              <p className="flex items-center gap-1.5 text-xs text-muted">
+                <CalendarX2 className="size-3 shrink-0 text-muted-soft" strokeWidth={2.2} />
+                등록된 일정이 없습니다.
+              </p>
             ) : (
               <ul className="space-y-2">
                 {selectedEvents.map((e) => (
                   <li key={e.id} className="flex items-center gap-2.5">
-                    <span className="grid h-6 w-6 shrink-0 place-items-center overflow-hidden rounded-md text-base">
-                      <PlatformIcon iconType={e.iconType} size={24} fallback={emoji(e)} />
-                    </span>
+                    <IconTile tone="plain" size="sm" className="size-6 rounded-md">
+                      <KindIcon iconType={e.iconType} emoji={e.emoji} kind={e.type} size={24} />
+                    </IconTile>
                     {e.url ? (
                       <SmartLink
                         href={e.url}
-                        className="text-sm font-semibold text-sky-600 underline underline-offset-2"
+                        className="min-w-0 truncate text-sm font-bold text-sky-700 underline decoration-sky-300 underline-offset-4 hover:decoration-sky-600"
                       >
                         {e.label}
                       </SmartLink>
                     ) : (
-                      <span className="text-sm font-semibold">{e.label}</span>
+                      <span className="min-w-0 truncate text-sm font-semibold">{e.label}</span>
                     )}
                     {e.endDate && (
-                      <span className="ml-auto shrink-0 text-xs text-muted">
+                      <span className="ml-auto shrink-0 text-xs font-semibold text-muted">
                         {formatRange(e)}
                       </span>
                     )}
@@ -250,16 +275,24 @@ export default function Calendar({ events }: { events: CalendarEvent[] }) {
             )}
           </>
         ) : monthList.length === 0 ? (
-          <p className="text-xs text-muted">{cursor.m}월에는 등록된 일정이 없습니다.</p>
+          <p className="flex items-center gap-1.5 text-xs text-muted">
+            <CalendarX2 className="size-3 shrink-0 text-muted-soft" strokeWidth={2.2} />
+            {cursor.m}월에는 등록된 일정이 없습니다.
+          </p>
         ) : (
           <ul className="space-y-2">
             {monthList.map(({ day, event }) => (
               <li key={event.id} className="flex items-center gap-2.5">
-                <span className="grid h-6 w-6 shrink-0 place-items-center overflow-hidden rounded-md text-base">
-                  <PlatformIcon iconType={event.iconType} size={24} fallback={emoji(event)} />
-                </span>
-                <span className="truncate text-sm font-semibold">{event.label}</span>
-                <span className="ml-auto shrink-0 text-xs text-muted">
+                <IconTile tone="plain" size="sm" className="size-6 rounded-md">
+                  <KindIcon
+                    iconType={event.iconType}
+                    emoji={event.emoji}
+                    kind={event.type}
+                    size={24}
+                  />
+                </IconTile>
+                <span className="min-w-0 truncate text-sm font-semibold">{event.label}</span>
+                <span className="ml-auto shrink-0 text-xs font-semibold text-muted">
                   {event.endDate ? formatRange(event) : `${cursor.m}.${day}`}
                 </span>
               </li>

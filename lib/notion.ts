@@ -814,7 +814,7 @@ export interface NotionSchedule {
   id: string;
   title: string;
   description?: string;
-  /** `종류` 선택지. 기본 이모지가 여기서 갈린다 (lib/kind-emoji.ts) */
+  /** `종류` 선택지. 기본 아이콘이 여기서 갈린다 (lib/kind-icon.ts) */
   kind: string;
   /** `노출 위치` 다중 선택 (calendar · todo · vote) */
   surfaces: string[];

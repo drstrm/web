@@ -133,11 +133,13 @@ export const getEtcGuides = () => getGuides("etc");
  * 가이드 카테고리 정보.
  * 가이드 허브(/guide)의 카드, 각 목록 페이지의 헤더, 상세 페이지의 「목록으로」
  * 링크가 모두 여기를 본다 — 문구를 한 군데서만 고치면 된다.
+ *
+ * 아이콘은 여기 두지 않는다. href 로 lib/nav-icons.ts 에서 찾으므로 헤더 ·
+ * 모바일 메뉴 · 허브 카드가 저절로 같은 그림을 쓴다.
  */
 export interface GuidePageInfo {
   page: GuidePage;
   href: string;
-  emoji: string;
   /** 페이지 제목 (허브 카드 · 헤더 · <title>) */
   title: string;
   /** 허브 카드의 한 줄 설명 */
@@ -150,7 +152,6 @@ export const GUIDE_PAGES: GuidePageInfo[] = [
   {
     page: "streaming",
     href: "/guide/streaming",
-    emoji: "🎧",
     title: "스트리밍 가이드",
     summary: "멜론·지니·벅스·플로·스포티파이 등 플랫폼별 음원/MV 스트리밍",
     description: "플랫폼을 고르면 가이드 이미지를 크게 볼 수 있어요.",
@@ -158,7 +159,6 @@ export const GUIDE_PAGES: GuidePageInfo[] = [
   {
     page: "id-generate",
     href: "/guide/id-generate",
-    emoji: "🪪",
     title: "아이디 생성 가이드",
     summary: "멜론·지니·벅스·플로·바이브 등 플랫폼별 계정 만들기",
     description: "플랫폼별 아이디 만드는 방법입니다. 스밍 전에 계정부터 준비해 주세요.",
@@ -166,7 +166,6 @@ export const GUIDE_PAGES: GuidePageInfo[] = [
   {
     page: "voting",
     href: "/guide/voting",
-    emoji: "🗳️",
     title: "투표 가이드",
     summary: "음악방송 · 시상식 투표 앱 가이드",
     description: "방송사별 음악방송 투표 앱과 시상식 투표 방법을 안내합니다.",
@@ -174,7 +173,6 @@ export const GUIDE_PAGES: GuidePageInfo[] = [
   {
     page: "download",
     href: "/guide/download",
-    emoji: "⬇️",
     title: "다운로드 가이드",
     summary: "플랫폼별 음원 · MV 다운로드",
     description: "플랫폼을 고르면 가이드 이미지를 크게 볼 수 있어요.",
@@ -182,7 +180,6 @@ export const GUIDE_PAGES: GuidePageInfo[] = [
   {
     page: "etc",
     href: "/guide/etc",
-    emoji: "✨",
     title: "기타 가이드",
     summary: "컬러링·벨 설정, 숏폼 제작, 이용권 추천",
     description: "컬러링·벨 설정, 숏폼 제작, 이용권 추천 가이드입니다.",
@@ -294,7 +291,6 @@ export interface FormLink {
 export interface FormPageInfo {
   kind: FormKind;
   href: string;
-  emoji: string;
   /** 페이지 제목 (헤더 · <title>) */
   title: string;
   description: string;
@@ -306,7 +302,6 @@ export const FORM_PAGES: Record<FormKind, FormPageInfo> = {
   form: {
     kind: "form",
     href: "/forms",
-    emoji: "📝",
     title: "폼 바로가기",
     description: "스밍팀에서 진행 중인 신청 · 설문 폼을 한곳에 모았어요.",
     empty: "진행 중인 폼이 없어요",
@@ -314,7 +309,6 @@ export const FORM_PAGES: Record<FormKind, FormPageInfo> = {
   helper: {
     kind: "helper",
     href: "/helper",
-    emoji: "🙋",
     title: "헬퍼 신청하기",
     description: "총공 · 이벤트를 함께 준비할 헬퍼를 모집하는 폼입니다.",
     empty: "모집 중인 헬퍼 폼이 없어요",

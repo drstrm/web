@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import FormLinks from "@/components/FormLinks";
-import { PageHeader } from "@/components/ui";
+import { Notice, PageHeader } from "@/components/ui";
+import { iconForRoute } from "@/lib/nav-icons";
 import { FORM_PAGES, getFormLinks } from "@/lib/content";
 
 /*
@@ -19,12 +20,18 @@ export default async function HelperPage() {
 
   return (
     <div>
-      <PageHeader eyebrow="HELPER" title={INFO.title} description={INFO.description} />
+      <PageHeader
+        eyebrow="HELPER"
+        title={INFO.title}
+        description={INFO.description}
+        icon={iconForRoute("/helper")}
+      />
       <FormLinks links={links} info={INFO} />
-      <p className="mt-6 text-xs text-muted">
-        * 신청 폼을 누르면 구글폼 등 외부 페이지가 새 탭으로 열립니다.
-        <br />* 모집이 끝난 폼은 회색으로 남겨 두고, 새 모집이 열리면 목록 위쪽에 올라옵니다.
-      </p>
+      <Notice>
+        신청 폼을 누르면 구글폼 등 외부 페이지가 새 탭으로 열립니다.
+        <br />
+        모집이 끝난 폼은 회색으로 남겨 두고, 새 모집이 열리면 목록 위쪽에 올라옵니다.
+      </Notice>
     </div>
   );
 }

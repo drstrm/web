@@ -1,8 +1,10 @@
+import { ArrowLeft, ChevronLeft, FileImage, ImageDown } from "lucide-react";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import LoadingImage from "@/components/LoadingImage";
 import PlatformIcon from "@/components/PlatformIcon";
 import SmartLink from "@/components/SmartLink";
+import { Badge, Button, EmptyState, IconTile } from "@/components/ui";
 import { getGuideEntry, getGuidePageInfo, type GuidePage } from "@/lib/content";
 
 /**
@@ -33,27 +35,28 @@ export default async function GuideDetail({
     <div>
       <SmartLink
         href={info.href}
-        className="inline-flex items-center gap-1 text-sm font-bold text-muted transition-colors hover:text-sky-600"
+        className="inline-flex items-center gap-1 text-sm font-bold text-muted transition-colors hover:text-sky-700"
       >
-        ‹ {info.title}
+        <ChevronLeft className="size-3.5 shrink-0" strokeWidth={2.5} />
+        {info.title}
       </SmartLink>
 
       <header className="mt-3 mb-6 flex items-start gap-3">
         {item.iconTypes && item.iconTypes.length > 0 && (
           <div className="flex shrink-0 gap-1.5">
             {item.iconTypes.map((key) => (
-              <span
-                key={key}
-                className="grid h-12 w-12 place-items-center overflow-hidden rounded-2xl bg-sky-50"
-              >
+              <IconTile key={key} tone="sky" size="lg">
                 <PlatformIcon iconType={key} size={48} />
-              </span>
+              </IconTile>
             ))}
           </div>
         )}
         <div className="min-w-0">
-          <p className="mb-1 text-xs font-bold uppercase tracking-widest text-sky-500">
-            {section.title}
+          <p className="mb-1.5 flex items-center gap-2">
+            <span className="champagne-glow inline-block size-1.5 rounded-full bg-champagne-400" />
+            <span className="text-brand-gradient font-display text-xs font-bold uppercase tracking-[0.18em]">
+              {section.title}
+            </span>
           </p>
           <h1 className="text-2xl font-extrabold tracking-tight sm:text-3xl">
             {item.title}
@@ -65,9 +68,11 @@ export default async function GuideDetail({
       </header>
 
       {images.length === 0 ? (
-        <p className="rounded-2xl border border-dashed px-6 py-10 text-center text-sm text-muted">
-          아직 등록된 가이드 이미지가 없어요.
-        </p>
+        <EmptyState
+          icon={FileImage}
+          title="아직 등록된 가이드 이미지가 없어요"
+          description="가이드가 준비되는 대로 이곳에 올라옵니다."
+        />
       ) : (
         <div className="-mx-4 space-y-6 sm:mx-0">
           {images.map((img, i) => (
@@ -83,18 +88,21 @@ export default async function GuideDetail({
                 wrapperClassName="bg-sky-50 sm:rounded-2xl sm:border"
                 className="block h-auto w-full"
               />
-              <figcaption className="mt-2 flex items-center justify-between gap-2 px-4 sm:px-0">
-                <span className="text-xs text-muted">
-                  {images.length > 1 ? `${i + 1} / ${images.length}` : ""}
-                </span>
+              <figcaption className="mt-2.5 flex items-center justify-between gap-2 px-4 sm:px-0">
+                {images.length > 1 ? (
+                  <Badge variant="muted" size="md">
+                    {i + 1} / {images.length}
+                  </Badge>
+                ) : (
+                  <span />
+                )}
                 {/* 이동이 아니라 파일 저장이라 SmartLink 를 쓰지 않는다 */}
-                <a
-                  href={img.src}
-                  download
-                  className="rounded-full accent-gradient px-4 py-1.5 text-xs font-bold text-[#5a4a1f]"
-                >
-                  ⬇ 이미지 저장
-                </a>
+                <Button asChild variant="accent" size="sm">
+                  <a href={img.src} download>
+                    <ImageDown strokeWidth={2.4} />
+                    이미지 저장
+                  </a>
+                </Button>
               </figcaption>
             </figure>
           ))}
@@ -102,12 +110,12 @@ export default async function GuideDetail({
       )}
 
       <div className="mt-10">
-        <SmartLink
-          href={info.href}
-          className="inline-flex items-center gap-1.5 rounded-2xl border bg-surface px-5 py-3 text-sm font-bold transition-colors hover:bg-sky-50"
-        >
-          ‹ {info.title} 목록으로
-        </SmartLink>
+        <Button asChild variant="outline" size="lg">
+          <SmartLink href={info.href}>
+            <ArrowLeft strokeWidth={2.4} />
+            {info.title} 목록으로
+          </SmartLink>
+        </Button>
       </div>
     </div>
   );

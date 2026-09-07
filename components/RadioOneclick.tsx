@@ -235,9 +235,10 @@ function MessageModal({
   };
 
   /*
-   * href 는 안드로이드 형태(`?body=`)로 두고, iOS 일 때만 눌리는 순간 `&body=`
-   * 주소로 넘긴다. 기기 판별을 렌더 중에 하면 서버가 만든 href 와 달라져
-   * 하이드레이션이 어긋난다 — 판별을 클릭 시점으로 미루면 그 문제가 없다.
+   * href 는 안드로이드 형태(`sms:%23번호?body=`)로 두고, iOS 일 때만 눌리는 순간
+   * iOS 형태(`sms:#번호&body=`)로 넘긴다. 기기 판별을 렌더 중에 하면 서버가 만든
+   * href 와 달라져 하이드레이션이 어긋난다 — 판별을 클릭 시점으로 미루면 그 문제가
+   * 없다. 두 형태가 왜 다른지는 lib/radio.ts 의 smsHref 에 적어 뒀다.
    */
   const handleSend = (e: MouseEvent<HTMLAnchorElement>) => {
     if (/iPhone|iPad|iPod/i.test(navigator.userAgent)) {

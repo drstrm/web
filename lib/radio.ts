@@ -235,10 +235,21 @@ export const RADIO_MESSAGE_NOTICE =
 
 /**
  * 문자 앱을 여는 주소.
- * 본문 구분자가 iOS 만 `&` 이고 나머지는 `?` 다. 번호의 `#` 은 인코딩하지 않는데,
- * imweb 원클릭 페이지에서 실기기로 검증된 형태가 이쪽이기 때문이다.
+ *
+ * 두 가지가 기기마다 다르다.
+ *
+ *  1) 본문 구분자 — iOS 만 `&` 이고 나머지는 `?`(RFC 5724) 다.
+ *  2) 번호 앞 `#` — 안드로이드에서는 `%23` 으로 인코딩해야 한다.
+ *
+ * (2)가 안드로이드 전용인 이유: `sms:#1077?body=...` 를 URI 로 읽으면 `#` 부터
+ * 끝까지가 **프래그먼트**라, 크롬이 문자 앱에 넘기는 건 번호도 본문도 없는
+ * 맨 `sms:` 다. 그래서 문자 앱은 열리는데 수신인 · 사연이 비어서 뜬다.
+ * iOS 는 주소를 통째로 문자 앱에 넘겨 프래그먼트로 잘리지 않으므로,
+ * 실기기로 검증된 형태(인코딩하지 않은 `#`)를 그대로 둔다.
  */
 export function smsHref(number: string, message: string, ios: boolean): string {
   const body = encodeURIComponent(message);
-  return ios ? `sms:${number}&body=${body}` : `sms:${number}?body=${body}`;
+  return ios
+    ? `sms:${number}&body=${body}`
+    : `sms:${number.replace(/#/g, "%23")}?body=${body}`;
 }

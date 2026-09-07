@@ -1,10 +1,11 @@
 "use client";
 
 import { MessageSquareText, Radio, Send } from "lucide-react";
-import { useEffect, useState } from "react";
+import { useEffect, useState, type MouseEvent } from "react";
 import SmartLink from "@/components/SmartLink";
 import { Button, Card, IconTile, Notice } from "@/components/ui";
 import { findSmsVoteSlot, type SmsVoteSlot } from "@/lib/oneclick";
+import { isIosDevice, smsHref } from "@/lib/sms";
 
 /**
  * 문자 투표 원클릭
@@ -28,10 +29,23 @@ export default function SmsVote() {
     return () => clearInterval(id);
   }, []);
 
-  const active = Boolean(slot?.enabled && slot.number);
-  const href = active
-    ? `sms:${slot!.number}${slot!.keyword ? `&body=${encodeURIComponent(slot!.keyword)}` : ""}`
-    : undefined;
+  /** 지금 눌러서 보낼 수 있는 슬롯. 열려 있지 않거나 번호가 비면 null */
+  const sendable = slot?.enabled && slot.number ? slot : null;
+  const active = sendable !== null;
+
+  /*
+   * href 는 안드로이드 형태로 두고, iOS 일 때만 눌리는 순간 iOS 형태로 넘긴다.
+   * 기기 판별을 렌더 중에 하면 하이드레이션이 어긋나므로 클릭 시점으로 미룬다.
+   * 두 형태가 왜 다른지는 lib/sms.ts 의 smsHref 에 적어 뒀다.
+   */
+  const href = sendable ? smsHref(sendable.number, sendable.keyword, false) : undefined;
+
+  const handleSend = (e: MouseEvent<HTMLAnchorElement>) => {
+    if (sendable && isIosDevice()) {
+      e.preventDefault();
+      window.location.href = smsHref(sendable.number, sendable.keyword, true);
+    }
+  };
 
   return (
     <Card>
@@ -59,7 +73,7 @@ export default function SmsVote() {
 
       {active ? (
         <Button asChild variant="accent" size="lg" block className="mt-4">
-          <SmartLink href={href!}>
+          <SmartLink href={href!} onClick={handleSend}>
             <Send strokeWidth={2.4} />
             원클릭 문자투표
           </SmartLink>

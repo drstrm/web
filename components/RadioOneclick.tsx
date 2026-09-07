@@ -16,10 +16,10 @@ import {
   RADIO_DEFAULT_MESSAGE,
   RADIO_MESSAGE_NOTICE,
   RADIO_STATIONS,
-  smsHref,
   type RadioNow,
   type RadioStation,
 } from "@/lib/radio";
+import { isIosDevice, smsHref } from "@/lib/sms";
 
 /**
  * 라디오 신청 원클릭
@@ -241,7 +241,7 @@ function MessageModal({
    * 없다. 두 형태가 왜 다른지는 lib/radio.ts 의 smsHref 에 적어 뒀다.
    */
   const handleSend = (e: MouseEvent<HTMLAnchorElement>) => {
-    if (/iPhone|iPad|iPod/i.test(navigator.userAgent)) {
+    if (isIosDevice()) {
       e.preventDefault();
       window.location.href = smsHref(station.number, message, true);
     }

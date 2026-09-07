@@ -18,9 +18,9 @@ export const SITE = {
 };
 
 /** 팀 공식 SNS · 소셜 위젯 (기획안 4: 소셜 위젯 연동) */
-export const SOCIALS: { label: string; href: string; handle?: string }[] = [
-  { label: "X (Twitter)", href: "https://x.com/", handle: "@NCTDREAM_STRM_" },
-  { label: "Weverse", href: "https://weverse.io/" },
+export const SOCIALS: { label: string; href: string }[] = [
+  { label: "X (Twitter)", href: "https://x.com/NCTDREAM_STRM_" },
+  { label: "Weverse", href: "https://weverse.io/nctdream/profile/81afe4cbdabcf25a1e728cf38c19f8d3" },
   { label: "다음 카페", href: "https://m.cafe.daum.net/NCTDREAMstreaming" },
 ];
 

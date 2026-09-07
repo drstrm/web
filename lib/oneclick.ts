@@ -43,8 +43,9 @@ export type VoteAppSlot = {
 };
 
 export const VOTE_APPS: VoteAppSlot[] = [
-  { key: "coogoong", name: "쿠궁", show: "coogoong · 뮤직뱅크", href: "https://open.fanca.io/" },
-  { key: "mnetplus", name: "엠넷플러스", show: "Mnet Plus · 엠카운트다운", href: "https://www.mnetplus.world/" },
+  { key: "coogoong", name: "쿠궁", show: "coogoong · 뮤직뱅크", href: "https://open.coogoong.com" },
+  // { key: "mnetplus", name: "엠넷플러스", show: "Mnet Plus · 엠카운트다운", href: "https://www.mnetplus.world/" },
+  { key: "mnetplus", name: "엠넷플러스", show: "Mnet Plus · 엠카운트다운", href: "https://mnetplus.onelink.me/TRa8/t9zck1c1" },
   { key: "mubeat", name: "뮤빗", show: "Mubeat · 음악중심", href: "https://www.mubeat.tv/" },
   { key: "muniverse", name: "뮤니버스", show: "muniverse · 음악중심", href: "https://www.muniverse.io/" },
   { key: "linc", name: "링크", show: "LiNC · 인기가요", href: "https://www.linc.fan/" },

@@ -36,20 +36,20 @@ export const OS_ICON: Record<string, LucideIcon> = {
 export type VoteAppSlot = {
   key: string;
   name: string;
-  /** 연동 음악방송 · 투표명 */
+  /** 연동 음악방송 이름. 대기 타일에 앱 이름 아래로 한 줄 들어간다 */
   show: string;
   /** 기본(대기중) 링크 */
   href: string;
 };
 
 export const VOTE_APPS: VoteAppSlot[] = [
-  { key: "coogoong", name: "쿠궁", show: "coogoong · 뮤직뱅크", href: "https://open.coogoong.com" },
-  // { key: "mnetplus", name: "엠넷플러스", show: "Mnet Plus · 엠카운트다운", href: "https://www.mnetplus.world/" },
-  { key: "mnetplus", name: "엠넷플러스", show: "Mnet Plus · 엠카운트다운", href: "https://mnetplus.onelink.me/TRa8/t9zck1c1" },
-  { key: "mubeat", name: "뮤빗", show: "Mubeat · 음악중심", href: "https://www.mubeat.tv/" },
-  { key: "muniverse", name: "뮤니버스", show: "muniverse · 음악중심", href: "https://www.muniverse.io/" },
-  { key: "linc", name: "링크", show: "LiNC · 인기가요", href: "https://www.linc.fan/" },
-  { key: "higher", name: "하이어", show: "HIGHER · 인기가요", href: "https://higher.market/" },
+  { key: "coogoong", name: "쿠궁", show: "뮤직뱅크", href: "https://open.coogoong.com" },
+  // { key: "mnetplus", name: "엠넷플러스", show: "엠카운트다운", href: "https://www.mnetplus.world/" },
+  { key: "mnetplus", name: "엠넷플러스", show: "엠카운트다운", href: "https://mnetplus.onelink.me/TRa8/t9zck1c1" },
+  { key: "mubeat", name: "뮤빗", show: "음악중심", href: "https://www.mubeat.tv/" },
+  { key: "muniverse", name: "뮤니버스", show: "음악중심", href: "https://www.muniverse.io/" },
+  { key: "linc", name: "링크", show: "인기가요", href: "https://www.linc.fan/" },
+  { key: "higher", name: "하이어", show: "인기가요", href: "https://higher.market/" },
 ];
 
 /**

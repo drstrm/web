@@ -27,23 +27,19 @@ export interface ActiveVote {
 }
 
 /**
- * 지금 진행중인 투표를 iconType 별로 반환.
- * 같은 앱에 여러 건이면 마감이 빠른 건을 우선한다(정렬은 서버가 해서 내려준다).
+ * 버튼이 있는 앱의 투표만 남긴다. 노션에 다른 플랫폼을 적어도 화면엔 자리가 없다.
+ *
+ * 같은 앱에 여러 건이 열려 있으면 **전부** 남긴다 — 화면은 투표 한 건에 카드
+ * 한 장을 준다(components/VoteApps.tsx). 순서는 서버가 잡아 준 마감 임박 순 그대로.
  */
-export async function fetchActiveVotes(
-  keys: string[],
-): Promise<Record<string, ActiveVote>> {
+export const votesForApps = (votes: ActiveVote[], keys: string[]) =>
+  votes.filter((vote) => keys.includes(vote.iconType));
+
+/** 지금 진행중인 투표를 마감 임박 순으로 */
+export async function fetchActiveVotes(keys: string[]): Promise<ActiveVote[]> {
   const res = await fetch("/api/votes", { cache: "no-store" });
   if (!res.ok) throw new Error(`votes ${res.status}`);
-  const votes = (await res.json()) as ActiveVote[];
-
-  const byKey: Record<string, ActiveVote> = {};
-  for (const vote of votes) {
-    if (keys.includes(vote.iconType) && !byKey[vote.iconType]) {
-      byKey[vote.iconType] = vote;
-    }
-  }
-  return byKey;
+  return votesForApps((await res.json()) as ActiveVote[], keys);
 }
 
 /** 투표 기간 표시용 (KST): "03.05 18:10 ~ 03.05 19:10" */

@@ -525,7 +525,7 @@ export async function getActiveVotes(): Promise<ActiveVote[]> {
     ];
   });
 
-  // 같은 앱에 여러 건이 걸리면 화면이 첫 건을 쓴다 — 마감이 빠른 쪽을 앞에 둔다
+  // 같은 앱에 여러 건이 열릴 수 있다. 화면이 건마다 카드 한 장을 놓으므로 전부 내려준다
   return open.sort((a, b) => a.endMs - b.endMs).map((o) => o.vote);
 }
 

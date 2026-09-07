@@ -6,7 +6,7 @@ import PlatformIcon from "@/components/PlatformIcon";
 import SmartLink from "@/components/SmartLink";
 import { Badge, EmptyState, IconTile } from "@/components/ui";
 import { VOTE_APPS, type VoteAppSlot } from "@/lib/oneclick";
-import { fetchActiveVotes, formatVotePeriod, type ActiveVote } from "@/lib/votes";
+import { fetchActiveVotes, formatVotePeriod, votesForApps, type ActiveVote } from "@/lib/votes";
 import { cn } from "@/lib/utils";
 
 /**
@@ -21,7 +21,8 @@ import { cn } from "@/lib/utils";
  * · 아래 「앱 바로가기」 — 앱 여섯 개 **항상 전부**, 앱 홈으로 가는 고정 링크.
  *
  * 아래 칸이 투표 유무와 무관하게 고정이라, 투표 목록이 도착해도 움직이는 것은
- * 위 칸뿐이다 — 버튼이 자리를 옮겨 다니지 않는다.
+ * 위 칸뿐이다 — 버튼이 자리를 옮겨 다니지 않는다. 위 칸도 서버가 그려 내려주므로
+ * (app/oneclick/voting/page.tsx) 첫 화면부터 제 모습이다.
  * 같은 아이콘이 두 장 나와도 제목 · 기간이 달라 서로 다른 투표임이 드러난다.
  * 갱신은 1분마다 /api/votes 로 한다(lib/votes.ts).
  */
@@ -29,8 +30,9 @@ import { cn } from "@/lib/utils";
 const KEYS = VOTE_APPS.map((app) => app.key);
 const APP_BY_KEY = new Map(VOTE_APPS.map((app) => [app.key, app]));
 
-export default function VoteApps() {
-  const [votes, setVotes] = useState<ActiveVote[]>([]);
+export default function VoteApps({ initialVotes = [] }: { initialVotes?: ActiveVote[] }) {
+  // 서버가 준 목록으로 시작한다 — 첫 렌더가 서버와 같아야 하이드레이션이 맞는다
+  const [votes, setVotes] = useState(() => votesForApps(initialVotes, KEYS));
 
   useEffect(() => {
     let alive = true;
@@ -39,9 +41,10 @@ export default function VoteApps() {
         const data = await fetchActiveVotes(KEYS);
         if (alive) setVotes(data);
       } catch (e) {
-        console.error(e); // 조회 실패 시 위 칸은 비고, 아래 앱 바로가기는 그대로다
+        console.error(e); // 조회 실패 시 서버가 준 목록을 그대로 둔다
       }
     };
+    // 서버 HTML 은 ISR 캐시라 최대 1분 묵어 있을 수 있다. 들어오자마자 한 번 맞춘다.
     sync();
     const id = setInterval(sync, 60_000);
     return () => {

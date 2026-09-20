@@ -1,5 +1,5 @@
 /*
- * 라디오 편성표 · 문자 신청 번호 (2026.08 기준)
+ * 라디오 편성표 · 문자 신청 번호 (2026.09 기준)
  * ------------------------------------------------------------------
  * 원클릭 문자 신청(components/RadioOneclick.tsx)과 사연 생성 API가 함께 쓰는
  * 데이터다. 방송사별 전체 편성표 화면은 public/radio 이미지 파일을 보여준다.
@@ -18,7 +18,13 @@ import { hhmmToMinutes, kstNow } from "@/lib/datetime";
 export type Possibility = 0 | 1 | 2;
 
 /** 편성이 요일을 타는 경우. 없으면 매일 같은 편성이다 */
-export type DayType = "weekday" | "weekend" | "saturday" | "sunday";
+export type DayType =
+  | "weekday"
+  | "weekend"
+  | "saturday"
+  | "sunday"
+  | "monWed"
+  | "thuFri";
 
 export type RadioStation = {
   /** 문자 신청 번호. sms: 링크에 그대로 들어간다 */
@@ -56,9 +62,9 @@ export const RADIO_SCHEDULE: RadioSlot[] = [
   // ── SBS 파워FM #1077 ──────────────────────────────
   { station: "#1077", start: "01:00", end: "03:00", djName: null, program: "애프터 클럽", possibility: 0 },
   { station: "#1077", start: "03:00", end: "05:00", djName: null, program: "파워 스테이션", possibility: 0 },
-  { station: "#1077", start: "05:00", end: "07:00", djName: "이인권님", program: "이인권의 풘펀투데이", possibility: 0 },
+  { station: "#1077", start: "05:00", end: "07:00", djName: "이인권님", program: "이인권의 펀펀투데이", possibility: 0 },
   { station: "#1077", start: "07:00", end: "09:00", djName: "철업디", program: "김영철의 파워 FM", possibility: 0 },
-  { station: "#1077", start: "09:00", end: "11:00", djName: "봉태규님", program: "아름다운 이 아침, 봉태큐입니다", possibility: 0 },
+  { station: "#1077", start: "09:00", end: "11:00", djName: "봉태규님", program: "아름다운 이 아침, 봉태규입니다", possibility: 0 },
   { station: "#1077", start: "11:00", end: "12:00", djName: "박하선님", program: "박하선의 씨네타운", possibility: 0 },
   { station: "#1077", start: "12:00", end: "14:00", djName: "주디", program: "12시엔 주현영", possibility: 1 },
   { station: "#1077", start: "14:00", end: "16:00", djName: null, program: "두시탈출 컬투쇼", possibility: 0 },
@@ -78,10 +84,11 @@ export const RADIO_SCHEDULE: RadioSlot[] = [
   { station: "#1035", start: "07:00", end: "09:00", djName: "DJ래피", program: "DJ래피의 드라이브 뮤직", dayType: "weekend", possibility: 2 },
   { station: "#1035", start: "09:05", end: "11:00", djName: "숙영님", program: "이숙영의 러브FM", dayType: "weekday", possibility: 0 },
   { station: "#1035", start: "09:05", end: "11:00", djName: "최영주님", program: "최영주의 러브FM", dayType: "weekend", possibility: 0 },
-  { station: "#1035", start: "11:00", end: "12:00", djName: "박영민님", program: "박연민의 목돈연구소", possibility: 0 },
+  { station: "#1035", start: "11:00", end: "12:00", djName: "박연미님", program: "박연미의 목돈연구소", possibility: 0 },
   { station: "#1035", start: "12:05", end: "14:00", djName: "민상님", program: "유민상의 배고픈 라디오", possibility: 0 },
   { station: "#1035", start: "14:20", end: "16:00", djName: "정엽님", program: "그대의 오후, 정엽입니다", possibility: 0 },
   { station: "#1035", start: "16:00", end: "17:00", djName: null, program: "인생은 오디션", dayType: "weekday", possibility: 0 },
+  { station: "#1035", start: "16:00", end: "18:00", djName: "DJ래피", program: "DJ래피의 드라이브 뮤직", dayType: "weekend", possibility: 2 },
   { station: "#1035", start: "17:00", end: "18:00", djName: "편상욱님", program: "편상욱의 뉴스직격", dayType: "weekday", possibility: 0 },
   { station: "#1035", start: "18:05", end: "20:00", djName: "창완님", program: "6시 저녁바람 김창완입니다", possibility: 0 },
   { station: "#1035", start: "20:05", end: "22:00", djName: "윤상님", program: "김윤상의 뮤직투나잇", possibility: 0 },
@@ -90,12 +97,12 @@ export const RADIO_SCHEDULE: RadioSlot[] = [
   // ── KBS COOL FM #8910 ─────────────────────────────
   { station: "#8910", start: "00:00", end: "05:00", djName: null, program: "Station Zero", dayType: "weekday", possibility: 1 },
   { station: "#8910", start: "00:00", end: "05:00", djName: null, program: "Station X", dayType: "weekend", possibility: 1 },
-  { station: "#8910", start: "05:00", end: "07:00", djName: null, program: "상쾌한 아침", possibility: 1 },
+  { station: "#8910", start: "05:00", end: "07:00", djName: "허유원님", program: "허유원의 상쾌한 아침", possibility: 1 },
   { station: "#8910", start: "07:00", end: "09:00", djName: "정식님", program: "조정식의 FM 대행진", possibility: 1 },
   { station: "#8910", start: "09:00", end: "11:00", djName: "현우님", program: "이현우의 음악앨범", possibility: 1 },
   { station: "#8910", start: "11:00", end: "12:00", djName: "쥐팍", program: "박명수의 라디오쇼", possibility: 2 },
-  { station: "#8910", start: "12:00", end: "14:00", djName: "폴킴님", program: "폴킴의 가요광장", possibility: 2 },
-  { station: "#8910", start: "14:00", end: "16:00", djName: "가비님", program: "가비의 슈퍼라디오", possibility: 1 },
+  { station: "#8910", start: "12:00", end: "14:00", djName: "폴디", program: "폴킴의 가요광장", possibility: 2 },
+  { station: "#8910", start: "14:00", end: "16:00", djName: "퀸디", program: "가비의 슈퍼라디오", possibility: 1 },
   { station: "#8910", start: "16:00", end: "18:00", djName: "정수님, 창희님", program: "윤정수 남창희의 미스터 라디오", possibility: 1 },
   { station: "#8910", start: "18:00", end: "20:00", djName: "이금희님", program: "사랑하기 좋은날 이금희 입니다", possibility: 1 },
   { station: "#8910", start: "20:00", end: "22:00", djName: "쩡디", program: "오마이걸 효정의 볼륨을 높여요", possibility: 1 },
@@ -109,14 +116,15 @@ export const RADIO_SCHEDULE: RadioSlot[] = [
   { station: "#8000", start: "05:00", end: "06:00", djName: null, program: "응답하라 20세기", dayType: "weekend", possibility: 0 },
   { station: "#8000", start: "06:00", end: "07:00", djName: "영은님", program: "세상을 여는 아침, 이영은입니다", possibility: 0 },
   { station: "#8000", start: "07:00", end: "09:00", djName: "테디", program: "굿모닝 FM 테이입니다", possibility: 1 },
-  { station: "#8000", start: "09:00", end: "11:00", djName: "윤상님", program: "오늘아침윤상입니다", possibility: 0 },
-  { station: "#8000", start: "11:00", end: "12:00", djName: "문세님", program: "안녕하세요이문세입니다", possibility: 0 },
+  { station: "#8000", start: "09:00", end: "11:00", djName: "윤상님", program: "오늘 아침 윤상입니다", possibility: 0 },
+  { station: "#8000", start: "11:00", end: "12:00", djName: "문세님", program: "안녕하세요 이문세입니다", possibility: 0 },
   { station: "#8000", start: "12:00", end: "14:00", djName: "신디", program: "정오의 희망곡 김신영입니다", possibility: 2 },
   { station: "#8000", start: "14:00", end: "16:00", djName: "영미님", program: "두시의 데이트 안영미입니다", possibility: 2 },
   { station: "#8000", start: "16:00", end: "18:00", djName: "순디", program: "완벽한 하루 이상순입니다", possibility: 0 },
   { station: "#8000", start: "18:00", end: "20:00", djName: "배철수님", program: "배철수의 음악캠프", possibility: 0 },
-  { station: "#8000", start: "20:00", end: "22:00", djName: "이나님", program: "김이나의 별이 빛나는 밤에", possibility: 1 },
-  { station: "#8000", start: "22:00", end: "24:00", djName: "뎡디, 온디", program: "친한친구 방송반", dayType: "weekday", possibility: 2 },
+  { station: "#8000", start: "20:00", end: "22:00", djName: "대장부엉", program: "김이나의 별이 빛나는 밤에", possibility: 1 },
+  { station: "#8000", start: "22:00", end: "24:00", djName: "태래님", program: "제로베이스원의 친한친구", dayType: "monWed", possibility: 2 },
+  { station: "#8000", start: "22:00", end: "24:00", djName: "선우님, 에릭님", program: "IDOL RADIO 시즌4", dayType: "thuFri", possibility: 2 },
   { station: "#8000", start: "22:00", end: "24:00", djName: "영배님", program: "스포왕 고영배", dayType: "weekend", possibility: 1 },
 
   // ── MBC 표준FM #8001 ──────────────────────────────
@@ -150,6 +158,8 @@ export const DAY_TYPE_LABEL: Record<DayType, string> = {
   weekend: "주말",
   saturday: "토요일",
   sunday: "일요일",
+  monWed: "월~수",
+  thuFri: "목·금",
 };
 
 export const POSSIBILITY_LABEL: Record<Possibility, string> = {
@@ -165,37 +175,50 @@ export function dayTypeOf(day: number): DayType {
   return "weekday";
 }
 
-/** 이 편성이 오늘 요일에 나가는가 */
-export function slotRunsOn(slot: RadioSlot, dayType: DayType): boolean {
+/** 편성 구분 → 그 편성이 나가는 요일(0=일) */
+const DAY_TYPE_DAYS: Record<DayType, number[]> = {
+  weekday: [1, 2, 3, 4, 5],
+  weekend: [0, 6],
+  saturday: [6],
+  sunday: [0],
+  monWed: [1, 2, 3],
+  thuFri: [4, 5],
+};
+
+/** 이 편성이 그 요일(0=일)에 나가는가 */
+export function slotRunsOn(slot: RadioSlot, day: number): boolean {
   if (!slot.dayType) return true;
-  if (slot.dayType === dayType) return true;
-  return (
-    slot.dayType === "weekend" && (dayType === "saturday" || dayType === "sunday")
-  );
+  return DAY_TYPE_DAYS[slot.dayType].includes(day);
+}
+
+/** 일주일 중 며칠 나가는 편성인가 — 적을수록 좁은 편성이다 */
+function daysCovered(slot: RadioSlot): number {
+  return slot.dayType ? DAY_TYPE_DAYS[slot.dayType].length : 7;
 }
 
 /**
  * 지금(KST) 이 채널에서 방송 중인 편성. 없으면 null.
  *
- * 같은 시간대에 요일 편성과 매일 편성이 겹치면 **요일 편성이 이긴다** —
- * 매일 편성을 "기본값", 요일 편성을 "예외"로 적기 때문이다.
+ * 같은 시간대에 여러 편성이 겹치면 **좁은 편성이 이긴다**(월~수 > 평일 > 매일) —
+ * 넓은 편성을 "기본값", 좁은 편성을 "예외"로 적기 때문이다.
  */
 export function findRadioSlot(
   station: string,
   now: Date = new Date()
 ): RadioSlot | null {
   const { day, minutes } = kstNow(now);
-  const dayType = dayTypeOf(day);
 
   const candidates = RADIO_SCHEDULE.filter(
     (s) =>
       s.station === station &&
       hhmmToMinutes(s.start) <= minutes &&
       minutes < hhmmToMinutes(s.end) &&
-      slotRunsOn(s, dayType)
+      slotRunsOn(s, day)
   );
 
-  return candidates.find((s) => s.dayType) ?? candidates[0] ?? null;
+  return (
+    [...candidates].sort((a, b) => daysCovered(a) - daysCovered(b))[0] ?? null
+  );
 }
 
 /** 편성표 화면용 — 채널별로 묶고 시작 시각순으로 정렬한다 */

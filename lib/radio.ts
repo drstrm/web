@@ -9,7 +9,9 @@
  * 브라우저로 딸려 내려간다 — 그쪽은 서버(API 라우트)에서만 읽는다.
  *
  * ⚠ 편성 개편이 있으면 RADIO_SCHEDULE 만 고치면 된다.
- *   possibility(신청 가능성)는 팀 운영 기준이라 개편과 별개로 손볼 수 있다.
+ *   possibility(신청 가능성)는 가이드 이미지 표기를 그대로 옮긴 값이다 —
+ *   하이라이트 2(가능성 높음) · 굵은글씨 1(가능성 있음) · 보통 0(신청 어려움).
+ *   이미지에 안 실린 편성(심야 · 뉴스 등)은 0 으로 둔다.
  */
 
 import { hhmmToMinutes, kstNow } from "@/lib/datetime";
@@ -60,18 +62,18 @@ export type RadioSlot = {
 
 export const RADIO_SCHEDULE: RadioSlot[] = [
   // ── SBS 파워FM #1077 ──────────────────────────────
-  { station: "#1077", start: "01:00", end: "03:00", djName: null, program: "애프터 클럽", possibility: 0 },
+  { station: "#1077", start: "01:00", end: "03:00", djName: null, program: "애프터 클럽", possibility: 1 },
   { station: "#1077", start: "03:00", end: "05:00", djName: null, program: "파워 스테이션", possibility: 0 },
-  { station: "#1077", start: "05:00", end: "07:00", djName: "이인권님", program: "이인권의 펀펀투데이", possibility: 0 },
-  { station: "#1077", start: "07:00", end: "09:00", djName: "철업디", program: "김영철의 파워 FM", possibility: 0 },
-  { station: "#1077", start: "09:00", end: "11:00", djName: "봉태규님", program: "아름다운 이 아침, 봉태규입니다", possibility: 0 },
+  { station: "#1077", start: "05:00", end: "07:00", djName: "이인권님", program: "이인권의 펀펀투데이", possibility: 2 },
+  { station: "#1077", start: "07:00", end: "09:00", djName: "철업디", program: "김영철의 파워 FM", possibility: 2 },
+  { station: "#1077", start: "09:00", end: "11:00", djName: "봉태규님", program: "아름다운 이 아침, 봉태규입니다", possibility: 2 },
   { station: "#1077", start: "11:00", end: "12:00", djName: "박하선님", program: "박하선의 씨네타운", possibility: 0 },
-  { station: "#1077", start: "12:00", end: "14:00", djName: "주디", program: "12시엔 주현영", possibility: 1 },
-  { station: "#1077", start: "14:00", end: "16:00", djName: null, program: "두시탈출 컬투쇼", possibility: 0 },
-  { station: "#1077", start: "16:00", end: "18:00", djName: "퐝디", program: "황제성의 황제파워", possibility: 1 },
-  { station: "#1077", start: "18:00", end: "20:00", djName: "라송", program: "박소현의 러브게임", possibility: 1 },
+  { station: "#1077", start: "12:00", end: "14:00", djName: "주디", program: "12시엔 주현영", possibility: 2 },
+  { station: "#1077", start: "14:00", end: "16:00", djName: null, program: "두시탈출 컬투쇼", possibility: 1 },
+  { station: "#1077", start: "16:00", end: "18:00", djName: "퐝디", program: "황제성의 황제파워", possibility: 2 },
+  { station: "#1077", start: "18:00", end: "20:00", djName: "라송", program: "박소현의 러브게임", possibility: 2 },
   { station: "#1077", start: "20:00", end: "22:00", djName: "완디", program: "웬디의 영스트리트", possibility: 2 },
-  { station: "#1077", start: "22:00", end: "23:00", djName: "배성재님", program: "배성재의 텐", possibility: 0 },
+  { station: "#1077", start: "22:00", end: "23:00", djName: "배성재님", program: "배성재의 텐", possibility: 2 },
   { station: "#1077", start: "23:00", end: "24:00", djName: "딘디", program: "딘딘의 뮤직하이", possibility: 2 },
 
   // ── SBS 러브FM #1035 ──────────────────────────────
@@ -86,27 +88,27 @@ export const RADIO_SCHEDULE: RadioSlot[] = [
   { station: "#1035", start: "09:05", end: "11:00", djName: "최영주님", program: "최영주의 러브FM", dayType: "weekend", possibility: 0 },
   { station: "#1035", start: "11:00", end: "12:00", djName: "박연미님", program: "박연미의 목돈연구소", possibility: 0 },
   { station: "#1035", start: "12:05", end: "14:00", djName: "민상님", program: "유민상의 배고픈 라디오", possibility: 0 },
-  { station: "#1035", start: "14:20", end: "16:00", djName: "정엽님", program: "그대의 오후, 정엽입니다", possibility: 0 },
+  { station: "#1035", start: "14:20", end: "16:00", djName: "정엽님", program: "그대의 오후, 정엽입니다", possibility: 2 },
   { station: "#1035", start: "16:00", end: "17:00", djName: null, program: "인생은 오디션", dayType: "weekday", possibility: 0 },
   { station: "#1035", start: "16:00", end: "18:00", djName: "DJ래피", program: "DJ래피의 드라이브 뮤직", dayType: "weekend", possibility: 2 },
   { station: "#1035", start: "17:00", end: "18:00", djName: "편상욱님", program: "편상욱의 뉴스직격", dayType: "weekday", possibility: 0 },
   { station: "#1035", start: "18:05", end: "20:00", djName: "창완님", program: "6시 저녁바람 김창완입니다", possibility: 0 },
-  { station: "#1035", start: "20:05", end: "22:00", djName: "윤상님", program: "김윤상의 뮤직투나잇", possibility: 0 },
-  { station: "#1035", start: "22:05", end: "24:00", djName: "박은경님", program: "음악이 흐르는 밤, 박은경입니다", possibility: 0 },
+  { station: "#1035", start: "20:05", end: "22:00", djName: "윤상님", program: "김윤상의 뮤직투나잇", possibility: 1 },
+  { station: "#1035", start: "22:05", end: "24:00", djName: "박은경님", program: "음악이 흐르는 밤, 박은경입니다", possibility: 1 },
 
   // ── KBS COOL FM #8910 ─────────────────────────────
-  { station: "#8910", start: "00:00", end: "05:00", djName: null, program: "Station Zero", dayType: "weekday", possibility: 1 },
-  { station: "#8910", start: "00:00", end: "05:00", djName: null, program: "Station X", dayType: "weekend", possibility: 1 },
-  { station: "#8910", start: "05:00", end: "07:00", djName: "허유원님", program: "허유원의 상쾌한 아침", possibility: 1 },
+  { station: "#8910", start: "00:00", end: "05:00", djName: null, program: "Station Zero", dayType: "weekday", possibility: 2 },
+  { station: "#8910", start: "00:00", end: "05:00", djName: null, program: "Station X", dayType: "weekend", possibility: 2 },
+  { station: "#8910", start: "05:00", end: "07:00", djName: "허유원님", program: "허유원의 상쾌한 아침", possibility: 0 },
   { station: "#8910", start: "07:00", end: "09:00", djName: "정식님", program: "조정식의 FM 대행진", possibility: 1 },
-  { station: "#8910", start: "09:00", end: "11:00", djName: "현우님", program: "이현우의 음악앨범", possibility: 1 },
+  { station: "#8910", start: "09:00", end: "11:00", djName: "현우님", program: "이현우의 음악앨범", possibility: 0 },
   { station: "#8910", start: "11:00", end: "12:00", djName: "쥐팍", program: "박명수의 라디오쇼", possibility: 2 },
   { station: "#8910", start: "12:00", end: "14:00", djName: "폴디", program: "폴킴의 가요광장", possibility: 2 },
-  { station: "#8910", start: "14:00", end: "16:00", djName: "퀸디", program: "가비의 슈퍼라디오", possibility: 1 },
-  { station: "#8910", start: "16:00", end: "18:00", djName: "정수님, 창희님", program: "윤정수 남창희의 미스터 라디오", possibility: 1 },
-  { station: "#8910", start: "18:00", end: "20:00", djName: "이금희님", program: "사랑하기 좋은날 이금희 입니다", possibility: 1 },
-  { station: "#8910", start: "20:00", end: "22:00", djName: "쩡디", program: "오마이걸 효정의 볼륨을 높여요", possibility: 1 },
-  { station: "#8910", start: "22:00", end: "24:00", djName: "샴디", program: "한해의 키스더라디오", possibility: 1 },
+  { station: "#8910", start: "14:00", end: "16:00", djName: "퀸디", program: "가비의 슈퍼라디오", possibility: 2 },
+  { station: "#8910", start: "16:00", end: "18:00", djName: "정수님, 창희님", program: "윤정수 남창희의 미스터 라디오", possibility: 2 },
+  { station: "#8910", start: "18:00", end: "20:00", djName: "이금희님", program: "사랑하기 좋은날 이금희 입니다", possibility: 0 },
+  { station: "#8910", start: "20:00", end: "22:00", djName: "쩡디", program: "오마이걸 효정의 볼륨을 높여요", possibility: 2 },
+  { station: "#8910", start: "22:00", end: "24:00", djName: "샴디", program: "한해의 키스더라디오", possibility: 2 },
 
   // ── MBC FM4U #8000 ────────────────────────────────
   { station: "#8000", start: "00:00", end: "01:00", djName: "세윤님", program: "FM영화음악 김세윤입니다", possibility: 0 },
@@ -114,18 +116,18 @@ export const RADIO_SCHEDULE: RadioSlot[] = [
   { station: "#8000", start: "03:00", end: "05:00", djName: null, program: "음악의 발견", possibility: 0 },
   { station: "#8000", start: "05:00", end: "06:00", djName: null, program: "여기는 MBC-FM4U", dayType: "weekday", possibility: 0 },
   { station: "#8000", start: "05:00", end: "06:00", djName: null, program: "응답하라 20세기", dayType: "weekend", possibility: 0 },
-  { station: "#8000", start: "06:00", end: "07:00", djName: "영은님", program: "세상을 여는 아침, 이영은입니다", possibility: 0 },
-  { station: "#8000", start: "07:00", end: "09:00", djName: "테디", program: "굿모닝 FM 테이입니다", possibility: 1 },
+  { station: "#8000", start: "06:00", end: "07:00", djName: "영은님", program: "세상을 여는 아침, 이영은입니다", possibility: 1 },
+  { station: "#8000", start: "07:00", end: "09:00", djName: "테디", program: "굿모닝 FM 테이입니다", possibility: 2 },
   { station: "#8000", start: "09:00", end: "11:00", djName: "윤상님", program: "오늘 아침 윤상입니다", possibility: 0 },
   { station: "#8000", start: "11:00", end: "12:00", djName: "문세님", program: "안녕하세요 이문세입니다", possibility: 0 },
   { station: "#8000", start: "12:00", end: "14:00", djName: "신디", program: "정오의 희망곡 김신영입니다", possibility: 2 },
   { station: "#8000", start: "14:00", end: "16:00", djName: "영미님", program: "두시의 데이트 안영미입니다", possibility: 2 },
   { station: "#8000", start: "16:00", end: "18:00", djName: "순디", program: "완벽한 하루 이상순입니다", possibility: 0 },
   { station: "#8000", start: "18:00", end: "20:00", djName: "배철수님", program: "배철수의 음악캠프", possibility: 0 },
-  { station: "#8000", start: "20:00", end: "22:00", djName: "대장부엉", program: "김이나의 별이 빛나는 밤에", possibility: 1 },
+  { station: "#8000", start: "20:00", end: "22:00", djName: "대장부엉", program: "김이나의 별이 빛나는 밤에", possibility: 2 },
   { station: "#8000", start: "22:00", end: "24:00", djName: "태래님", program: "제로베이스원의 친한친구", dayType: "monWed", possibility: 2 },
   { station: "#8000", start: "22:00", end: "24:00", djName: "선우님, 에릭님", program: "IDOL RADIO 시즌4", dayType: "thuFri", possibility: 2 },
-  { station: "#8000", start: "22:00", end: "24:00", djName: "영배님", program: "스포왕 고영배", dayType: "weekend", possibility: 1 },
+  { station: "#8000", start: "22:00", end: "24:00", djName: "영배님", program: "스포왕 고영배", dayType: "weekend", possibility: 2 },
 
   // ── MBC 표준FM #8001 ──────────────────────────────
   { station: "#8001", start: "00:00", end: "02:00", djName: null, program: "낭만가요", possibility: 0 },
@@ -147,7 +149,7 @@ export const RADIO_SCHEDULE: RadioSlot[] = [
   { station: "#8001", start: "14:10", end: "16:00", djName: null, program: "손태진의 트로트라디오", dayType: "weekend", possibility: 0 },
   { station: "#8001", start: "16:05", end: "18:00", djName: "정선희님, 문천식님", program: "정선희, 문천식의 지금은 라디오 시대", dayType: "weekday", possibility: 0 },
   { station: "#8001", start: "18:05", end: "20:00", djName: "김치형님", program: "김치형의 뉴스 하이킥", dayType: "weekend", possibility: 0 },
-  { station: "#8001", start: "20:05", end: "22:00", djName: "이재은님", program: "오늘도 당신 편 이재은입니다", possibility: 0 },
+  { station: "#8001", start: "20:05", end: "22:00", djName: "이재은님", program: "오늘도 당신 편 이재은입니다", possibility: 1 },
   { station: "#8001", start: "22:05", end: "23:00", djName: "박정호님", program: "박정호의 손에 잡히는 경제 플러스", possibility: 0 },
   { station: "#8001", start: "23:05", end: "24:00", djName: "신해림님", program: "신해림의 골든디스크", possibility: 0 },
 ];

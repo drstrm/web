@@ -14,7 +14,7 @@ export const SITE = {
     "NCT DREAM 스트리밍 · 투표 · 다운로드 가이드와 원클릭을 한곳에. 스밍팀 공식 웹사이트.",
   // 메인 하단: 운영진 구글 계정 이메일
   email: "nctdreamstrm.notice@gmail.com",
-  url: "https://example.com",
+  url: "https://dreamstrm.com",
 };
 
 /** 팀 공식 SNS · 소셜 위젯 (기획안 4: 소셜 위젯 연동) */

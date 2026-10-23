@@ -117,17 +117,17 @@ export default async function Home() {
         <SectionTitle>NCT DREAM</SectionTitle>
         <Card className="overflow-hidden p-0">
           {/*
-           * 원본(1024×874)은 위·아래에 남색 레터박스가 인화돼 있다.
-           * 16:9 로 잘라내며 object-position 을 60% 로 내려 그 여백만 정확히
-           * 걷어내고 멤버 얼굴은 모두 남긴다.
+           * 원본(3000×2000 · 3:2)은 카드 비율인 16:9 보다 세로가 길어 15% 쯤을
+           * 덜어내야 한다. 멤버들이 화면 한가운데 모여 있는 구도라 위아래를
+           * 고르게 잘라내는 가운데 정렬이 얼굴을 가장 안전하게 남긴다.
            */}
-          <div className="relative aspect-[16/9] bg-[#12283c]">
+          <div className="relative aspect-[16/9] bg-sky-100">
             <LoadingImage
-              src="/profile/dream_profile.png"
+              src="/profile/dream_profile.jpeg"
               alt="NCT DREAM 단체 이미지"
               fill
               sizes="(max-width: 1024px) 100vw, 992px"
-              className="object-cover object-[center_60%]"
+              className="object-cover object-center"
             />
           </div>
           <div className="flex flex-wrap gap-2 p-5">

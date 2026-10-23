@@ -548,7 +548,8 @@ export interface MvStat {
  */
 export function getMvStats(): MvStat[] {
   return [
-    { title: "최신 MV", youtubeId: "wvtNmMmcAYw", views: "—", likes: "—" },
+    // https://youtu.be/LFbU0A1-IH8
+    { title: "최신 MV", youtubeId: "LFbU0A1-IH8", views: "—", likes: "—" },
   ];
 }
 

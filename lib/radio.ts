@@ -246,7 +246,7 @@ export type RadioNow = {
  * "지금 당장 신청"이라는 이 화면의 쓸모가 통째로 사라진다. 최소한의 한 줄은
  * 항상 들고 있다가 문자 앱을 열어준다.
  */
-export const RADIO_DEFAULT_MESSAGE = "NCT DREAM의 Beat It Up 신청합니다!";
+export const RADIO_DEFAULT_MESSAGE = "NCT DREAM의 BoogieWoogie 신청합니다!";
 
 /**
  * 사연 팝업 · 라디오 페이지에 함께 띄우는 안내 문구.

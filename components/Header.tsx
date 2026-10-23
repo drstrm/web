@@ -40,7 +40,7 @@ export default function Header() {
           className="flex shrink-0 items-center gap-2.5 font-extrabold tracking-tight"
         >
           {/*
-           * 로고는 원본(400×400 · 197KB) 대신 128px 로 줄인 사본을 쓰고
+           * 로고는 원본(drstrm_logo.jpg · 400×400) 대신 128px 로 줄인 사본을 쓰고
            * `unoptimized` 로 /_next/image 최적화를 건너뛴다.
            * 32px 로 그려지는 이미지라 최적화로 줄어드는 양이 미미한 반면,
            * 개발 서버에서 첫 변환이 끝날 때까지 로고가 계속 빈칸으로 남는

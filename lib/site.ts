@@ -89,6 +89,12 @@ export const NAV: {
       { label: "FAQ", href: "/community/faq" },
       { label: "폼 바로가기", href: "/community/forms" },
       { label: "헬퍼 신청하기", href: "/community/helper" },
+      /*
+       * 앨범 예약판매는 컴백 때만 쓰는 메뉴라 COMMUNITY 안에 둔다. 예약판매가
+       * 끝나면 이 줄만 지우면 메뉴에서 빠지고, 페이지(/community/album)는 그대로
+       * 남아 이미 공유된 링크가 산다.
+       */
+      { label: "앨범 예약판매", href: "/community/album" },
     ],
   },
 ];

@@ -1,4 +1,4 @@
-import { ArrowUpRight, Link2, Music4, Package, TrendingUp } from "lucide-react";
+import { ArrowUpRight, Link2, Music4, TrendingUp } from "lucide-react";
 import BannerSlider from "@/components/BannerSlider";
 import Calendar from "@/components/Calendar";
 import LoadingImage from "@/components/LoadingImage";
@@ -6,12 +6,12 @@ import MvCard from "@/components/MvCard";
 import PlatformIcon from "@/components/PlatformIcon";
 import SmartLink from "@/components/SmartLink";
 import TodoList from "@/components/TodoList";
-import { Card, EmptyState, IconTile, SectionTitle } from "@/components/ui";
+import { Card, HubCard, IconTile, SectionTitle } from "@/components/ui";
+import { ALBUM } from "@/lib/album";
 import {
   getBanners,
   getCalendarEvents,
   getMvStats,
-  getPreorderShops,
   getQuickLinks,
   getRealtimeChart,
   getTodoList,
@@ -32,7 +32,6 @@ export default async function Home() {
     getTodoList(),
   ]);
   const mv = getMvStats();
-  const preorders = getPreorderShops();
 
   return (
     <div className="space-y-12">
@@ -145,32 +144,18 @@ export default async function Home() {
         </Card>
       </section>
 
-      {/* 앨범 사전 판매 정리 */}
+      {/* 앨범 예약판매 · 공구 (/community/album) */}
+      {/*
+       * `id="preorder"` 를 그대로 둔다. 노션 바로가기 DB 에 `#preorder` 로 적어 둔
+       * 버튼이 있어서, id 를 바꾸면 그 버튼이 조용히 아무 데도 못 간다.
+       */}
       <section id="preorder" className="scroll-mt-24">
-        <SectionTitle>앨범 사전 판매 · 공구 정리</SectionTitle>
-        {preorders.length === 0 ? (
-          <EmptyState
-            icon={Package}
-            tone="accent"
-            title="오픈 예정입니다"
-            description="사전 예약 판매가 시작되면 앨범사 · 팬덤 공구 링크를 정리해 올려드릴게요. (공구주분 동의 후)"
-          />
-        ) : (
-          <div className="grid gap-3 sm:grid-cols-2">
-            {preorders.map((p) => (
-              <SmartLink
-                key={p.name}
-                href={p.href}
-                className="flex items-center justify-between gap-3 rounded-2xl border border-border bg-surface px-4 py-3.5 shadow-card transition-all hover:-translate-y-0.5 hover:border-sky-200 hover:shadow-lift"
-              >
-                <span className="min-w-0 truncate font-bold">{p.name}</span>
-                <span className="inline-flex h-6 shrink-0 items-center rounded-full bg-sky-100 px-2.5 text-[11px] font-bold leading-none text-sky-700">
-                  {p.kind}
-                </span>
-              </SmartLink>
-            ))}
-          </div>
-        )}
+        <SectionTitle>앨범 예약판매 · 공구</SectionTitle>
+        <HubCard
+          href="/community/album"
+          title={ALBUM.title}
+          description={`예약판매 기간 ${ALBUM.period} · 버전별 특전과 앨범사 링크, 팬덤 공구를 한곳에 모았어요.`}
+        />
       </section>
     </div>
   );

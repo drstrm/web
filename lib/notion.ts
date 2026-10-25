@@ -14,9 +14,12 @@
  */
 
 import type {
+  AlbumShop,
+  AlbumShopLink,
   FormKind,
   FormLink,
   FormStatus,
+  GroupOrder,
   GuideImage,
   GuideItem,
   GuideSection,
@@ -25,6 +28,7 @@ import type {
   StreamingList,
   StreamingTarget,
 } from "@/lib/content";
+import { matchShopIcon, matchVersion } from "@/lib/album";
 import { toSeoulDate } from "@/lib/datetime";
 import { PLATFORM_ICONS } from "@/lib/platform-icons";
 import { toHref } from "@/lib/url";
@@ -35,7 +39,15 @@ const NOTION_VERSION = "2026-03-11";
 const TOKEN = process.env.NOTION_TOKEN;
 
 /** 코드가 아는 노션 DB 목록. 행(row)은 전부 조회 결과로만 다룬다. */
-type DbKey = "guide" | "banner" | "streaming" | "links" | "forms" | "schedule";
+type DbKey =
+  | "guide"
+  | "banner"
+  | "streaming"
+  | "links"
+  | "forms"
+  | "schedule"
+  | "album"
+  | "groupOrder";
 
 const DATABASES: Record<DbKey, { env: string; db?: string; ds?: string }> = {
   guide: {
@@ -67,6 +79,16 @@ const DATABASES: Record<DbKey, { env: string; db?: string; ds?: string }> = {
     env: "NOTION_SCHEDULE_DB_ID",
     db: process.env.NOTION_SCHEDULE_DB_ID,
     ds: process.env.NOTION_SCHEDULE_DS_ID,
+  },
+  album: {
+    env: "NOTION_ALBUM_DB_ID",
+    db: process.env.NOTION_ALBUM_DB_ID,
+    ds: process.env.NOTION_ALBUM_DS_ID,
+  },
+  groupOrder: {
+    env: "NOTION_GROUP_ORDER_DB_ID",
+    db: process.env.NOTION_GROUP_ORDER_DB_ID,
+    ds: process.env.NOTION_GROUP_ORDER_DS_ID,
   },
 };
 
@@ -310,6 +332,19 @@ const text = (parts?: { plain_text: string }[]) =>
  */
 function titleOf(props: Record<string, NotionProperty>): string {
   return text(Object.values(props).find((v) => v.type === "title")?.title);
+}
+
+/**
+ * 선택지 열 값 목록.
+ *
+ * 운영진이 같은 칸을 선택(Select)으로 만들기도, 다중 선택(Multi-select)으로 만들기도
+ * 한다 — 「버전」처럼 한 행에 하나만 걸릴 때도 있고 여럿이 걸릴 때도 있는 칸이 그렇다.
+ * 어느 쪽으로 만들어도 읽히게 둔다 (순서를 읽는 getSelectOptions 도 둘 다 받는다).
+ */
+function selectValues(prop?: NotionProperty): string[] {
+  const multi = (prop?.multi_select ?? []).map((o) => o.name.trim());
+  const one = prop?.select?.name?.trim();
+  return [...multi, ...(one ? [one] : [])].filter(Boolean);
 }
 
 const fileUrl = (f: NotionFile): string | null =>
@@ -961,4 +996,120 @@ export async function getSchedules(revalidate = 300): Promise<NotionSchedule[]> 
   });
 
   return rows.sort((a, b) => a.order - b.order);
+}
+
+/* ---------------- 앨범 예약판매 (앨범사 링크) ---------------- */
+
+/**
+ * 앨범사 예약판매 링크 조회 (스키마는 docs/notion-album-db.md).
+ *
+ * 이 DB 는 다른 DB 와 모양이 다르다. **한 행이 판매처 하나, 버전마다 열이 하나**인
+ * 가로형 표다 (예스24 행의 `Photobook Ver.` 칸 · `Jewel Case Ver.` 칸 … 에 각각
+ * 주소가 들어간다). 앨범사 × 버전 매트릭스를 사람이 채우고 빈칸을 눈으로 훑기에는
+ * 이 모양이 압도적으로 편해서, 운영진이 만든 구조를 그대로 받았다.
+ *
+ * 그래서 **열 이름을 코드에 박지 않는다.** 제목 열(= 판매처)과 `순서` 를 뺀 나머지
+ * 열을 전부 돌면서, 값이 주소로 읽히는 칸만 링크로 삼는다. 덕분에 버전 열을 더하거나
+ * 이름을 고쳐도 배포가 필요 없고, 설명용 열(`비고` 같은)이 생겨도 주소가 아니라서
+ * 저절로 무시된다. 열 이름을 박아 두면 운영진이 열 이름 끝에 특전 문구를 한 줄
+ * 덧붙이는 순간 그 버전이 화면에서 사라진다 — 실제로 지금 그렇게 적혀 있다.
+ *
+ * 표시 순서
+ *  - 판매처(카드): `순서` 숫자 열 → 없거나 비면 노션에 행을 추가한 순서
+ *  - 버전 버튼: lib/album.ts 의 `ALBUM_VERSIONS` 순서. 노션 API 가 **열 순서를
+ *    알려주지 않아서**(properties 가 객체로 오고 제목 열이 중간에 섞인다) 이것만은
+ *    코드가 쥔다. 모르는 열은 맨 뒤에 그대로 붙는다.
+ */
+export async function getAlbumShops(revalidate = 300): Promise<AlbumShop[]> {
+  const pages = await queryRows("album", revalidate);
+
+  /** 링크 칸이 아닌 열. 이름이 곧 버전인 DB 라 「버전이 아닌 것」만 추려 둔다 */
+  const NOT_A_VERSION = new Set(["판매처", "순서"]);
+
+  const rows = pages.flatMap((page) => {
+    const p = normalized(page);
+
+    // 제목 열이 판매처다. 선택 열로 바꿔 쓰더라도 읽히게 둔다
+    const name = selectValues(p["판매처"])[0] || titleOf(p);
+    if (!name) return [];
+
+    const links = Object.entries(p).flatMap(([column, prop]) => {
+      if (prop.type === "title" || NOT_A_VERSION.has(column)) return [];
+      /*
+       * 주소는 URL 열로도, 텍스트 열로도 들어온다(운영진이 표에 붙여 넣으면 텍스트).
+       * 주소로 읽히지 않는 칸은 빈칸이거나 설명 열이므로 그대로 버린다.
+       */
+      const href = linkValue(prop);
+      if (!href) return [];
+
+      // 열 이름 첫 줄만 쓴다 — 그 아래 줄에는 특전 설명이 붙어 있다
+      const { label, order } = matchVersion(column.split("\n")[0].trim());
+      return [{ order, link: { version: label, href } satisfies AlbumShopLink }];
+    });
+
+    // 링크가 하나도 없는 행은 카드를 만들지 않는다 (노션 기본 빈 행 · 아직 안 채운 행)
+    if (links.length === 0) return [];
+
+    return [
+      {
+        order: p["순서"]?.number ?? Number.MAX_SAFE_INTEGER,
+        shop: {
+          name,
+          // 로고가 있는 판매처만. 없으면 화면이 기본 상점 그림을 쓴다 (lib/album.ts)
+          ...(matchShopIcon(name) ? { iconType: matchShopIcon(name) } : {}),
+          links: links.sort((a, b) => a.order - b.order).map((l) => l.link),
+        } satisfies AlbumShop,
+      },
+    ];
+  });
+
+  return rows.sort((a, b) => a.order - b.order).map((r) => r.shop);
+}
+
+/* ---------------- 팬덤 공구 ---------------- */
+
+/**
+ * 팬덤 공구 목록 조회 (스키마는 docs/notion-album-db.md).
+ *
+ * 앨범사 링크와 DB 를 나눠 둔다. 열이 겹치지 않고(공구주 · 공구 사이트 · 비고),
+ * 무엇보다 **채워 넣는 조건이 다르다** — 앨범사는 공지가 나오면 바로 올리지만,
+ * 공구는 공구주 컨택 · 동의가 끝난 것만 올린다. 한 DB 에 섞으면 그 구분이
+ * 열 하나(`구분`)에 걸리게 되고, 실수로 섞인 행이 바로 공개된다.
+ *
+ * `공구 URL` 이 비어도 행은 남긴다 — 「누가 공구를 연다」까지는 알리고 신청만
+ * 기다리는 상태가 실제로 있다. 화면에서는 링크 없이 「준비 중」으로 나온다.
+ *
+ * 표시 순서는 `순서` 숫자 열, 없거나 비면 노션에 행을 추가한 순서(BY_CREATED).
+ */
+export async function getGroupOrders(revalidate = 300): Promise<GroupOrder[]> {
+  const pages = await queryRows("groupOrder", revalidate);
+
+  const rows = pages.flatMap((page) => {
+    const p = normalized(page);
+
+    // 제목 열은 이름이 아니라 타입으로 찾는다 — `공구주` · `공구주 성명` 어느 쪽이든 읽힌다
+    const host = titleOf(p);
+    // 공구주가 비면 누구 공구인지 알 수 없다 (노션 기본 빈 행이 여기서 걸러진다)
+    if (!host) return [];
+
+    // 공구 사이트를 텍스트로 적어도, 선택지로 만들어도 읽는다
+    const site = text(p["공구 사이트"]?.rich_text) || selectValues(p["공구 사이트"])[0] || "";
+    const href = linkValue(p["공구 URL"] ?? p["URL"] ?? p["url"]);
+    const note = text(p["비고"]?.rich_text);
+
+    return [
+      {
+        order: p["순서"]?.number ?? Number.MAX_SAFE_INTEGER,
+        row: {
+          key: page.id,
+          host,
+          ...(site ? { site } : {}),
+          ...(href ? { href } : {}),
+          ...(note ? { note } : {}),
+        } satisfies GroupOrder,
+      },
+    ];
+  });
+
+  return rows.sort((a, b) => a.order - b.order).map((r) => r.row);
 }

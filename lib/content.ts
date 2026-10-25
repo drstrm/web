@@ -11,8 +11,10 @@
  */
 
 import {
+  getAlbumShops as getNotionAlbumShops,
   getBanners as getNotionBanners,
   getFormLinks as getNotionFormLinks,
+  getGroupOrders as getNotionGroupOrders,
   getGuideSections,
   getQuickLinks as getNotionQuickLinks,
   getSchedules as getNotionSchedules,
@@ -553,13 +555,65 @@ export function getMvStats(): MvStat[] {
   ];
 }
 
-/* ---------------- HOME: 앨범 사전판매 정리 ---------------- */
-export interface PreorderShop {
-  name: string;
+/* ---------------- ALBUM: 앨범사 예약판매 링크 (노션 DB) ---------------- */
+
+/** 한 판매처 안의 버전 링크 하나 */
+export interface AlbumShopLink {
+  /** 버전 표기 (`Photobook Ver.` · `Jewel Case Ver. SET` …) */
+  version: string;
   href: string;
-  kind: "앨범사" | "팬덤공구";
 }
-export function getPreorderShops(): PreorderShop[] {
-  // 사전예약판매 시작 시 업데이트 (공구주 동의 후)
-  return [];
+
+export interface AlbumShop {
+  /** 판매처 이름 (알라딘 · SMTOWN &STORE · Weverse shop …). 렌더링 key 로도 쓴다 */
+  name: string;
+  /** 로고 파일 key (`public/icons/<key>.png`). 로고가 없는 판매처는 비어 있다 */
+  iconType?: string;
+  /** 그 판매처가 파는 버전들. 노션 가로형 표의 한 행이 여기로 펴진다 */
+  links: AlbumShopLink[];
+}
+
+/**
+ * 앨범사 예약판매 링크 조회 (스키마는 docs/notion-album-db.md).
+ * 조회에 실패하거나 DB 를 아직 안 만들었으면 목록만 비운다 —
+ * 페이지는 기간 · 버전 · 특전과 「준비 중」 안내를 그대로 보여준다.
+ */
+export async function getAlbumShops(): Promise<AlbumShop[]> {
+  try {
+    return await getNotionAlbumShops();
+  } catch (e) {
+    console.error("[album-shops] 노션 조회 실패:", e);
+    return [];
+  }
+}
+
+/* ---------------- ALBUM: 팬덤 공구 (노션 DB) ---------------- */
+
+export interface GroupOrder {
+  /** 노션 page id. 목록 렌더링 key 로만 쓴다 */
+  key: string;
+  /** 공구주 (제목 열) */
+  host: string;
+  /** 공구를 받는 곳 (네이버 폼 · 구글 폼 · 자체 사이트 …) */
+  site?: string;
+  /** 신청 주소. 아직 안 열렸으면 비어 있다 */
+  href?: string;
+  /** 비고 — 마감일 · 배송 조건처럼 운영진이 덧붙이는 한 줄 */
+  note?: string;
+}
+
+/**
+ * 팬덤 공구 목록 조회 (스키마는 docs/notion-album-db.md).
+ *
+ * **공구주 동의 없이 행을 채우지 않는다.** 링크 · 연락처가 공개되는 자리라
+ * 컨택이 끝난 공구만 올린다. 비어 있는 동안 화면은 「공구주분 컨택 후 추가될
+ * 예정입니다」 안내를 보여준다 (components/GroupOrders.tsx).
+ */
+export async function getGroupOrders(): Promise<GroupOrder[]> {
+  try {
+    return await getNotionGroupOrders();
+  } catch (e) {
+    console.error("[group-orders] 노션 조회 실패:", e);
+    return [];
+  }
 }

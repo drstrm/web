@@ -11,6 +11,7 @@
 import {
   BookOpen,
   ClipboardList,
+  Disc3,
   Download,
   HandHeart,
   Headphones,
@@ -47,6 +48,7 @@ export const ROUTE_ICON: Record<string, LucideIcon> = {
   "/community/faq": CircleQuestionMark,
   "/community/forms": ClipboardList,
   "/community/helper": HandHeart,
+  "/community/album": Disc3,
 };
 
 /** 등록되지 않은 경로는 Sparkles 로 둔다 (화면이 비지 않게) */

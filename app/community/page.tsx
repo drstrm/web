@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { HubCard, PageHeader } from "@/components/ui";
+import { ALBUM } from "@/lib/album";
 import { FORM_PAGES } from "@/lib/content";
 import { iconForRoute } from "@/lib/nav-icons";
 
@@ -27,6 +28,12 @@ const CATEGORIES = [
     href: FORM_PAGES.helper.href,
     title: FORM_PAGES.helper.title,
     desc: FORM_PAGES.helper.description,
+  },
+  // 컴백 때만 쓰는 카드. 예약판매가 끝나면 이 항목과 NAV 의 같은 줄을 지운다
+  {
+    href: "/community/album",
+    title: ALBUM.title,
+    desc: ALBUM.description,
   },
 ];
 

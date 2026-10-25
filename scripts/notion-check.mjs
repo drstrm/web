@@ -81,6 +81,32 @@ const DATABASES = [
     // 아직 안 만들었을 수 있다. 없으면 /forms · /helper 가 「준비 중」으로 나온다
     optionalDb: true,
   },
+  {
+    /*
+     * 가로형(매트릭스) 표다 — 한 행이 판매처 하나, **버전마다 열이 하나**.
+     * 그래서 검사할 「필수 열」이 제목 열(판매처) 말고는 없다. 버전 열은 이름이 곧
+     * 데이터라 코드도, 이 스크립트도 목록을 갖고 있지 않다. 대신 아래
+     * `columnsAreVersions` 로 코드가 지금 어떤 칸을 읽는지 찍어 준다.
+     */
+    label: "앨범사 예약판매 링크",
+    env: "ALBUM",
+    required: [],
+    optional: ["순서"],
+    columnsAreVersions: true,
+    orderBy: "순서",
+    // 아직 안 만들었을 수 있다. 없으면 /community/album 의 링크 섹션이 「준비 중」으로 나온다
+    optionalDb: true,
+  },
+  {
+    // 제목 열(= 공구주)은 이름을 안 본다(타입으로 찾는다)
+    label: "팬덤 공구",
+    env: "GROUP_ORDER",
+    // `공구 URL` 도 필수가 아니다 — 비우면 「준비 중」으로 나온다
+    required: [],
+    optional: ["공구 사이트", "공구 URL", "비고", "순서"],
+    orderBy: "순서",
+    optionalDb: true,
+  },
 ];
 
 /* ---------------- .env ---------------- */
@@ -192,6 +218,16 @@ for (const db of DATABASES) {
   const missingOptional = db.optional.filter((n) => !trimmed.has(n));
   if (missingOptional.length) {
     console.log(`   · 없는 선택 열: ${missingOptional.map((n) => `\`${n}\``).join(", ")}`);
+  }
+  if (db.columnsAreVersions) {
+    // 제목 열(판매처)과 `순서` 를 뺀 나머지가 전부 버전 칸이다 (lib/notion.ts 와 같은 규칙)
+    const versions = names.filter(
+      (n) => n.trim() !== "순서" && schema.body.properties[n]?.type !== "title",
+    );
+    console.log(
+      `   · 버전 열 ${versions.length}개 (코드가 읽는 이름 = 첫 줄):\n     ` +
+        versions.map((n) => `\`${n.split("\n")[0].trim()}\``).join(", "),
+    );
   }
   const untrimmed = names.filter((n) => n !== n.trim());
   if (untrimmed.length) {

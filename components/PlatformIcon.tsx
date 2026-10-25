@@ -21,13 +21,20 @@ export default function PlatformIcon({
   size = 24,
   fallback = null,
   className = "",
+  label,
 }: {
   iconType?: string | null;
   size?: number;
   fallback?: React.ReactNode;
   className?: string;
+  /**
+   * 플랫폼 목록(lib/platform-icons.ts) 밖의 아이콘을 그릴 때 쓰는 alt.
+   * 앨범 판매처 로고(`shop-*.png`)처럼 목록이 따로 있는 아이콘이 여기 해당한다 —
+   * 그쪽은 「아이콘이 있는가」를 자기 목록에서 이미 가렸으므로 alt 만 받으면 된다.
+   */
+  label?: string;
 }) {
-  const name = iconType ? PLATFORM_ICONS[iconType] : undefined;
+  const name = label ?? (iconType ? PLATFORM_ICONS[iconType] : undefined);
   if (!iconType || !name) return <>{fallback}</>;
 
   return (

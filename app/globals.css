@@ -12,9 +12,14 @@
   1.5:1 밖에 안 나오므로 **채움색으로만** 쓰고 글자는 항상 --champagne-ink 를
   얹는다(10:1). 샴페인 계열을 글자색으로 써야 할 때는 흰 배경에서 5.4:1 이
   나오는 --champagne-700 이상만 쓴다.
+
+  다크 모드는 아래 「다크 팔레트」에서 같은 이름의 토큰만 덮어쓴다. 화면 코드는
+  한 줄도 바뀌지 않는다 — 자세한 규칙은 그 블록의 주석에 적어 두었다.
 */
 
 :root {
+  color-scheme: light;
+
   --background: #f6fbff;
   --surface: #ffffff;
   --surface-soft: #f2f8fe;
@@ -45,9 +50,28 @@
   /* 샴페인 채움 위에 얹는 글자색 (대비 10:1) */
   --champagne-ink: #1f2a04;
 
+  /* 캘린더 일요일 — 유일한 난색. 토큰으로 묶어 다크에서 같이 밝힌다 */
+  --rose-400: #fb7185;
+
   --border: #e3edf8;
   --border-strong: #cddef1;
   --ring: var(--sky-400);
+
+  /*
+   * 주 버튼 · 캘린더 오늘칸(.sky-gradient)의 양 끝.
+   * 이 그라디언트 위에는 항상 흰 글씨가 올라가므로 스카이 스케일을 직접 쓰지
+   * 않고 따로 둔다 — 다크에서 --sky-600 은 「어두운 바탕에 얹는 밝은 글자색」이
+   * 되어 버려서, 그대로 묶어 두면 흰 글씨 대비가 깨진다.
+   */
+  --gradient-sky-from: var(--sky-400);
+  --gradient-sky-to: var(--sky-600);
+
+  /* body 상단에 옅게 번지는 빛. 다크에서는 거의 안 보일 만큼 가라앉는다 */
+  --glow-sky: var(--sky-100);
+  --glow-champagne: var(--champagne-200);
+
+  /* 모달 뒤를 덮는 막 */
+  --overlay: rgb(13 26 43 / 0.5);
 
   --radius-sm: 0.625rem;
   --radius-md: 0.875rem;
@@ -56,6 +80,120 @@
 
   --shadow-card: 0 1px 2px rgb(13 26 43 / 0.04), 0 8px 24px -12px rgb(13 26 43 / 0.14);
   --shadow-lift: 0 2px 4px rgb(13 26 43 / 0.05), 0 16px 32px -16px rgb(13 26 43 / 0.22);
+}
+
+/*
+  다크 팔레트
+  ------------------------------------------------------------------
+  켜지는 조건은 두 가지다.
+    · 시스템이 다크이고 사용자가 라이트를 **고르지 않았을 때**
+    · 헤더 토글로 다크를 직접 골랐을 때 (html[data-theme="dark"])
+  CSS 에서 미디어 쿼리와 속성 선택자를 한 규칙으로 묶을 수 없어 같은 값이 두 번
+  나온다. **한쪽만 고치면 토글과 시스템 설정이 어긋나니 반드시 둘 다 고친다.**
+
+  ⚠ 스케일을 「밝기 순」이 아니라 「쓰임새」 기준으로 뒤집는다.
+  이 사이트는 낮은 번호를 채움(bg-sky-50 26곳), 높은 번호를 글자(text-sky-700
+  24곳)로 쓴다. 그래서 다크에서는 50·100 이 가장 어둡고 600·700 이 가장 밝다.
+  덕분에 화면 코드의 클래스를 하나도 바꾸지 않고 역할이 그대로 유지된다.
+  (500 → 600 구간에서 밝기가 한 번 되꺾이는 건 이 때문이고, 의도한 것이다.)
+*/
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    color-scheme: dark;
+
+    --background: #070d16;
+    --surface: #0f1825;
+    --surface-soft: #16212f;
+    --foreground: #e9f1f8;
+    --muted: #9aacbf;
+    --muted-soft: #6b7d92;
+
+    --sky-50: #0c1a26;
+    --sky-100: #13293a;
+    --sky-200: #2a4a63;
+    --sky-300: #7dd3fc;
+    --sky-400: #4cc2f7;
+    --sky-500: #38bdf8;
+    --sky-600: #7acffa;
+    --sky-700: #9adcfb;
+
+    --champagne-50: #1b2208;
+    --champagne-100: #262f0c;
+    --champagne-200: #3f4d12;
+    --champagne-300: #cdec4d;
+    --champagne-400: #bbe309;
+    --champagne-500: #a3cb06;
+    --champagne-600: #c0dd48;
+    --champagne-700: #cce95f;
+    --champagne-800: #d9f279;
+    --champagne-ink: #1f2a04;
+
+    --rose-400: #fda4af;
+
+    --border: #1e2a3a;
+    --border-strong: #2e3f54;
+
+    --gradient-sky-from: #0ea5e9;
+    --gradient-sky-to: #075985;
+
+    --glow-sky: #0b2237;
+    --glow-champagne: #273309;
+
+    --overlay: rgb(2 6 12 / 0.72);
+
+    /* 어두운 바탕에서는 옅은 그림자가 보이지 않는다 — 더 짙고 넓게 */
+    --shadow-card: 0 1px 2px rgb(0 0 0 / 0.45), 0 10px 26px -14px rgb(0 0 0 / 0.75);
+    --shadow-lift: 0 2px 6px rgb(0 0 0 / 0.5), 0 20px 36px -18px rgb(0 0 0 / 0.85);
+  }
+}
+
+/* ↑ 위 블록과 값이 같아야 한다 (헤더 토글로 다크를 직접 고른 경우) */
+:root[data-theme="dark"] {
+  color-scheme: dark;
+
+  --background: #070d16;
+  --surface: #0f1825;
+  --surface-soft: #16212f;
+  --foreground: #e9f1f8;
+  --muted: #9aacbf;
+  --muted-soft: #6b7d92;
+
+  --sky-50: #0c1a26;
+  --sky-100: #13293a;
+  --sky-200: #2a4a63;
+  --sky-300: #7dd3fc;
+  --sky-400: #4cc2f7;
+  --sky-500: #38bdf8;
+  --sky-600: #7acffa;
+  --sky-700: #9adcfb;
+
+  --champagne-50: #1b2208;
+  --champagne-100: #262f0c;
+  --champagne-200: #3f4d12;
+  --champagne-300: #cdec4d;
+  --champagne-400: #bbe309;
+  --champagne-500: #a3cb06;
+  --champagne-600: #c0dd48;
+  --champagne-700: #cce95f;
+  --champagne-800: #d9f279;
+  --champagne-ink: #1f2a04;
+
+  --rose-400: #fda4af;
+
+  --border: #1e2a3a;
+  --border-strong: #2e3f54;
+
+  --gradient-sky-from: #0ea5e9;
+  --gradient-sky-to: #075985;
+
+  --glow-sky: #0b2237;
+  --glow-champagne: #273309;
+
+  --overlay: rgb(2 6 12 / 0.72);
+
+  --shadow-card: 0 1px 2px rgb(0 0 0 / 0.45), 0 10px 26px -14px rgb(0 0 0 / 0.75);
+  --shadow-lift: 0 2px 6px rgb(0 0 0 / 0.5), 0 20px 36px -18px rgb(0 0 0 / 0.85);
 }
 
 @theme inline {
@@ -86,8 +224,12 @@
   --color-champagne-800: var(--champagne-800);
   --color-champagne-ink: var(--champagne-ink);
 
+  /* 캘린더 일요일. Tailwind 기본 rose-400 을 토큰으로 대체한다 */
+  --color-rose-400: var(--rose-400);
+
   --color-border: var(--border);
   --color-border-strong: var(--border-strong);
+  --color-overlay: var(--overlay);
 
   --font-sans: var(--font-noto-sans-kr), ui-sans-serif, system-ui, sans-serif;
   --font-display: var(--font-outfit), var(--font-noto-sans-kr), ui-sans-serif, sans-serif;
@@ -103,8 +245,8 @@
 body {
   /* 청량감: 상단에서 옅게 번지는 스카이 + 오른쪽 위 샴페인 한 점 */
   background:
-    radial-gradient(90% 45% at 85% -8%, color-mix(in srgb, var(--champagne-200) 42%, transparent) 0%, transparent 55%),
-    radial-gradient(120% 55% at 30% -10%, var(--sky-100) 0%, transparent 60%),
+    radial-gradient(90% 45% at 85% -8%, color-mix(in srgb, var(--glow-champagne) 42%, transparent) 0%, transparent 55%),
+    radial-gradient(120% 55% at 30% -10%, var(--glow-sky) 0%, transparent 60%),
     var(--background);
   background-attachment: fixed;
   color: var(--foreground);
@@ -125,7 +267,7 @@ body {
 /* ---------------- 그라디언트 ---------------- */
 
 .sky-gradient {
-  background-image: linear-gradient(135deg, var(--sky-400) 0%, var(--sky-600) 100%);
+  background-image: linear-gradient(135deg, var(--gradient-sky-from) 0%, var(--gradient-sky-to) 100%);
 }
 
 /* 포인트 채움. 위에는 반드시 text-champagne-ink 를 쓴다 */
@@ -156,6 +298,72 @@ body {
   box-shadow:
     0 0 0 1px color-mix(in srgb, var(--champagne-400) 45%, transparent),
     0 6px 20px -6px color-mix(in srgb, var(--champagne-400) 60%, transparent);
+}
+
+/* ---------------- 테마 토글 ---------------- */
+
+/*
+  좌우 스위치의 손잡이 위치 · 아이콘 색 · 스크린리더 안내문을 자바스크립트 상태가
+  아니라 CSS 로 고른다. 서버가 그린 HTML 과 첫 화면이 어긋나지 않아서(hydration)
+  손잡이가 튀지 않고, JS 가 아직 안 붙은 상태에서도 지금 테마가 제대로 보인다.
+
+  손잡이 이동거리 1.75rem = 안쪽 너비 3.5rem − 손잡이 1.75rem.
+  ThemeToggle 의 `w-16 p-[3px]` · `size-7` 과 짝이다 — 한쪽을 바꾸면 같이 고친다.
+
+  아래 다크 규칙도 「다크 팔레트」와 똑같이 미디어 쿼리 · 속성 선택자 두 벌이다.
+*/
+
+.theme-thumb {
+  transform: translateX(0);
+}
+
+/* 라이트에서는 해가 켜지고 달이 꺼진다 (해는 샴페인, 달은 스카이) */
+.theme-switch-sun {
+  color: var(--champagne-700);
+}
+
+.theme-switch-moon {
+  color: var(--muted-soft);
+}
+
+/* 지금 테마에 맞는 안내문만 남긴다 — 그 문장이 버튼의 접근성 이름이 된다 */
+.theme-when-dark {
+  display: none;
+}
+
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) .theme-thumb {
+    transform: translateX(1.75rem);
+  }
+  :root:not([data-theme="light"]) .theme-switch-sun {
+    color: var(--muted-soft);
+  }
+  :root:not([data-theme="light"]) .theme-switch-moon {
+    color: var(--sky-700);
+  }
+  :root:not([data-theme="light"]) .theme-when-light {
+    display: none;
+  }
+  :root:not([data-theme="light"]) .theme-when-dark {
+    display: block;
+  }
+}
+
+/* ↑ 위 블록과 값이 같아야 한다 (헤더 토글로 다크를 직접 고른 경우) */
+:root[data-theme="dark"] .theme-thumb {
+  transform: translateX(1.75rem);
+}
+:root[data-theme="dark"] .theme-switch-sun {
+  color: var(--muted-soft);
+}
+:root[data-theme="dark"] .theme-switch-moon {
+  color: var(--sky-700);
+}
+:root[data-theme="dark"] .theme-when-light {
+  display: none;
+}
+:root[data-theme="dark"] .theme-when-dark {
+  display: block;
 }
 
 /* ---------------- 애니메이션 ---------------- */

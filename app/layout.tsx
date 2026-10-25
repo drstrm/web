@@ -4,6 +4,7 @@ import "./globals.css";
 import Header from "@/components/Header";
 import Footer from "@/components/Footer";
 import { SITE } from "@/lib/site";
+import { THEME_COLOR, THEME_INIT_SCRIPT } from "@/lib/theme";
 
 const notoSansKr = Noto_Sans_KR({
   variable: "--font-noto-sans-kr",
@@ -46,10 +47,16 @@ export const metadata: Metadata = {
   twitter: { card: "summary_large_image" },
 };
 
-/** 팬덤의 90% 이상이 모바일이라 주소창 색까지 스카이로 맞춘다 */
+/**
+ * 팬덤의 90% 이상이 모바일이라 주소창 색까지 테마에 맞춘다.
+ * 테마를 고정한 사용자의 주소창은 ThemeToggle 이 이 메타를 덮어써서 맞춘다.
+ */
 export const viewport: Viewport = {
-  themeColor: "#f6fbff",
-  colorScheme: "light",
+  themeColor: [
+    { media: "(prefers-color-scheme: light)", color: THEME_COLOR.light },
+    { media: "(prefers-color-scheme: dark)", color: THEME_COLOR.dark },
+  ],
+  colorScheme: "light dark",
 };
 
 export default function RootLayout({
@@ -61,8 +68,16 @@ export default function RootLayout({
     <html
       lang="ko"
       className={`${notoSansKr.variable} ${outfit.variable} h-full antialiased`}
+      // 아래 스크립트가 data-theme 을 붙이고 시작하므로 서버 HTML 과 다를 수 있다
+      suppressHydrationWarning
     >
       <body className="flex min-h-full flex-col">
+        {/*
+         * 저장해 둔 테마를 첫 페인트 전에 적용한다. 본문 맨 앞의 동기 스크립트라
+         * 아래 내용이 그려지기 전에 끝난다 — 테마가 번쩍이지 않는 이유다.
+         */}
+        <script dangerouslySetInnerHTML={{ __html: THEME_INIT_SCRIPT }} />
+
         {/* 키보드 사용자가 내비게이션을 건너뛸 수 있게 한다 */}
         <a
           href="#main"

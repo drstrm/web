@@ -254,7 +254,7 @@ export default function BannerSlider({ banners }: { banners: Banner[] }) {
             type="button"
             aria-label="이전 배너"
             onClick={() => go(-1)}
-            className="absolute left-2 top-1/2 z-10 grid size-9 -translate-y-1/2 place-items-center rounded-full bg-white/75 text-foreground shadow-card backdrop-blur transition hover:bg-white active:scale-95 sm:left-4 sm:size-11"
+            className="absolute left-2 top-1/2 z-10 grid size-9 -translate-y-1/2 place-items-center rounded-full bg-surface/75 text-foreground shadow-card backdrop-blur transition hover:bg-surface active:scale-95 sm:left-4 sm:size-11"
           >
             <ChevronLeft className="size-4 sm:size-5" strokeWidth={2.5} />
           </button>
@@ -262,7 +262,7 @@ export default function BannerSlider({ banners }: { banners: Banner[] }) {
             type="button"
             aria-label="다음 배너"
             onClick={() => go(1)}
-            className="absolute right-2 top-1/2 z-10 grid size-9 -translate-y-1/2 place-items-center rounded-full bg-white/75 text-foreground shadow-card backdrop-blur transition hover:bg-white active:scale-95 sm:right-4 sm:size-11"
+            className="absolute right-2 top-1/2 z-10 grid size-9 -translate-y-1/2 place-items-center rounded-full bg-surface/75 text-foreground shadow-card backdrop-blur transition hover:bg-surface active:scale-95 sm:right-4 sm:size-11"
           >
             <ChevronRight className="size-4 sm:size-5" strokeWidth={2.5} />
           </button>

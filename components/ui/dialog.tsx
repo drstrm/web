@@ -26,7 +26,7 @@ export function DialogContent({
     <DialogPrimitive.Portal>
       <DialogPrimitive.Overlay
         className={cn(
-          "fixed inset-0 z-50 bg-[#0d1a2b]/50 backdrop-blur-sm",
+          "fixed inset-0 z-50 bg-overlay backdrop-blur-sm",
           "data-[state=open]:animate-[overlay-in_180ms_ease-out]",
         )}
       />

@@ -5,6 +5,7 @@ import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 import SmartLink from "@/components/SmartLink";
+import ThemeToggle from "@/components/ThemeToggle";
 import { iconForRoute } from "@/lib/nav-icons";
 import { NAV, SITE } from "@/lib/site";
 import { cn } from "@/lib/utils";
@@ -60,82 +61,88 @@ export default function Header() {
           </span>
         </SmartLink>
 
-        {/* 데스크톱 내비 */}
-        <nav className="hidden items-center gap-0.5 md:flex">
-          {NAV.map((item) => {
-            const active = isActive(item.href);
-            return (
-              <div key={item.href} className="group relative">
-                <SmartLink
-                  href={item.href}
-                  className={cn(
-                    "relative flex items-center gap-1 rounded-full px-3.5 py-2",
-                    "font-display text-sm font-bold tracking-wide transition-colors",
-                    active ? "text-sky-700" : "text-foreground hover:text-sky-600",
-                  )}
-                >
-                  {item.label}
+        {/* 오른쪽 묶음: 테마 토글 · 데스크톱 내비 · 모바일 메뉴 버튼 */}
+        <div className="flex items-center gap-2">
+          {/* 라이트 ↔ 다크. 데스크톱 내비 · 모바일 햄버거 모두의 왼쪽에 둔다 */}
+          <ThemeToggle />
+
+          {/* 데스크톱 내비 */}
+          <nav className="hidden items-center gap-0.5 md:flex">
+            {NAV.map((item) => {
+              const active = isActive(item.href);
+              return (
+                <div key={item.href} className="group relative">
+                  <SmartLink
+                    href={item.href}
+                    className={cn(
+                      "relative flex items-center gap-1 rounded-full px-3.5 py-2",
+                      "font-display text-sm font-bold tracking-wide transition-colors",
+                      active ? "text-sky-700" : "text-foreground hover:text-sky-600",
+                    )}
+                  >
+                    {item.label}
+                    {item.children && (
+                      <ChevronDown
+                        aria-hidden
+                        className="size-3 text-muted-soft transition-transform group-hover:rotate-180"
+                        strokeWidth={2.5}
+                      />
+                    )}
+                    {/* 활성 표시는 샴페인 밑줄 — 파란 글씨와 겹치지 않고 눈에 띈다 */}
+                    {active && (
+                      <span
+                        aria-hidden
+                        className="absolute inset-x-3 -bottom-0.5 h-[3px] rounded-full bg-champagne-400"
+                      />
+                    )}
+                  </SmartLink>
+
                   {item.children && (
-                    <ChevronDown
-                      aria-hidden
-                      className="size-3 text-muted-soft transition-transform group-hover:rotate-180"
-                      strokeWidth={2.5}
-                    />
-                  )}
-                  {/* 활성 표시는 샴페인 밑줄 — 파란 글씨와 겹치지 않고 눈에 띈다 */}
-                  {active && (
-                    <span
-                      aria-hidden
-                      className="absolute inset-x-3 -bottom-0.5 h-[3px] rounded-full bg-champagne-400"
-                    />
-                  )}
-                </SmartLink>
-
-                {item.children && (
-                  <div className="invisible absolute left-0 top-full min-w-52 pt-2 opacity-0 transition-all duration-150 group-hover:visible group-hover:opacity-100 group-focus-within:visible group-focus-within:opacity-100">
-                    <div className="overflow-hidden rounded-2xl border border-border bg-surface p-1.5 shadow-lift">
-                      {item.children.map((c) => {
-                        const Icon = iconForRoute(c.href);
-                        const childActive = pathname === c.href;
-                        return (
-                          <SmartLink
-                            key={c.href}
-                            href={c.href}
-                            className={cn(
-                              "flex items-center gap-2.5 rounded-xl px-3 py-2.5 text-sm font-semibold transition-colors",
-                              childActive
-                                ? "bg-sky-50 text-sky-700"
-                                : "text-foreground hover:bg-sky-50 hover:text-sky-700",
-                            )}
-                          >
-                            <Icon className="size-3.5 shrink-0 text-sky-500" strokeWidth={2.2} />
-                            {c.label}
-                          </SmartLink>
-                        );
-                      })}
+                    <div className="invisible absolute left-0 top-full min-w-52 pt-2 opacity-0 transition-all duration-150 group-hover:visible group-hover:opacity-100 group-focus-within:visible group-focus-within:opacity-100">
+                      <div className="overflow-hidden rounded-2xl border border-border bg-surface p-1.5 shadow-lift">
+                        {item.children.map((c) => {
+                          const Icon = iconForRoute(c.href);
+                          const childActive = pathname === c.href;
+                          return (
+                            <SmartLink
+                              key={c.href}
+                              href={c.href}
+                              className={cn(
+                                "flex items-center gap-2.5 rounded-xl px-3 py-2.5 text-sm font-semibold transition-colors",
+                                childActive
+                                  ? "bg-sky-50 text-sky-700"
+                                  : "text-foreground hover:bg-sky-50 hover:text-sky-700",
+                              )}
+                            >
+                              <Icon className="size-3.5 shrink-0 text-sky-500" strokeWidth={2.2} />
+                              {c.label}
+                            </SmartLink>
+                          );
+                        })}
+                      </div>
                     </div>
-                  </div>
-                )}
-              </div>
-            );
-          })}
-        </nav>
+                  )}
+                </div>
+              );
+            })}
+          </nav>
 
-        {/* 모바일 토글 */}
-        <button
-          type="button"
-          aria-label={open ? "메뉴 닫기" : "메뉴 열기"}
-          aria-expanded={open}
-          aria-controls="mobile-nav"
-          onClick={() => setOpen((v) => !v)}
-          className="grid size-10 shrink-0 place-items-center rounded-xl border border-border bg-surface text-foreground transition-colors hover:bg-sky-50 md:hidden"
-        >
-          {open ? (
-            <X className="size-[18px]" strokeWidth={2.4} />
-          ) : (
-            <Menu className="size-[18px]" strokeWidth={2.4} />
-          )}
-        </button>
+          {/* 모바일 토글 */}
+          <button
+            type="button"
+            aria-label={open ? "메뉴 닫기" : "메뉴 열기"}
+            aria-expanded={open}
+            aria-controls="mobile-nav"
+            onClick={() => setOpen((v) => !v)}
+            className="grid size-10 shrink-0 place-items-center rounded-xl border border-border bg-surface text-foreground transition-colors hover:bg-sky-50 md:hidden"
+          >
+            {open ? (
+              <X className="size-[18px]" strokeWidth={2.4} />
+            ) : (
+              <Menu className="size-[18px]" strokeWidth={2.4} />
+            )}
+          </button>
+        </div>
       </div>
 
       {/* 모바일 메뉴 */}

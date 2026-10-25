@@ -42,10 +42,16 @@ export function AccordionTrigger({
         {...props}
       >
         {children}
+        {/*
+         * 화살표는 옆 글자와 비슷한 크기로 둔다. 셰브런은 상자 높이의 3/8 만 차지하는
+         * 모양이라(viewBox 24 중 9), size-4 로 두면 상자만 16px 이고 실제로 보이는 V 는
+         * 6px 남짓이다 — 글자 옆에서 혼자 작아 보이던 이유다. 상자를 24px 로 키우면
+         * V 가 9px 쯤 되어 14px 글자의 높이와 맞는다. 커진 만큼 선은 살짝 얇게.
+         */}
         <ChevronDown
           aria-hidden
-          className="ml-auto size-4 shrink-0 text-sky-500 transition-transform duration-200 group-data-[state=open]:rotate-180"
-          strokeWidth={2.4}
+          className="ml-auto size-6 shrink-0 text-sky-500 transition-transform duration-200 group-data-[state=open]:rotate-180"
+          strokeWidth={2.2}
         />
       </AccordionPrimitive.Trigger>
     </AccordionPrimitive.Header>

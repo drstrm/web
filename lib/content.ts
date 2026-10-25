@@ -11,6 +11,7 @@
  */
 
 import {
+  getAlbumBenefits as getNotionAlbumBenefits,
   getAlbumShops as getNotionAlbumShops,
   getBanners as getNotionBanners,
   getFormLinks as getNotionFormLinks,
@@ -553,6 +554,33 @@ export function getMvStats(): MvStat[] {
     // https://youtu.be/LFbU0A1-IH8
     { title: "최신 MV", youtubeId: "LFbU0A1-IH8", views: "—", likes: "—" },
   ];
+}
+
+/* ---------------- ALBUM: 버전 · 특전 (노션 DB) ---------------- */
+
+/** 「앨범 버전 · 특전」 표의 한 줄 */
+export interface AlbumBenefit {
+  /** 노션 page id. 목록 렌더링 key 로만 쓴다 */
+  key: string;
+  /** 버전 이름. 「전 버전 공통」처럼 버전이 아닌 줄도 그대로 온다 */
+  version: string;
+  /** 추가 특전. 노션 `추가 특전` 칸의 줄마다 하나씩 */
+  benefits: string[];
+  /** 비고 — 「세트 구매 가능」 · 「SMTOWN &STORE · Berriz 한정」 */
+  note?: string;
+}
+
+/**
+ * 버전 · 특전 표 조회 (스키마는 docs/notion-album-db.md).
+ * 조회에 실패하면 표만 비운다 — 아래 앨범사 링크는 그대로 보인다.
+ */
+export async function getAlbumBenefits(): Promise<AlbumBenefit[]> {
+  try {
+    return await getNotionAlbumBenefits();
+  } catch (e) {
+    console.error("[album-benefits] 노션 조회 실패:", e);
+    return [];
+  }
 }
 
 /* ---------------- ALBUM: 앨범사 예약판매 링크 (노션 DB) ---------------- */

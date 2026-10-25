@@ -4,15 +4,15 @@ import AlbumShops from "@/components/AlbumShops";
 import GroupOrders from "@/components/GroupOrders";
 import { Notice, PageHeader, SectionTitle } from "@/components/ui";
 import { ALBUM } from "@/lib/album";
-import { getAlbumShops, getGroupOrders } from "@/lib/content";
+import { getAlbumBenefits, getAlbumShops, getGroupOrders } from "@/lib/content";
 import { iconForRoute } from "@/lib/nav-icons";
 
 /*
  * 앨범 예약판매 (/community/album)
  * ------------------------------------------------------------------
  * 위에서 아래로 「언제까지 · 어떤 버전 · 무슨 특전」 → 「어디서 사나」 →
- * 「팬덤 공구」 순이다. 기간 · 버전 · 특전은 lib/album.ts 의 고정값이고,
- * 판매 링크 두 종류는 노션에서 읽는다 (docs/notion-album-db.md).
+ * 「팬덤 공구」 순이다. 기간만 lib/album.ts 의 고정값이고, 버전 · 특전 표와
+ * 판매 링크 두 종류는 노션 세 DB 에서 읽는다 (docs/notion-album-db.md).
  *
  * 노션 DB 를 아직 안 만들었어도 페이지는 정상으로 뜬다 — 링크 섹션만 「준비 중」이
  * 된다(lib/content.ts 가 조회 실패를 빈 배열로 흡수한다).
@@ -22,7 +22,11 @@ export const metadata: Metadata = { title: ALBUM.title };
 export const revalidate = 300;
 
 export default async function AlbumPage() {
-  const [shops, groupOrders] = await Promise.all([getAlbumShops(), getGroupOrders()]);
+  const [benefits, shops, groupOrders] = await Promise.all([
+    getAlbumBenefits(),
+    getAlbumShops(),
+    getGroupOrders(),
+  ]);
 
   return (
     /*
@@ -44,7 +48,7 @@ export default async function AlbumPage() {
       />
 
       <div className="space-y-10">
-        <AlbumInfo />
+        <AlbumInfo benefits={benefits} />
 
         <section>
           <SectionTitle>앨범사 예약판매 링크</SectionTitle>

@@ -98,6 +98,16 @@ const DATABASES = [
     optionalDb: true,
   },
   {
+    // 제목 열(= 버전)은 이름을 안 본다(타입으로 찾는다)
+    label: "버전별 특전 정리",
+    env: "ALBUM_BENEFIT",
+    required: [],
+    optional: ["추가 특전", "비고", "순서"],
+    // 이 순서가 화면 표의 줄 순서이자 앨범사 카드의 버전 버튼 순서다
+    orderBy: "순서",
+    optionalDb: true,
+  },
+  {
     // 제목 열(= 공구주)은 이름을 안 본다(타입으로 찾는다)
     label: "팬덤 공구",
     env: "GROUP_ORDER",

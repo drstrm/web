@@ -14,6 +14,7 @@
  */
 
 import type {
+  AlbumBenefit,
   AlbumShop,
   AlbumShopLink,
   FormKind,
@@ -28,7 +29,7 @@ import type {
   StreamingList,
   StreamingTarget,
 } from "@/lib/content";
-import { matchShopIcon, matchVersion } from "@/lib/album";
+import { matchShopIcon, nameKey } from "@/lib/album";
 import { toSeoulDate } from "@/lib/datetime";
 import { PLATFORM_ICONS } from "@/lib/platform-icons";
 import { toHref } from "@/lib/url";
@@ -47,6 +48,7 @@ type DbKey =
   | "forms"
   | "schedule"
   | "album"
+  | "albumBenefit"
   | "groupOrder";
 
 const DATABASES: Record<DbKey, { env: string; db?: string; ds?: string }> = {
@@ -84,6 +86,11 @@ const DATABASES: Record<DbKey, { env: string; db?: string; ds?: string }> = {
     env: "NOTION_ALBUM_DB_ID",
     db: process.env.NOTION_ALBUM_DB_ID,
     ds: process.env.NOTION_ALBUM_DS_ID,
+  },
+  albumBenefit: {
+    env: "NOTION_ALBUM_BENEFIT_DB_ID",
+    db: process.env.NOTION_ALBUM_BENEFIT_DB_ID,
+    ds: process.env.NOTION_ALBUM_BENEFIT_DS_ID,
   },
   groupOrder: {
     env: "NOTION_GROUP_ORDER_DB_ID",
@@ -998,7 +1005,84 @@ export async function getSchedules(revalidate = 300): Promise<NotionSchedule[]> 
   return rows.sort((a, b) => a.order - b.order);
 }
 
+/* ---------------- 앨범 버전 · 특전 ---------------- */
+
+/** `추가 특전` 칸의 여러 줄을 항목으로 쪼갠다. 운영진이 찍어 둔 글머리표는 떼어낸다 */
+const toBenefitItems = (raw: string): string[] =>
+  raw
+    .split("\n")
+    .map((line) => line.replace(/^[\s•·‧∙*-]+/, "").trim())
+    .filter(Boolean);
+
+/**
+ * 버전 · 특전 조회 (스키마는 docs/notion-album-db.md).
+ *
+ * 화면의 「앨범 버전 · 특전」 표가 이 DB 의 행을 그대로 그린다. 「전 버전 공통」처럼
+ * 버전이 아닌 줄도 운영진이 적어 둔 그대로 한 줄로 내보낸다 — 코드가 특정 이름을
+ * 알아야 하는 규칙을 두지 않으려는 것이다. 줄을 더하고 빼고 옮기는 일이 전부
+ * 노션에서 끝난다.
+ *
+ * 이 DB 는 **앨범사 카드의 버전 버튼 순서 · 표기도 함께 정한다**(getAlbumShops).
+ * 예약판매 DB 는 버전이 열로 누워 있는데 노션 API 가 열 순서를 알려주지 않아서,
+ * 순서를 쥘 곳이 필요하다. 같은 버전 목록을 두 군데 적지 않도록 여기를 기준으로 삼는다.
+ */
+export async function getAlbumBenefits(revalidate = 300): Promise<AlbumBenefit[]> {
+  const pages = await queryRows("albumBenefit", revalidate);
+
+  const rows = pages.flatMap((page) => {
+    const p = normalized(page);
+
+    const version = titleOf(p);
+    // 버전 이름이 비면 표에 놓을 자리가 없다 (노션 기본 빈 행이 여기서 걸러진다)
+    if (!version) return [];
+
+    const benefits = toBenefitItems(text(p["추가 특전"]?.rich_text));
+    const note = text(p["비고"]?.rich_text);
+
+    return [
+      {
+        order: p["순서"]?.number ?? Number.MAX_SAFE_INTEGER,
+        row: {
+          key: page.id,
+          version,
+          benefits,
+          ...(note ? { note } : {}),
+        } satisfies AlbumBenefit,
+      },
+    ];
+  });
+
+  return rows.sort((a, b) => a.order - b.order).map((r) => r.row);
+}
+
 /* ---------------- 앨범 예약판매 (앨범사 링크) ---------------- */
+
+/**
+ * 예약판매 DB 의 **열 이름** → 화면 표기 · 순서.
+ *
+ * 기준은 특전 DB 의 행 순서다. 열 이름은 사람이 치는 값이라 표기가 흔들리므로
+ * (`SMini Ver` · `Special ver.`) 느슨하게 맞춰 특전 DB 의 표기로 통일한다.
+ *
+ * 세트 칸(`Jewel Case Ver. set`)은 특전 DB 에 줄이 따로 없다 — 표에서는 단품 줄의
+ * 「세트 구매 가능」으로 합쳐 두기 때문이다. 그래서 끝의 `set` 을 떼고 단품을 찾아
+ * **그 바로 뒤**에 꽂는다(order + 0.5). 단품과 세트가 붙어 있어야 고를 때 헷갈리지 않는다.
+ */
+function versionMatcher(benefits: AlbumBenefit[]) {
+  const index = new Map(benefits.map((b, order) => [nameKey(b.version), { label: b.version, order }]));
+
+  return (columnName: string): { label: string; order: number } => {
+    const key = nameKey(columnName);
+    const exact = index.get(key);
+    if (exact) return exact;
+
+    const base = key.replace(/set$/, "");
+    const unit = base === key ? undefined : index.get(base);
+    if (unit) return { label: `${unit.label} SET`, order: unit.order + 0.5 };
+
+    // 특전 DB 에 없는 열 — 이름 그대로, 맨 뒤에
+    return { label: columnName, order: benefits.length + 1 };
+  };
+}
 
 /**
  * 앨범사 예약판매 링크 조회 (스키마는 docs/notion-album-db.md).
@@ -1016,12 +1100,20 @@ export async function getSchedules(revalidate = 300): Promise<NotionSchedule[]> 
  *
  * 표시 순서
  *  - 판매처(카드): `순서` 숫자 열 → 없거나 비면 노션에 행을 추가한 순서
- *  - 버전 버튼: lib/album.ts 의 `ALBUM_VERSIONS` 순서. 노션 API 가 **열 순서를
- *    알려주지 않아서**(properties 가 객체로 오고 제목 열이 중간에 섞인다) 이것만은
- *    코드가 쥔다. 모르는 열은 맨 뒤에 그대로 붙는다.
+ *  - 버전 버튼: 특전 DB 의 줄 순서(versionMatcher). 특전 조회가 실패해도 링크는
+ *    살아야 하므로, 그때는 순서 없이 열 이름 그대로 내보낸다.
  */
 export async function getAlbumShops(revalidate = 300): Promise<AlbumShop[]> {
-  const pages = await queryRows("album", revalidate);
+  const [pages, benefits] = await Promise.all([
+    queryRows("album", revalidate),
+    // 같은 조회를 페이지에서도 하지만 Next 의 fetch 캐시가 한 번으로 합친다
+    getAlbumBenefits(revalidate).catch((e) => {
+      console.error("[album-shops] 버전 순서를 못 읽었다 (열 이름 그대로 쓴다):", e);
+      return [] as AlbumBenefit[];
+    }),
+  ]);
+
+  const matchVersion = versionMatcher(benefits);
 
   /** 링크 칸이 아닌 열. 이름이 곧 버전인 DB 라 「버전이 아닌 것」만 추려 둔다 */
   const NOT_A_VERSION = new Set(["판매처", "순서"]);

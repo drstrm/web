@@ -8,22 +8,28 @@
     "start": "next start",
     "lint": "eslint",
     "webp": "./scripts/to-webp.sh",
-    "notion-check": "./scripts/notion-check.sh"
+    "notion-check": "./scripts/notion-check.sh",
+    "i18n": "node scripts/i18n-sync.mjs",
+    "i18n:adopt": "node scripts/i18n-sync.mjs --adopt",
+    "i18n:translate": "node scripts/i18n-sync.mjs --translate"
   },
   "dependencies": {
     "@radix-ui/react-accordion": "^1.2.20",
     "@radix-ui/react-dialog": "^1.1.23",
+    "@radix-ui/react-dropdown-menu": "^2.2.1",
     "@radix-ui/react-slot": "^1.3.3",
     "@vercel/analytics": "^2.0.1",
     "class-variance-authority": "^0.7.1",
     "clsx": "^2.1.1",
     "lucide-react": "^1.41.0",
     "next": "16.2.10",
+    "next-intl": "^4.14.9",
     "react": "19.2.4",
     "react-dom": "19.2.4",
     "tailwind-merge": "^3.6.0"
   },
   "devDependencies": {
+    "@anthropic-ai/sdk": "^1.3.0",
     "@tailwindcss/postcss": "^4",
     "@types/node": "^24",
     "@types/react": "^19",
@@ -31,7 +37,8 @@
     "eslint": "^9",
     "eslint-config-next": "16.2.10",
     "tailwindcss": "^4",
-    "typescript": "^5"
+    "typescript": "^5",
+    "zod": "^4.6.7"
   },
   "engines": {
     "node": "^24.22.1"

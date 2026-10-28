@@ -1,0 +1,278 @@
+{
+  "meta": {
+    "siteName": "NCT DREAM Streaming Team",
+    "title": "NCT DREAM Streaming Team — Situs Resmi",
+    "description": "Panduan streaming, voting, dan download untuk NCT DREAM, plus link one-click. Situs resmi tim streaming NCT DREAM."
+  },
+  "layout": {
+    "skipToContent": "Lewati ke konten"
+  },
+  "a11y": {
+    "openMenu": "Buka menu",
+    "closeMenu": "Tutup menu"
+  },
+  "common": {
+    "close": "Tutup",
+    "imageLoading": "Memuat gambar"
+  },
+  "locale": {
+    "label": "Pilih bahasa"
+  },
+  "theme": {
+    "toggleTheme": "Ubah tema",
+    "lightHint": "Mode terang — ketuk untuk beralih ke mode gelap",
+    "darkHint": "Mode gelap — ketuk untuk beralih ke mode terang"
+  },
+  "banner": {
+    "prev": "Banner sebelumnya",
+    "next": "Banner berikutnya",
+    "imageAlt": "Banner"
+  },
+  "nav": {
+    "voting": "Voting",
+    "streamingList": "Playlist streaming",
+    "votingOneclick": "Voting one-click",
+    "radio": "Radio",
+    "notice": "Pengumuman",
+    "faq": "FAQ",
+    "album": "Pre-order album"
+  },
+  "social": {
+    "daumCafe": "Daum Cafe"
+  },
+  "contact": {
+    "streamingTeam": "Hubungi tim streaming",
+    "eventTeam": "Hubungi tim event"
+  },
+  "home": {
+    "shortcuts": "Akses cepat",
+    "youtubeMv": "MV YouTube",
+    "realtimeChart": "Chart real-time",
+    "chartWaiting": "Menunggu pembaruan",
+    "calendar": "Kalender",
+    "preorder": "Pre-order album & group order",
+    "preorderCard": "Periode pre-order {period} — benefit tiap versi, link toko album, dan group order fandom, semuanya di satu tempat.",
+    "profileAlt": "Foto grup NCT DREAM"
+  },
+  "mv": {
+    "latest": "MV terbaru",
+    "embedSoon": "Embed MV segera hadir"
+  },
+  "calendar": {
+    "prevMonth": "Bulan sebelumnya",
+    "nextMonth": "Bulan berikutnya",
+    "today": "Hari ini",
+    "noEvents": "Tidak ada jadwal.",
+    "noEventsInMonth": "Tidak ada jadwal bulan ini.",
+    "eventCount": "{count} jadwal"
+  },
+  "todo": {
+    "empty": "Belum ada yang perlu dikerjakan",
+    "emptyHint": "Jadwal voting dan streaming akan muncul di sini begitu dimulai.",
+    "footnote": "Daftar voting dan streaming harian selama periode comeback.",
+    "guide": "Panduan",
+    "deadline": {
+      "daily": "Setiap hari",
+      "always": "Kapan saja",
+      "due": "Batas {due}"
+    }
+  },
+  "voteApps": {
+    "ongoing": "Voting yang sedang buka",
+    "count": "{count}",
+    "empty": "Belum ada voting yang buka",
+    "emptyHint": "Tombol akses cepat akan muncul di sini saat voting dibuka.",
+    "appShortcuts": "Akses cepat aplikasi",
+    "vote": "Voting sekarang"
+  },
+  "guideHub": {
+    "navTitle": "Panduan",
+    "title": "Panduan streaming",
+    "description": "Baru pertama kali streaming? Semua panduan pakai screenshot langkah per langkah, jadi tinggal ikuti saja."
+  },
+  "guide": {
+    "streaming": {
+      "title": "Panduan streaming",
+      "summary": "Streaming audio dan MV di Melon, Genie, Bugs, FLO, Spotify, dan lainnya",
+      "description": "Pilih platform untuk melihat gambar panduannya dalam ukuran penuh."
+    },
+    "id-generate": {
+      "title": "Panduan membuat akun",
+      "summary": "Membuat akun di Melon, Genie, Bugs, FLO, VIBE, dan lainnya",
+      "description": "Cara membuat akun di tiap platform. Siapkan akunmu dulu sebelum mulai streaming."
+    },
+    "voting": {
+      "title": "Panduan voting",
+      "summary": "Aplikasi voting untuk music show dan awards show",
+      "description": "Cara voting di aplikasi music show tiap stasiun TV dan di awards show."
+    },
+    "download": {
+      "title": "Panduan download",
+      "summary": "Download audio dan MV per platform",
+      "description": "Pilih platform untuk melihat gambar panduannya dalam ukuran penuh."
+    },
+    "etc": {
+      "title": "Panduan lainnya",
+      "summary": "Setting ringtone dan ringback tone, bikin short-form, rekomendasi paket langganan",
+      "description": "Panduan setting ringtone dan ringback tone, bikin short-form, dan memilih paket langganan."
+    }
+  },
+  "guideSection": {
+    "audio": "Streaming audio",
+    "mv": "Streaming MV",
+    "id-generate": "Membuat akun",
+    "music-show": "Voting music show",
+    "awards": "Voting awards show",
+    "audio-dl": "Download audio",
+    "mv-dl": "Download MV",
+    "etc": "Panduan lainnya"
+  },
+  "guideList": {
+    "empty": "Panduan sedang disiapkan",
+    "emptyHint": "Akan diunggah di sini begitu siap.",
+    "comingSoon": "Segera hadir",
+    "view": "Lihat panduan",
+    "pages": "{count} gambar"
+  },
+  "guideDetail": {
+    "noImages": "Belum ada gambar panduan",
+    "noImagesHint": "Akan diunggah di sini begitu siap.",
+    "saveImage": "Simpan gambar",
+    "backToList": "Kembali ke {category}"
+  },
+  "oneclickHub": {
+    "title": "One-click",
+    "description": "Streaming, voting, dan kirim pesan ke radio dalam satu ketukan. Tinggal buka link, langsung jalan.",
+    "streamingDesc": "Buka playlist streaming tiap platform dalam satu klik",
+    "votingDesc": "Akses cepat aplikasi voting dan voting SMS one-click",
+    "radioDesc": "Jadwal radio per stasiun dan kirim pesan one-click"
+  },
+  "oneclickStreaming": {
+    "metaTitle": "Playlist streaming one-click",
+    "description": "Pilih platform dan perangkat yang kamu pakai, link streaming one-click akan langsung terbuka.",
+    "noticeDevice": "Link one-click berbeda untuk tiap platform dan perangkat (Android / iOS / PC). Ketuk <strong>link yang sesuai dengan perangkatmu</strong>.",
+    "noticeOrder": "Kalau ada beberapa playlist, putar berurutan dari 1 sampai 4.",
+    "noticeUpdate": "Link diperbarui ke rilisan terbaru setiap comeback."
+  },
+  "oneclickVoting": {
+    "description": "Akses cepat aplikasi voting dan voting SMS dalam satu tempat.",
+    "appVote": "Voting aplikasi",
+    "smsVote": "Voting SMS"
+  },
+  "oneclickRadio": {
+    "metaTitle": "Radio one-click",
+    "description": "Kami buatkan pesan radio yang cocok dengan acara yang sedang on air — dan kirim lewat SMS dalam satu ketukan.",
+    "oneclickTitle": "Kirim pesan radio one-click",
+    "oneclickHint": "Ketuk stasiunnya, pesan untuk acara yang sedang on air akan muncul.",
+    "scheduleTitle": "Jadwal per stasiun",
+    "scheduleHint": "Jadwal lengkap tiap stasiun bisa dilihat dari gambar yang sudah diunggah."
+  },
+  "streamingLists": {
+    "empty": "Playlist streaming belum terdaftar",
+    "emptyHint": "Link one-click tiap platform akan diunggah menjelang comeback.",
+    "shortcut": "Buka streaming one-click",
+    "list": "Playlist"
+  },
+  "smsVote": {
+    "title": "Voting SMS one-click",
+    "currentShow": "Music show di jam ini",
+    "checking": "Memeriksa…",
+    "noShow": "Tidak ada acara",
+    "oneclick": "Voting SMS one-click",
+    "hintReady": "Aplikasi pesan akan terbuka di ponsel.",
+    "hintWaiting": "Tombol aktif begitu voting SMS real-time dibuka."
+  },
+  "radio": {
+    "noProgram": "Tidak ada acara",
+    "noSchedule": "Tidak ada info jadwal",
+    "noScheduleInfo": "Tidak ada info jadwal",
+    "checking": "Memeriksa…",
+    "editNotice": "Tambahkan satu dua kalimat sesuai tema radio hari itu sebelum mengirim",
+    "editHint": "Ketuk kotak di bawah untuk mengeditnya sesuka kamu — apa yang kamu tulis itulah yang dikirim.",
+    "messageLabel": "Pesanmu",
+    "loading": "Menyiapkan pesanmu…",
+    "placeholder": "Tulis pesan yang mau kamu kirim.",
+    "chars": "{count} karakter",
+    "refresh": "Buat yang baru",
+    "send": "Kirim",
+    "guideImage": "Gambar panduan kirim pesan radio",
+    "guideAlt": "Panduan kirim pesan radio {broadcaster}",
+    "saveImage": "Simpan gambar",
+    "possibility": {
+      "2": "Peluang besar",
+      "1": "Mungkin",
+      "0": "Kecil kemungkinan"
+    }
+  },
+  "community": {
+    "title": "Komunitas",
+    "description": "Pengumuman, FAQ, dan formulir dikelola langsung di Notion oleh tim, jadi selalu yang terbaru.",
+    "noticeDesc": "Pengumuman resmi tim dan info event",
+    "faqDesc": "FAQ soal donasi akun, streaming, dan event"
+  },
+  "notice": {
+    "title": "Pengumuman",
+    "description": "Pengumuman resmi tim. Isinya dikelola di Notion oleh tim.",
+    "cardTitle": "Baca pengumuman resmi",
+    "cardHint": "Akan terbuka di Notion.",
+    "open": "Buka pengumuman",
+    "giftTitle": "Tentang event gift card",
+    "giftHint": "Untuk hal-hal soal gift card, silakan hubungi lewat channel KakaoTalk di bawah."
+  },
+  "faq": {
+    "metaTitle": "FAQ",
+    "title": "Pertanyaan yang sering diajukan",
+    "description": "Pertanyaan yang paling sering kami terima. FAQ lengkapnya dikelola di Notion.",
+    "cardTitle": "Baca FAQ lengkap",
+    "cardHint": "Temukan jawaban soal donasi akun, streaming, dan event.",
+    "open": "Buka FAQ",
+    "topics": {
+      "idDonation": "Donasi akun",
+      "streaming": "Streaming",
+      "event": "Event"
+    }
+  },
+  "form": {
+    "form": {
+      "title": "Formulir",
+      "description": "Formulir pendaftaran dan survei yang sedang dijalankan tim streaming, semuanya di satu tempat.",
+      "empty": "Belum ada formulir yang buka"
+    },
+    "helper": {
+      "title": "Daftar jadi helper",
+      "description": "Formulir rekrutmen helper untuk menyiapkan organized fan push dan event bersama kami.",
+      "empty": "Belum ada formulir helper yang buka"
+    }
+  },
+  "formLinks": {
+    "emptyHint": "Formulir baru akan diunggah di sini begitu dibuka.",
+    "apply": "Daftar",
+    "closed": "Ditutup",
+    "upcoming": "Segera hadir"
+  },
+  "groupOrders": {
+    "empty": "Group order fandom sedang disiapkan",
+    "emptyHint": "Akan ditambahkan setelah kami menghubungi para host group order.",
+    "apply": "Daftar",
+    "upcoming": "Segera hadir"
+  },
+  "album": {
+    "title": "Pre-order DREAM AFTER DREAM",
+    "description": "Benefit tiap versi untuk album penuh ke-6 «DREAM AFTER DREAM», link pre-order toko, dan group order fandom, semuanya di satu tempat.",
+    "period": "Periode pre-order",
+    "benefitsTitle": "Versi & benefit",
+    "benefitsEmpty": "Versi dan benefit sedang dirangkum",
+    "benefitsEmptyHint": "Kami akan unggah benefit tiap versi begitu toko-toko mengumumkannya.",
+    "colVersion": "Versi",
+    "colBenefits": "Benefit tambahan",
+    "shopsTitle": "Link pre-order toko album",
+    "groupOrdersTitle": "Group order fandom",
+    "noticeBenefits": "Benefit <strong>berbeda antar toko</strong>, dan satu toko bisa tutup lebih awal kalau stoknya habis.",
+    "noticeGroupOrders": "Group order fandom <strong>dijalankan sendiri oleh host-nya</strong>. Untuk pertanyaan soal pemesanan atau pengiriman, cek halaman tiap group order.",
+    "noticeUpdate": "Link diperbarui mengikuti pengumuman dari toko."
+  },
+  "albumShops": {
+    "empty": "Link toko sedang disiapkan",
+    "emptyHint": "Link tiap toko akan muncul di sini begitu pre-order dibuka."
+  }
+}

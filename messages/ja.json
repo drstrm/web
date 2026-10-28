@@ -1,0 +1,278 @@
+{
+  "meta": {
+    "siteName": "NCT DREAM ストリーミングチーム",
+    "title": "NCT DREAM ストリーミングチーム 公式サイト",
+    "description": "NCT DREAM のストリーミング・投票・ダウンロードガイドとワンクリックをまとめて。ストリーミングチーム公式サイトです。"
+  },
+  "layout": {
+    "skipToContent": "本文へスキップ"
+  },
+  "a11y": {
+    "openMenu": "メニューを開く",
+    "closeMenu": "メニューを閉じる"
+  },
+  "common": {
+    "close": "閉じる",
+    "imageLoading": "画像を読み込み中"
+  },
+  "locale": {
+    "label": "言語を選択"
+  },
+  "theme": {
+    "toggleTheme": "テーマを切り替え",
+    "lightHint": "ライトモード — タップするとダークモードになります",
+    "darkHint": "ダークモード — タップするとライトモードになります"
+  },
+  "banner": {
+    "prev": "前のバナー",
+    "next": "次のバナー",
+    "imageAlt": "バナー"
+  },
+  "nav": {
+    "voting": "投票",
+    "streamingList": "ストリーミングリスト",
+    "votingOneclick": "ワンクリック投票",
+    "radio": "ラジオ",
+    "notice": "お知らせ",
+    "faq": "FAQ",
+    "album": "アルバム予約販売"
+  },
+  "social": {
+    "daumCafe": "Daum カフェ"
+  },
+  "contact": {
+    "streamingTeam": "ストリーミングチームへ問い合わせ",
+    "eventTeam": "イベントチームへ問い合わせ"
+  },
+  "home": {
+    "shortcuts": "ショートカット",
+    "youtubeMv": "YouTube MV",
+    "realtimeChart": "リアルタイムチャート",
+    "chartWaiting": "更新待ち",
+    "calendar": "カレンダー",
+    "preorder": "アルバム予約販売・共同購入",
+    "preorderCard": "予約販売期間 {period} — バージョンごとの特典、アルバムショップのリンク、ファン共同購入をまとめました。",
+    "profileAlt": "NCT DREAM 集合写真"
+  },
+  "mv": {
+    "latest": "最新 MV",
+    "embedSoon": "MV 埋め込みは準備中です"
+  },
+  "calendar": {
+    "prevMonth": "前の月",
+    "nextMonth": "次の月",
+    "today": "今日",
+    "noEvents": "予定はありません。",
+    "noEventsInMonth": "この月の予定はありません。",
+    "eventCount": "予定 {count}件"
+  },
+  "todo": {
+    "empty": "進行中のタスクはありません",
+    "emptyHint": "投票・ストリーミングの予定が始まるとここに表示されます。",
+    "footnote": "カムバック期間中に毎日こなす投票・ストリーミングのリストです。",
+    "guide": "ガイド",
+    "deadline": {
+      "daily": "毎日",
+      "always": "随時",
+      "due": "締切 {due}"
+    }
+  },
+  "voteApps": {
+    "ongoing": "進行中の投票",
+    "count": "{count}件",
+    "empty": "進行中の投票はありません",
+    "emptyHint": "投票が始まるとここにショートカットが表示されます。",
+    "appShortcuts": "アプリへのショートカット",
+    "vote": "投票する"
+  },
+  "guideHub": {
+    "navTitle": "ガイド",
+    "title": "ストリーミングガイド",
+    "description": "ストリーミングが初めてでも大丈夫。スクリーンショット中心でそのまま進められるようまとめました。"
+  },
+  "guide": {
+    "streaming": {
+      "title": "ストリーミングガイド",
+      "summary": "Melon・Genie・Bugs・FLO・Spotify など、プラットフォーム別の音源/MV ストリーミング",
+      "description": "プラットフォームを選ぶとガイド画像を大きく見られます。"
+    },
+    "id-generate": {
+      "title": "アカウント作成ガイド",
+      "summary": "Melon・Genie・Bugs・FLO・VIBE など、プラットフォーム別のアカウント作成",
+      "description": "プラットフォームごとのアカウント作成方法です。ストリーミングの前にアカウントを準備してください。"
+    },
+    "voting": {
+      "title": "投票ガイド",
+      "summary": "音楽番組・授賞式の投票アプリガイド",
+      "description": "放送局ごとの音楽番組投票アプリと、授賞式の投票方法をご案内します。"
+    },
+    "download": {
+      "title": "ダウンロードガイド",
+      "summary": "プラットフォーム別の音源・MV ダウンロード",
+      "description": "プラットフォームを選ぶとガイド画像を大きく見られます。"
+    },
+    "etc": {
+      "title": "その他のガイド",
+      "summary": "着信音・呼出音の設定、ショート動画の作成、サブスクのおすすめ",
+      "description": "着信音・呼出音の設定、ショート動画の作成、サブスク選びのガイドです。"
+    }
+  },
+  "guideSection": {
+    "audio": "音源ストリーミング",
+    "mv": "MV ストリーミング",
+    "id-generate": "アカウント作成",
+    "music-show": "音楽番組の投票",
+    "awards": "授賞式の投票",
+    "audio-dl": "音源ダウンロード",
+    "mv-dl": "MV ダウンロード",
+    "etc": "その他のガイド"
+  },
+  "guideList": {
+    "empty": "ガイドを準備しています",
+    "emptyHint": "準備ができ次第こちらに掲載します。",
+    "comingSoon": "公開予定",
+    "view": "ガイドを見る",
+    "pages": "{count}枚"
+  },
+  "guideDetail": {
+    "noImages": "ガイド画像はまだありません",
+    "noImagesHint": "準備ができ次第こちらに掲載します。",
+    "saveImage": "画像を保存",
+    "backToList": "{category}の一覧へ"
+  },
+  "oneclickHub": {
+    "title": "ワンクリック",
+    "description": "ワンタップでストリーミング・投票・ラジオ投稿まで。リンクを押すだけで実行されます。",
+    "streamingDesc": "プラットフォーム別の再生リストをワンクリックで開く",
+    "votingDesc": "投票アプリへのショートカットとワンクリック SMS 投票",
+    "radioDesc": "放送局別のラジオ番組表とワンクリック投稿"
+  },
+  "oneclickStreaming": {
+    "metaTitle": "ワンクリック ストリーミングリスト",
+    "description": "プラットフォームと使っている端末を選ぶと、ワンクリックのストリーミングリンクがすぐ開きます。",
+    "noticeDevice": "ワンクリックリンクはプラットフォームと端末（Android / iOS / PC）ごとに異なります。<strong>お使いの端末に合うリンク</strong>を押してください。",
+    "noticeOrder": "リストが複数ある場合は 1〜4 の順に回してください。",
+    "noticeUpdate": "リンクはカムバックのたびに最新音源へ更新されます。"
+  },
+  "oneclickVoting": {
+    "description": "投票アプリへのショートカットと SMS 投票をまとめて。",
+    "appVote": "アプリ投票",
+    "smsVote": "SMS 投票"
+  },
+  "oneclickRadio": {
+    "metaTitle": "ワンクリック ラジオ",
+    "description": "いま放送中の番組に合わせてメッセージを作ります。ボタン一つで SMS 投稿まで。",
+    "oneclickTitle": "ワンクリック ラジオ投稿",
+    "oneclickHint": "局を押すと、放送中の番組に合わせたメッセージが表示されます。",
+    "scheduleTitle": "放送局別の番組表",
+    "scheduleHint": "放送局ごとの番組表は、掲載されている画像でご確認いただけます。"
+  },
+  "streamingLists": {
+    "empty": "ストリーミングリストはまだ登録されていません",
+    "emptyHint": "カムバックに合わせてプラットフォーム別のワンクリックリンクを掲載します。",
+    "shortcut": "ワンクリック ストリーミングを開く",
+    "list": "リスト"
+  },
+  "smsVote": {
+    "title": "ワンクリック SMS 投票",
+    "currentShow": "この時間帯の音楽番組",
+    "checking": "確認中…",
+    "noShow": "放送なし",
+    "oneclick": "ワンクリック SMS 投票",
+    "hintReady": "モバイルでメッセージアプリが開きます。",
+    "hintWaiting": "リアルタイム SMS 投票の時間になるとボタンが有効になります。"
+  },
+  "radio": {
+    "noProgram": "番組なし",
+    "noSchedule": "番組情報なし",
+    "noScheduleInfo": "番組情報なし",
+    "checking": "確認中…",
+    "editNotice": "当日のラジオのテーマに合わせて、ひと言添えてから送ってください",
+    "editHint": "下の欄を押すと自由に編集できます。書いたものがそのまま SMS に入ります。",
+    "messageLabel": "送るメッセージ",
+    "loading": "メッセージを作成しています…",
+    "placeholder": "送りたいメッセージを書いてください。",
+    "chars": "{count}文字",
+    "refresh": "別のメッセージにする",
+    "send": "送信",
+    "guideImage": "ラジオ投稿ガイドの画像",
+    "guideAlt": "{broadcaster} ラジオ投稿ガイド",
+    "saveImage": "画像を保存",
+    "possibility": {
+      "2": "可能性が高い",
+      "1": "可能性あり",
+      "0": "採用されにくい"
+    }
+  },
+  "community": {
+    "title": "コミュニティ",
+    "description": "お知らせ・FAQ・応募フォームは運営が Notion で直接管理しているため、つねに最新の状態です。",
+    "noticeDesc": "チーム公式のお知らせ・イベント案内",
+    "faqDesc": "アカウント提供・ストリーミング・イベントに関する FAQ"
+  },
+  "notice": {
+    "title": "お知らせ",
+    "description": "チーム公式のお知らせです。内容は運営が Notion で管理しています。",
+    "cardTitle": "公式のお知らせを読む",
+    "cardHint": "Notion のページへ移動します。",
+    "open": "お知らせを開く",
+    "giftTitle": "ギフトカードイベントのご案内",
+    "giftHint": "ギフトカードに関するお問い合わせは、下記のカカオチャンネルへお願いします。"
+  },
+  "faq": {
+    "metaTitle": "FAQ",
+    "title": "よくある質問",
+    "description": "よくいただく質問をまとめました。FAQ 全文は Notion で管理しています。",
+    "cardTitle": "FAQ 全文を読む",
+    "cardHint": "アカウント提供・ストリーミング・イベントに関する質問をご確認ください。",
+    "open": "FAQ を開く",
+    "topics": {
+      "idDonation": "アカウント提供",
+      "streaming": "ストリーミング",
+      "event": "イベント"
+    }
+  },
+  "form": {
+    "form": {
+      "title": "フォーム",
+      "description": "ストリーミングチームが実施中の応募・アンケートフォームをまとめました。",
+      "empty": "受付中のフォームはありません"
+    },
+    "helper": {
+      "title": "ヘルパーに応募",
+      "description": "一斉ストリーミング企画やイベントを一緒に準備するヘルパーを募集するフォームです。",
+      "empty": "募集中のヘルパーフォームはありません"
+    }
+  },
+  "formLinks": {
+    "emptyHint": "新しいフォームが開くとこちらに掲載します。",
+    "apply": "応募",
+    "closed": "受付終了",
+    "upcoming": "準備中"
+  },
+  "groupOrders": {
+    "empty": "ファン共同購入を準備しています",
+    "emptyHint": "主催者さまとの連絡が済み次第、追加していきます。",
+    "apply": "応募",
+    "upcoming": "準備中"
+  },
+  "album": {
+    "title": "DREAM AFTER DREAM 予約販売",
+    "description": "正規 6 作目「DREAM AFTER DREAM」のバージョン別特典、アルバムショップの予約リンク、ファン共同購入をまとめました。",
+    "period": "予約販売期間",
+    "benefitsTitle": "アルバムのバージョン・特典",
+    "benefitsEmpty": "バージョン・特典を整理しています",
+    "benefitsEmptyHint": "アルバムショップの告知が出次第、バージョン別の特典を掲載します。",
+    "colVersion": "バージョン",
+    "colBenefits": "追加特典",
+    "shopsTitle": "アルバムショップの予約リンク",
+    "groupOrdersTitle": "ファン共同購入",
+    "noticeBenefits": "特典は<strong>アルバムショップごとに絵柄が異なり</strong>、在庫がなくなり次第、早期に終了する場合があります。",
+    "noticeGroupOrders": "ファン共同購入は<strong>主催者が直接運営</strong>しています。申込・配送のお問い合わせは各共同購入のページをご確認ください。",
+    "noticeUpdate": "リンクはアルバムショップの告知に合わせて更新されます。"
+  },
+  "albumShops": {
+    "empty": "アルバムショップのリンクを準備しています",
+    "emptyHint": "予約販売が始まり次第、ショップごとのリンクをこちらに掲載します。"
+  }
+}

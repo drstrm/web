@@ -1,0 +1,278 @@
+{
+  "meta": {
+    "siteName": "NCT DREAM 打榜组",
+    "title": "NCT DREAM 打榜组官方网站",
+    "description": "NCT DREAM 的打榜、投票、下载教程和一键链接，全部集中在这里。打榜组官方网站。"
+  },
+  "layout": {
+    "skipToContent": "跳至正文"
+  },
+  "a11y": {
+    "openMenu": "打开菜单",
+    "closeMenu": "关闭菜单"
+  },
+  "common": {
+    "close": "关闭",
+    "imageLoading": "正在加载图片"
+  },
+  "locale": {
+    "label": "选择语言"
+  },
+  "theme": {
+    "toggleTheme": "切换主题",
+    "lightHint": "浅色模式 — 点击切换到深色模式",
+    "darkHint": "深色模式 — 点击切换到浅色模式"
+  },
+  "banner": {
+    "prev": "上一张横幅",
+    "next": "下一张横幅",
+    "imageAlt": "横幅"
+  },
+  "nav": {
+    "voting": "投票",
+    "streamingList": "打榜歌单",
+    "votingOneclick": "一键投票",
+    "radio": "电台",
+    "notice": "公告",
+    "faq": "常见问题",
+    "album": "专辑预售"
+  },
+  "social": {
+    "daumCafe": "Daum 咖啡厅"
+  },
+  "contact": {
+    "streamingTeam": "联系打榜组",
+    "eventTeam": "联系活动组"
+  },
+  "home": {
+    "shortcuts": "快捷入口",
+    "youtubeMv": "YouTube MV",
+    "realtimeChart": "实时榜单",
+    "chartWaiting": "等待更新",
+    "calendar": "日历",
+    "preorder": "专辑预售・团购",
+    "preorderCard": "预售时间 {period} — 各版本特典、专辑店链接和粉丝团购，全部集中在这里。",
+    "profileAlt": "NCT DREAM 合照"
+  },
+  "mv": {
+    "latest": "最新 MV",
+    "embedSoon": "MV 嵌入功能即将上线"
+  },
+  "calendar": {
+    "prevMonth": "上个月",
+    "nextMonth": "下个月",
+    "today": "今天",
+    "noEvents": "暂无日程。",
+    "noEventsInMonth": "本月暂无日程。",
+    "eventCount": "{count} 项日程"
+  },
+  "todo": {
+    "empty": "目前没有待办事项",
+    "emptyHint": "投票和打榜日程开始后会显示在这里。",
+    "footnote": "回归期间每天都要完成的投票和打榜清单。",
+    "guide": "教程",
+    "deadline": {
+      "daily": "每天",
+      "always": "长期",
+      "due": "截止 {due}"
+    }
+  },
+  "voteApps": {
+    "ongoing": "进行中的投票",
+    "count": "{count} 项",
+    "empty": "目前没有进行中的投票",
+    "emptyHint": "投票开始后这里会出现快捷按钮。",
+    "appShortcuts": "应用快捷入口",
+    "vote": "去投票"
+  },
+  "guideHub": {
+    "navTitle": "教程",
+    "title": "打榜教程",
+    "description": "第一次打榜也没关系。每篇教程都以截图为主，照着做就可以。"
+  },
+  "guide": {
+    "streaming": {
+      "title": "打榜教程",
+      "summary": "Melon、Genie、Bugs、FLO、Spotify 等各平台的音源/MV 打榜",
+      "description": "选择平台即可放大查看教程图片。"
+    },
+    "id-generate": {
+      "title": "注册账号教程",
+      "summary": "在 Melon、Genie、Bugs、FLO、VIBE 等平台注册账号",
+      "description": "各平台的账号注册方法。打榜前请先准备好账号。"
+    },
+    "voting": {
+      "title": "投票教程",
+      "summary": "音乐节目和颁奖礼的投票应用教程",
+      "description": "介绍各电视台音乐节目的投票应用，以及颁奖礼的投票方法。"
+    },
+    "download": {
+      "title": "下载教程",
+      "summary": "各平台的音源和 MV 下载",
+      "description": "选择平台即可放大查看教程图片。"
+    },
+    "etc": {
+      "title": "其他教程",
+      "summary": "彩铃和铃声设置、短视频制作、会员套餐推荐",
+      "description": "彩铃和铃声设置、短视频制作、会员套餐选择的教程。"
+    }
+  },
+  "guideSection": {
+    "audio": "音源打榜",
+    "mv": "MV 打榜",
+    "id-generate": "注册账号",
+    "music-show": "音乐节目投票",
+    "awards": "颁奖礼投票",
+    "audio-dl": "音源下载",
+    "mv-dl": "MV 下载",
+    "etc": "其他教程"
+  },
+  "guideList": {
+    "empty": "教程正在准备中",
+    "emptyHint": "准备好后会第一时间发布在这里。",
+    "comingSoon": "即将上线",
+    "view": "查看教程",
+    "pages": "{count} 张"
+  },
+  "guideDetail": {
+    "noImages": "还没有教程图片",
+    "noImagesHint": "准备好后会第一时间发布在这里。",
+    "saveImage": "保存图片",
+    "backToList": "返回{category}"
+  },
+  "oneclickHub": {
+    "title": "一键直达",
+    "description": "一次点击就能打榜、投票、给电台投稿。点开链接就会直接运行。",
+    "streamingDesc": "一键打开各平台的打榜歌单",
+    "votingDesc": "投票应用快捷入口和一键短信投票",
+    "radioDesc": "各电台的节目表和一键投稿"
+  },
+  "oneclickStreaming": {
+    "metaTitle": "一键打榜歌单",
+    "description": "选择平台和你正在用的设备，一键打榜链接就会立刻打开。",
+    "noticeDevice": "一键链接会因平台和设备（Android / iOS / PC）而不同。请点击<strong>与你的设备相符的链接</strong>。",
+    "noticeOrder": "如果有多个歌单，请按 1 到 4 的顺序依次循环。",
+    "noticeUpdate": "每次回归时，链接都会更新为最新音源。"
+  },
+  "oneclickVoting": {
+    "description": "投票应用快捷入口和短信投票，一次搞定。",
+    "appVote": "应用投票",
+    "smsVote": "短信投票"
+  },
+  "oneclickRadio": {
+    "metaTitle": "一键电台",
+    "description": "我们会根据当前正在播出的节目帮你写好投稿，一键就能用短信发送。",
+    "oneclickTitle": "一键电台投稿",
+    "oneclickHint": "点击电台，就会显示为当前节目写好的投稿。",
+    "scheduleTitle": "各电台节目表",
+    "scheduleHint": "各电台的完整节目表可以通过已发布的图片查看。"
+  },
+  "streamingLists": {
+    "empty": "还没有登记打榜歌单",
+    "emptyHint": "回归时会发布各平台的一键链接。",
+    "shortcut": "打开一键打榜",
+    "list": "歌单"
+  },
+  "smsVote": {
+    "title": "一键短信投票",
+    "currentShow": "当前时段的音乐节目",
+    "checking": "正在确认…",
+    "noShow": "当前无节目",
+    "oneclick": "一键短信投票",
+    "hintReady": "在手机上会打开短信应用。",
+    "hintWaiting": "实时短信投票开始后按钮就会启用。"
+  },
+  "radio": {
+    "noProgram": "无节目",
+    "noSchedule": "暂无节目信息",
+    "noScheduleInfo": "暂无节目信息",
+    "checking": "正在确认…",
+    "editNotice": "请结合当天电台的主题补充一两句后再发送",
+    "editHint": "点击下面的输入框可以自由修改，你写的内容会原样发送。",
+    "messageLabel": "要发送的投稿",
+    "loading": "正在生成投稿…",
+    "placeholder": "请写下你想发送的投稿。",
+    "chars": "{count} 字",
+    "refresh": "换一条投稿",
+    "send": "发送",
+    "guideImage": "电台投稿教程图片",
+    "guideAlt": "{broadcaster} 电台投稿教程",
+    "saveImage": "保存图片",
+    "possibility": {
+      "2": "机会较大",
+      "1": "有机会",
+      "0": "较难被选中"
+    }
+  },
+  "community": {
+    "title": "社区",
+    "description": "公告、常见问题和报名表单由运营直接在 Notion 管理，始终保持最新。",
+    "noticeDesc": "团队官方公告和活动通知",
+    "faqDesc": "关于账号支援、打榜、活动的常见问题"
+  },
+  "notice": {
+    "title": "公告",
+    "description": "团队官方公告。内容由运营在 Notion 管理。",
+    "cardTitle": "查看官方公告",
+    "cardHint": "将跳转到 Notion 页面。",
+    "open": "打开公告",
+    "giftTitle": "关于礼品卡活动",
+    "giftHint": "关于礼品卡的问题，请通过下面的 KakaoTalk 频道咨询。"
+  },
+  "faq": {
+    "metaTitle": "常见问题",
+    "title": "常见问题",
+    "description": "我们整理了最常被问到的问题。完整的常见问题在 Notion 管理。",
+    "cardTitle": "查看完整常见问题",
+    "cardHint": "查看关于账号支援、打榜、活动的问答。",
+    "open": "打开常见问题",
+    "topics": {
+      "idDonation": "账号支援",
+      "streaming": "打榜",
+      "event": "活动"
+    }
+  },
+  "form": {
+    "form": {
+      "title": "表单入口",
+      "description": "打榜组正在进行的报名和问卷表单，全部集中在这里。",
+      "empty": "目前没有进行中的表单"
+    },
+    "helper": {
+      "title": "报名成为志愿者",
+      "description": "招募志愿者一起筹备集中打榜和活动的表单。",
+      "empty": "目前没有招募中的志愿者表单"
+    }
+  },
+  "formLinks": {
+    "emptyHint": "新表单开放后会立即发布在这里。",
+    "apply": "报名",
+    "closed": "已结束",
+    "upcoming": "准备中"
+  },
+  "groupOrders": {
+    "empty": "粉丝团购正在准备中",
+    "emptyHint": "与团长联系确认后会陆续添加。",
+    "apply": "报名",
+    "upcoming": "准备中"
+  },
+  "album": {
+    "title": "DREAM AFTER DREAM 预售",
+    "description": "正规六辑《DREAM AFTER DREAM》各版本特典、专辑店预售链接和粉丝团购，全部集中在这里。",
+    "period": "预售时间",
+    "benefitsTitle": "专辑版本・特典",
+    "benefitsEmpty": "正在整理版本和特典",
+    "benefitsEmptyHint": "专辑店公布后，会第一时间发布各版本的特典。",
+    "colVersion": "版本",
+    "colBenefits": "额外特典",
+    "shopsTitle": "专辑店预售链接",
+    "groupOrdersTitle": "粉丝团购",
+    "noticeBenefits": "特典<strong>每家专辑店的图案都不同</strong>，售完后可能会提前结束。",
+    "noticeGroupOrders": "粉丝团购<strong>由团长自行运营</strong>。关于报名和配送的问题，请查看各团购的页面。",
+    "noticeUpdate": "链接会随专辑店的公布同步更新。"
+  },
+  "albumShops": {
+    "empty": "专辑店链接正在准备中",
+    "emptyHint": "预售开始后，各店的链接会立刻发布在这里。"
+  }
+}

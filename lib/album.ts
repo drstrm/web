@@ -14,13 +14,16 @@
  * 아래 ALBUM(제목 · 기간) + 노션 세 DB 의 행. 화면 코드는 건드릴 필요가 없다.
  */
 
+/*
+ * 제목 · 설명은 여기 없다 — messages 의 `album.{title,description}` 이다.
+ * 앨범명(DREAM AFTER DREAM)은 고유명사라 어느 언어에서도 그대로 들어간다.
+ *
+ * 기간만 여기 남긴다. 날짜 표기라 번역 대상이 아니고, 컴백마다 이 한 줄만
+ * 고치면 홈 · 커뮤니티 카드 · 앨범 페이지가 같이 바뀐다.
+ */
 export const ALBUM = {
-  /** 페이지 제목 · <title> · 홈 · 커뮤니티 카드 제목 */
-  title: "DREAM AFTER DREAM 예약판매",
   /** 화면에 그대로 나오는 기간 표기 (자유 텍스트) */
   period: "~ 11/8",
-  description:
-    "정규 6집 「DREAM AFTER DREAM」 버전별 특전과 앨범사 예약판매 링크, 팬덤 공구를 한곳에 모았어요.",
 } as const;
 
 /**

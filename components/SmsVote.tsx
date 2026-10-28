@@ -1,6 +1,7 @@
 "use client";
 
 import { MessageSquareText, Radio, Send } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { useEffect, useState, type MouseEvent } from "react";
 import SmartLink from "@/components/SmartLink";
 import { Button, Card, IconTile, Notice } from "@/components/ui";
@@ -16,6 +17,7 @@ import { isIosDevice, smsHref } from "@/lib/sms";
  * 「지금 보낼 수 있다」는 신호다.
  */
 export default function SmsVote() {
+  const tr = useTranslations("smsVote");
   const [slot, setSlot] = useState<SmsVoteSlot | null>(null);
   const [ready, setReady] = useState(false);
 
@@ -53,20 +55,20 @@ export default function SmsVote() {
         <IconTile tone="sky" size="md">
           <MessageSquareText strokeWidth={2.2} />
         </IconTile>
-        <h3 className="font-extrabold">문자 투표 원클릭</h3>
+        <h3 className="font-extrabold">{tr("title")}</h3>
       </div>
 
       <div className="mt-4 rounded-xl bg-sky-50 px-4 py-3.5">
         <p className="flex items-center gap-1.5 text-[11px] font-bold uppercase tracking-wide text-muted">
           <Radio className="size-3 shrink-0 text-sky-500" strokeWidth={2.4} />
-          현재 시간대 음악방송
+          {tr("currentShow")}
         </p>
         <p className="mt-1 flex items-center gap-2 text-lg font-extrabold text-sky-700">
           {active && (
             <span aria-hidden className="pulse-dot size-2 shrink-0 rounded-full bg-champagne-400" />
           )}
           <span className="min-w-0 truncate">
-            {!ready ? "확인 중..." : (slot?.show ?? "방송 없음")}
+            {!ready ? tr("checking") : (slot?.show ?? tr("noShow"))}
           </span>
         </p>
       </div>
@@ -75,20 +77,20 @@ export default function SmsVote() {
         <Button asChild variant="accent" size="lg" block className="mt-4">
           <SmartLink href={href!} onClick={handleSend}>
             <Send strokeWidth={2.4} />
-            원클릭 문자투표
+            {tr("oneclick")}
           </SmartLink>
         </Button>
       ) : (
         <Button variant="outline" size="lg" block disabled className="mt-4">
           <Send strokeWidth={2.4} />
-          원클릭 문자투표
+          {tr("oneclick")}
         </Button>
       )}
 
       <Notice className="mt-3">
         {active
-          ? "모바일에서 문자 앱이 열립니다."
-          : "실시간 문자투표 시간이 되면 버튼이 활성화됩니다."}
+          ? tr("hintReady")
+          : tr("hintWaiting")}
       </Notice>
     </Card>
   );

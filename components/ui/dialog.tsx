@@ -1,6 +1,7 @@
 "use client";
 
 import * as DialogPrimitive from "@radix-ui/react-dialog";
+import { useTranslations } from "next-intl";
 import { X } from "lucide-react";
 import type { ComponentProps, ReactNode } from "react";
 import { cn } from "@/lib/utils";
@@ -49,9 +50,10 @@ export function DialogContent({
 
 /** 오른쪽 위 닫기 버튼 */
 export function DialogCloseButton() {
+  const t = useTranslations("common");
   return (
     <DialogPrimitive.Close
-      aria-label="닫기"
+      aria-label={t("close")}
       className={cn(
         "grid size-9 shrink-0 place-items-center rounded-xl border border-border",
         "text-muted transition-colors hover:bg-sky-50 hover:text-sky-700",

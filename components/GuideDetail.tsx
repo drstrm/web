@@ -1,4 +1,5 @@
 import { ArrowLeft, ChevronLeft, FileImage, ImageDown } from "lucide-react";
+import { getTranslations } from "next-intl/server";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import LoadingImage from "@/components/LoadingImage";
@@ -30,6 +31,9 @@ export default async function GuideDetail({
   const { item, section } = entry;
   const info = getGuidePageInfo(page);
   const images = item.images ?? [];
+  const t = await getTranslations("guideDetail");
+  // 카테고리 이름(「스트리밍 가이드」)은 가이드 묶음에 있다
+  const category = await getTranslations(`guide.${page}`);
 
   return (
     <div>
@@ -38,7 +42,7 @@ export default async function GuideDetail({
         className="inline-flex items-center gap-1 text-sm font-bold text-muted transition-colors hover:text-sky-700"
       >
         <ChevronLeft className="size-3.5 shrink-0" strokeWidth={2.5} />
-        {info.title}
+        {category("title")}
       </SmartLink>
 
       <header className="mt-3 mb-6 flex items-start gap-3">
@@ -70,8 +74,8 @@ export default async function GuideDetail({
       {images.length === 0 ? (
         <EmptyState
           icon={FileImage}
-          title="아직 등록된 가이드 이미지가 없어요"
-          description="가이드가 준비되는 대로 이곳에 올라옵니다."
+          title={t("noImages")}
+          description={t("noImagesHint")}
         />
       ) : (
         <div className="-mx-4 space-y-6 sm:mx-0">
@@ -100,7 +104,7 @@ export default async function GuideDetail({
                 <Button asChild variant="accent" size="sm">
                   <a href={img.src} download>
                     <ImageDown strokeWidth={2.4} />
-                    이미지 저장
+                    {t("saveImage")}
                   </a>
                 </Button>
               </figcaption>
@@ -113,7 +117,7 @@ export default async function GuideDetail({
         <Button asChild variant="outline" size="lg">
           <SmartLink href={info.href}>
             <ArrowLeft strokeWidth={2.4} />
-            {info.title} 목록으로
+            {t("backToList", { category: category("title") })}
           </SmartLink>
         </Button>
       </div>
@@ -128,14 +132,20 @@ export default async function GuideDetail({
 export async function guideDetailMetadata(
   page: GuidePage,
   slug: string,
+  locale: string,
 ): Promise<Metadata> {
-  const info = getGuidePageInfo(page);
+  const t = await getTranslations({ locale, namespace: `guide.${page}` });
+  const category = t("title");
   const entry = await getGuideEntry(page, decodeSlug(slug));
-  if (!entry) return { title: info.title };
+  if (!entry) return { title: category };
 
-  // 노션 제목이 이미 "멜론 다운로드 가이드" 처럼 카테고리를 품고 있으면 덧붙이지 않는다.
+  /*
+   * 노션 제목이 이미 "멜론 다운로드 가이드" 처럼 카테고리를 품고 있으면
+   * 덧붙이지 않는다. 노션 제목은 운영진이 쓴 한국어라 카테고리명이 번역된
+   * 언어에서는 이 비교가 걸리지 않고 둘 다 붙는데, 그래도 틀린 제목은 아니다.
+   */
   const { title } = entry.item;
-  return { title: title.includes(info.title) ? title : `${title} · ${info.title}` };
+  return { title: title.includes(category) ? title : `${title} · ${category}` };
 }
 
 /**

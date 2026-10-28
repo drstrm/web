@@ -3,7 +3,7 @@
  * ------------------------------------------------------------------
  * 화면은 `@/components/ui` 하나만 import 한다. 아이콘은 lucide-react,
  * 변형(variant)은 class-variance-authority, 클래스 병합은 tailwind-merge 가
- * 맡고, 접근성이 필요한 위젯(Dialog · Accordion)은 Radix 위에 얹었다.
+ * 맡고, 접근성이 필요한 위젯(Dialog · Accordion · Dropdown)은 Radix 위에 얹었다.
  *
  * 색 토큰은 app/globals.css 한 곳에만 있다.
  */
@@ -21,6 +21,12 @@ export {
   AccordionTrigger,
   AccordionContent,
 } from "./accordion";
+export {
+  Dropdown,
+  DropdownTrigger,
+  DropdownContent,
+  DropdownItem,
+} from "./dropdown";
 export {
   Dialog,
   DialogTrigger,

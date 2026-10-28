@@ -1,4 +1,5 @@
 import { CalendarRange } from "lucide-react";
+import { getTranslations } from "next-intl/server";
 import { Card, ComingSoon, IconTile, SectionTitle } from "@/components/ui";
 import { ALBUM } from "@/lib/album";
 import type { AlbumBenefit } from "@/lib/content";
@@ -17,7 +18,8 @@ import type { AlbumBenefit } from "@/lib/content";
  * 「전 버전 공통」처럼 버전이 아닌 줄도 노션에 적힌 그대로 한 줄이 된다. 어느 줄을
  * 특별 취급하는 규칙을 코드에 두지 않아야, 줄을 더하고 옮기는 일이 노션에서 끝난다.
  */
-export default function AlbumInfo({ benefits }: { benefits: AlbumBenefit[] }) {
+export default async function AlbumInfo({ benefits }: { benefits: AlbumBenefit[] }) {
+  const t = await getTranslations("album");
   return (
     <>
       {/* 기간 — 페이지에서 가장 먼저 읽혀야 하는 값이라 포인트색 타일을 준다 */}
@@ -27,19 +29,19 @@ export default function AlbumInfo({ benefits }: { benefits: AlbumBenefit[] }) {
         </IconTile>
         <div className="min-w-0">
           <p className="font-display text-[11px] font-bold uppercase tracking-[0.14em] text-muted">
-            예약판매 기간
+            {t("period")}
           </p>
           <p className="text-xl font-extrabold tracking-tight">{ALBUM.period}</p>
         </div>
       </Card>
 
       <section>
-        <SectionTitle>앨범 버전 · 특전</SectionTitle>
+        <SectionTitle>{t("benefitsTitle")}</SectionTitle>
         {/* 노션 조회에 실패했거나(로그: [album-benefits]) 아직 행이 없는 경우 */}
         {benefits.length === 0 ? (
           <ComingSoon
-            label="버전 · 특전 정리 중입니다"
-            description="앨범사 공지가 나오는 대로 버전별 특전을 올려드릴게요."
+            label={t("benefitsEmpty")}
+            description={t("benefitsEmptyHint")}
           />
         ) : (
           <Card className="overflow-hidden p-0">
@@ -47,10 +49,10 @@ export default function AlbumInfo({ benefits }: { benefits: AlbumBenefit[] }) {
               <thead>
                 <tr className="border-b border-border bg-surface-soft text-[11px] font-bold tracking-wide text-muted">
                   <th scope="col" className="px-4 py-2.5">
-                    버전
+                    {t("colVersion")}
                   </th>
                   <th scope="col" className="px-4 py-2.5">
-                    추가 특전
+                    {t("colBenefits")}
                   </th>
                 </tr>
               </thead>

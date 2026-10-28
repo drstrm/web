@@ -1,4 +1,4 @@
-import Link from "next/link";
+import { Link } from "@/i18n/navigation";
 import type { AnchorHTMLAttributes, ReactNode } from "react";
 import { resolveHref } from "@/lib/url";
 
@@ -10,7 +10,11 @@ import { resolveHref } from "@/lib/url";
  * `rel` 을 직접 붙이던 것을 여기 한 곳으로 모은 것이다 — 새로 만드는 화면이
  * `rel="noopener"` 를 빠뜨리거나 새 탭 규칙을 다르게 가져갈 여지를 없앤다.
  *
- * 내부 경로는 next/link 로 나가므로 프리페치 · 클라이언트 라우팅이 그대로 유지된다.
+ * 내부 경로는 next-intl 의 <Link> 로 나간다. 프리페치 · 클라이언트 라우팅이
+ * 그대로 유지되고, **지금 언어의 접두어가 자동으로 붙는다** — 영어로 보는
+ * 사용자가 메뉴를 눌렀을 때 한국어 주소로 나갔다가 리다이렉트로 되돌아오는
+ * 왕복이 없다. 사이트의 모든 내부 링크가 여기를 지나므로 이 파일 하나로
+ * 전체가 커버된다.
  */
 export default function SmartLink({
   href,

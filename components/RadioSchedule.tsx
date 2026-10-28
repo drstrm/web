@@ -1,6 +1,7 @@
 "use client";
 
 import { ImageDown, Radio } from "lucide-react";
+import { useTranslations } from "next-intl";
 import LoadingImage from "@/components/LoadingImage";
 import {
   Accordion,
@@ -41,6 +42,7 @@ const RADIO_SCHEDULE_IMAGES: RadioScheduleImage[] = [
 
 /** public/radio 에 등록된 방송사별 편성표 이미지를 그대로 보여준다. */
 export default function RadioSchedule() {
+  const tr = useTranslations("radio");
   return (
     <Accordion
       type="single"
@@ -59,7 +61,7 @@ export default function RadioSchedule() {
                 {image.broadcaster}
               </span>
               <span className="block truncate text-xs text-muted">
-                라디오 신청 가이드 이미지
+                {tr("guideImage")}
               </span>
             </span>
           </AccordionTrigger>
@@ -68,7 +70,7 @@ export default function RadioSchedule() {
             <figure>
               <LoadingImage
                 src={image.src}
-                alt={`${image.broadcaster} 라디오 신청 가이드`}
+                alt={tr("guideAlt", { broadcaster: image.broadcaster })}
                 width={image.width}
                 height={image.height}
                 sizes="(max-width: 1024px) 100vw, 1024px"
@@ -81,7 +83,7 @@ export default function RadioSchedule() {
                 <Button asChild variant="accent" size="sm">
                   <a href={image.src} download>
                     <ImageDown strokeWidth={2.4} />
-                    이미지 저장
+                    {tr("saveImage")}
                   </a>
                 </Button>
               </figcaption>

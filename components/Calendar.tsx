@@ -1,6 +1,7 @@
 "use client";
 
 import { CalendarX2, ChevronLeft, ChevronRight } from "lucide-react";
+import { useLocale, useTranslations } from "next-intl";
 import { useMemo, useState } from "react";
 import KindIcon from "@/components/KindIcon";
 import SmartLink from "@/components/SmartLink";
@@ -17,7 +18,25 @@ import { cn } from "@/lib/utils";
  *   endDate 가 있으면 시작~종료일 사이의 모든 날짜에 표시
  */
 
-const WEEKDAYS = ["일", "월", "화", "수", "목", "금", "토"];
+/**
+ * 요일 머리글 (일~토). 이름을 코드에 박지 않고 `Intl` 에서 받는다 —
+ * 언어마다 「일 월 화」 · 「Sun Mon Tue」 · 「日 月 火」 가 저절로 나오고,
+ * 번역 파일에 요일 7개를 7개 언어만큼 적어 둘 필요가 없다.
+ *
+ * ⚠ 주의 시작은 **일요일로 고정**이다 (한국 달력 관습이고, 아래 그리드의
+ *   `firstWeekday` 계산이 getUTCDay() = 0(일) 기준이다). 언어를 바꿔도
+ *   칸 순서는 그대로여야 하므로 Intl 의 지역별 주 시작일은 쓰지 않는다.
+ */
+function weekdayNames(locale: string): string[] {
+  const fmt = new Intl.DateTimeFormat(locale, {
+    weekday: "short",
+    timeZone: "UTC",
+  });
+  // 1970-01-04 는 일요일 — 거기서 7일을 뽑으면 일~토가 된다
+  return Array.from({ length: 7 }, (_, i) =>
+    fmt.format(new Date(Date.UTC(1970, 0, 4 + i))),
+  );
+}
 
 const DAY_MS = 86_400_000;
 
@@ -50,6 +69,29 @@ function seoulToday() {
 }
 
 export default function Calendar({ events }: { events: CalendarEvent[] }) {
+  const t = useTranslations("calendar");
+  const locale = useLocale();
+  const WEEKDAYS = useMemo(() => weekdayNames(locale), [locale]);
+  /** 「2026년 10월」 · 「October 2026」 — 순서까지 언어가 정한다 */
+  const monthLabel = useMemo(
+    () =>
+      new Intl.DateTimeFormat(locale, {
+        year: "numeric",
+        month: "long",
+        timeZone: "UTC",
+      }),
+    [locale],
+  );
+  /** 「10월 5일」 · 「October 5」 — 선택한 날짜 뱃지 */
+  const dayLabel = useMemo(
+    () =>
+      new Intl.DateTimeFormat(locale, {
+        month: "long",
+        day: "numeric",
+        timeZone: "UTC",
+      }),
+    [locale],
+  );
   const today = useMemo(() => seoulToday(), []);
   const [cursor, setCursor] = useState({ y: today.y, m: today.m });
   const [selected, setSelected] = useState<number | null>(today.d);
@@ -123,14 +165,14 @@ export default function Calendar({ events }: { events: CalendarEvent[] }) {
         <button
           type="button"
           onClick={() => moveMonth(-1)}
-          aria-label="이전 달"
+          aria-label={t("prevMonth")}
           className="grid size-9 place-items-center rounded-full border border-border text-muted transition-colors hover:border-sky-300 hover:bg-sky-50 hover:text-sky-700"
         >
           <ChevronLeft className="size-3.5" strokeWidth={2.5} />
         </button>
         <div className="flex items-center gap-2">
           <span className="font-display text-base font-extrabold tracking-tight">
-            {cursor.y}년 {cursor.m}월
+            {monthLabel.format(new Date(Date.UTC(cursor.y, cursor.m - 1, 1)))}
           </span>
           {!isThisMonth && (
             <button
@@ -138,14 +180,14 @@ export default function Calendar({ events }: { events: CalendarEvent[] }) {
               onClick={goToday}
               className="champagne-gradient inline-flex h-6 items-center rounded-full px-2.5 text-[11px] font-bold leading-none text-champagne-ink transition-transform active:scale-95"
             >
-              오늘
+              {t("today")}
             </button>
           )}
         </div>
         <button
           type="button"
           onClick={() => moveMonth(1)}
-          aria-label="다음 달"
+          aria-label={t("nextMonth")}
           className="grid size-9 place-items-center rounded-full border border-border text-muted transition-colors hover:border-sky-300 hover:bg-sky-50 hover:text-sky-700"
         >
           <ChevronRight className="size-3.5" strokeWidth={2.5} />
@@ -179,7 +221,7 @@ export default function Calendar({ events }: { events: CalendarEvent[] }) {
               key={day}
               type="button"
               onClick={() => setSelected(isSelected ? null : day)}
-              aria-label={`${cursor.m}월 ${day}일${dayEvents.length ? `, 일정 ${dayEvents.length}건` : ""}`}
+              aria-label={`${dayLabel.format(new Date(Date.UTC(cursor.y, cursor.m - 1, day)))}${dayEvents.length ? `, ${t("eventCount", { count: dayEvents.length })}` : ""}`}
               aria-pressed={isSelected}
               className={cn(
                 "flex aspect-square flex-col items-center justify-center gap-1 rounded-xl border text-xs transition-colors",
@@ -239,13 +281,13 @@ export default function Calendar({ events }: { events: CalendarEvent[] }) {
           <>
             <p className="mb-2.5">
               <Badge variant="sky" size="md">
-                {cursor.m}월 {selected}일
+                {dayLabel.format(new Date(Date.UTC(cursor.y, cursor.m - 1, selected)))}
               </Badge>
             </p>
             {selectedEvents.length === 0 ? (
               <p className="flex items-center gap-1.5 text-xs text-muted">
                 <CalendarX2 className="size-3 shrink-0 text-muted-soft" strokeWidth={2.2} />
-                등록된 일정이 없습니다.
+                {t("noEvents")}
               </p>
             ) : (
               <ul className="space-y-2">
@@ -277,7 +319,7 @@ export default function Calendar({ events }: { events: CalendarEvent[] }) {
         ) : monthList.length === 0 ? (
           <p className="flex items-center gap-1.5 text-xs text-muted">
             <CalendarX2 className="size-3 shrink-0 text-muted-soft" strokeWidth={2.2} />
-            {cursor.m}월에는 등록된 일정이 없습니다.
+            {t("noEventsInMonth")}
           </p>
         ) : (
           <ul className="space-y-2">

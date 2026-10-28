@@ -8,26 +8,36 @@
  */
 
 export const SITE = {
-  name: "NCT DREAM 스트리밍팀",
+  /*
+   * 팀 이름(「NCT DREAM 스트리밍팀」)은 여기 없다 — messages 의 `meta.siteName`.
+   * shortName 은 브랜드 표기라 어느 언어에서도 그대로 쓴다.
+   */
   shortName: "DREAM STRM",
-  description:
-    "NCT DREAM 스트리밍 · 투표 · 다운로드 가이드와 원클릭을 한곳에. 스밍팀 공식 웹사이트.",
+  /*
+   * 사이트 설명은 messages 의 `meta.description` 에 있다. 여기 두면 언어별로
+   * 바꿀 수 없어서 공유 카드 · 검색 결과가 전 언어 한국어로 나간다.
+   */
   // 메인 하단: 운영진 구글 계정 이메일
   email: "nctdreamstrm.notice@gmail.com",
   url: "https://dreamstrm.com",
 };
 
-/** 팀 공식 SNS · 소셜 위젯 (기획안 4: 소셜 위젯 연동) */
-export const SOCIALS: { label: string; href: string }[] = [
+/**
+ * 팀 공식 SNS · 소셜 위젯 (기획안 4: 소셜 위젯 연동)
+ *
+ * X · Weverse 는 서비스 이름이라 그대로 두고, 「다음 카페」만 번역 키를 쓴다 —
+ * 해외 팬에게는 「Daum Cafe」로 보여야 어디인지 짚힌다.
+ */
+export const SOCIALS: { label?: string; labelKey?: string; href: string }[] = [
   { label: "X (Twitter)", href: "https://x.com/NCTDREAM_STRM_" },
   { label: "Weverse", href: "https://weverse.io/nctdream/profile/81afe4cbdabcf25a1e728cf38c19f8d3" },
-  { label: "다음 카페", href: "https://m.cafe.daum.net/NCTDREAMstreaming" },
+  { labelKey: "social.daumCafe", href: "https://m.cafe.daum.net/NCTDREAMstreaming" },
 ];
 
 /** 문의 채널 (기획안 4: 카카오 오픈프로필) */
-export const CONTACTS: { label: string; href: string }[] = [
-  { label: "스트리밍팀 문의", href: "https://pf.kakao.com/_dxdwxbxj" },
-  { label: "이벤트팀 문의", href: "https://pf.kakao.com/_hFlxkxj" },
+export const CONTACTS: { labelKey: string; href: string }[] = [
+  { labelKey: "contact.streamingTeam", href: "https://pf.kakao.com/_dxdwxbxj" },
+  { labelKey: "contact.eventTeam", href: "https://pf.kakao.com/_hFlxkxj" },
 ];
 
 /** DREAM 공식 SNS (홈 프로필 카드) */
@@ -54,47 +64,55 @@ export const NOTION = {
   faq: "https://app.notion.com/p/nctdreamstrm/FAQ-392dec8e2bf080fd8db0e297d73336a5",
 };
 
-/** 전역 내비게이션 구조 (기획안 2: IA) */
+/**
+ * 전역 내비게이션 구조 (기획안 2: IA)
+ * ------------------------------------------------------------------
+ * 라벨을 여기 적지 않고 **번역 키**(`labelKey`)만 둔다. 문구는
+ * messages/<언어>.json 의 `nav` 묶음에 있고, 헤더 · 모바일 메뉴가 t() 로 꺼낸다.
+ *
+ * HOME · GUIDE · ONECLICK · COMMUNITY 는 디자인상 영문 대문자 그대로 쓰는
+ * 자리라(font-display) 번역 대상이 아니다 — 1단 라벨은 코드에 그대로 둔다.
+ */
 export const NAV: {
   label: string;
   href: string;
-  children?: { label: string; href: string }[];
+  children?: { labelKey: string; href: string }[];
 }[] = [
   { label: "HOME", href: "/" },
   {
     label: "GUIDE",
     href: "/guide",
     children: [
-      { label: "스트리밍 가이드", href: "/guide/streaming" },
-      { label: "아이디 생성 가이드", href: "/guide/id-generate" },
-      { label: "투표", href: "/guide/voting" },
-      { label: "다운로드 가이드", href: "/guide/download" },
-      { label: "기타 가이드", href: "/guide/etc" },
+      { labelKey: "guide.streaming.title", href: "/guide/streaming" },
+      { labelKey: "guide.id-generate.title", href: "/guide/id-generate" },
+      { labelKey: "nav.voting", href: "/guide/voting" },
+      { labelKey: "guide.download.title", href: "/guide/download" },
+      { labelKey: "guide.etc.title", href: "/guide/etc" },
     ],
   },
   {
     label: "ONECLICK",
     href: "/oneclick",
     children: [
-      { label: "스밍리스트", href: "/oneclick/streaming" },
-      { label: "투표 원클릭", href: "/oneclick/voting" },
-      { label: "라디오", href: "/oneclick/radio" },
+      { labelKey: "nav.streamingList", href: "/oneclick/streaming" },
+      { labelKey: "nav.votingOneclick", href: "/oneclick/voting" },
+      { labelKey: "nav.radio", href: "/oneclick/radio" },
     ],
   },
   {
     label: "COMMUNITY",
     href: "/community",
     children: [
-      { label: "공지사항", href: "/community/notice" },
-      { label: "FAQ", href: "/community/faq" },
-      { label: "폼 바로가기", href: "/community/forms" },
-      { label: "헬퍼 신청하기", href: "/community/helper" },
+      { labelKey: "nav.notice", href: "/community/notice" },
+      { labelKey: "nav.faq", href: "/community/faq" },
+      { labelKey: "form.form.title", href: "/community/forms" },
+      { labelKey: "form.helper.title", href: "/community/helper" },
       /*
        * 앨범 예약판매는 컴백 때만 쓰는 메뉴라 COMMUNITY 안에 둔다. 예약판매가
        * 끝나면 이 줄만 지우면 메뉴에서 빠지고, 페이지(/community/album)는 그대로
        * 남아 이미 공유된 링크가 산다.
        */
-      { label: "앨범 예약판매", href: "/community/album" },
+      { labelKey: "nav.album", href: "/community/album" },
     ],
   },
 ];

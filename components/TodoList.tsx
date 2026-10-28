@@ -1,4 +1,5 @@
 import { CalendarClock, CircleCheckBig, Infinity as InfinityIcon, Repeat } from "lucide-react";
+import { getTranslations } from "next-intl/server";
 import KindIcon from "@/components/KindIcon";
 import SmartLink from "@/components/SmartLink";
 import { Badge, EmptyState, IconTile, Notice } from "@/components/ui";
@@ -17,27 +18,38 @@ import { formatKstDate, formatKstDateTime } from "@/lib/datetime";
  * · 매일 반복 할일은 마감이 의미가 없다 — 오늘 하면 내일 또 해야 한다.
  * · 하루 종일 일정은 시각을 떼고, 기간을 안 적었으면 상시 할일.
  */
-function deadline(t: TodoItem): { icon: typeof Repeat; text: string } {
-  if (t.daily) return { icon: Repeat, text: "매일" };
-  if (!t.endsAt) return { icon: InfinityIcon, text: "상시" };
+/*
+ * 마감 표시. 문구가 아니라 **번역 키와 값**을 돌려준다 — 순수 함수라
+ * 요청의 언어를 모른다. 화면(TodoList)이 t() 로 푼다.
+ */
+function deadline(t: TodoItem): {
+  icon: typeof Repeat;
+  key: "daily" | "always" | "due";
+  due?: string;
+} {
+  if (t.daily) return { icon: Repeat, key: "daily" };
+  if (!t.endsAt) return { icon: InfinityIcon, key: "always" };
   return {
     icon: CalendarClock,
-    text: `마감 ${t.allDay ? formatKstDate(t.endsAt) : formatKstDateTime(t.endsAt)}`,
+    key: "due",
+    due: t.allDay ? formatKstDate(t.endsAt) : formatKstDateTime(t.endsAt),
   };
 }
 
-const FOOTNOTE = "컴백 기간 동안 매일 해야 하는 투표 · 스밍 리스트입니다.";
 
-export default function TodoList({ todos }: { todos: TodoItem[] }) {
+
+export default async function TodoList({ todos }: { todos: TodoItem[] }) {
+  // 목록 콜백의 `t`(TodoItem)와 겹치지 않게 번역기는 tr 로 둔다
+  const tr = await getTranslations("todo");
   if (todos.length === 0) {
     return (
       <>
         <EmptyState
           icon={CircleCheckBig}
-          title="지금 진행중인 할일이 없습니다"
-          description="투표 · 스밍 일정이 시작되면 여기에 표시됩니다."
+          title={tr("empty")}
+          description={tr("emptyHint")}
         />
-        <Notice>{FOOTNOTE}</Notice>
+        <Notice>{tr("footnote")}</Notice>
       </>
     );
   }
@@ -46,7 +58,7 @@ export default function TodoList({ todos }: { todos: TodoItem[] }) {
     <>
       <ul className="space-y-2">
         {todos.map((t) => {
-          const { icon: DeadlineIcon, text } = deadline(t);
+          const { icon: DeadlineIcon, key, due } = deadline(t);
 
           return (
             <li
@@ -73,7 +85,7 @@ export default function TodoList({ todos }: { todos: TodoItem[] }) {
                 )}
                 <p className="mt-0.5 flex items-center gap-1 text-[11px] font-semibold text-muted">
                   <DeadlineIcon className="size-2.5 shrink-0" strokeWidth={2.5} />
-                  <span className="truncate">{text}</span>
+                  <span className="truncate">{tr(`deadline.${key}`, { due: due ?? "" })}</span>
                 </p>
               </div>
 
@@ -81,7 +93,7 @@ export default function TodoList({ todos }: { todos: TodoItem[] }) {
               {t.guideUrl && (
                 <SmartLink href={t.guideUrl} className="shrink-0">
                   <Badge variant="outline" size="md">
-                    가이드
+                    {tr("guide")}
                   </Badge>
                 </SmartLink>
               )}
@@ -89,7 +101,7 @@ export default function TodoList({ todos }: { todos: TodoItem[] }) {
           );
         })}
       </ul>
-      <Notice>{FOOTNOTE}</Notice>
+      <Notice>{tr("footnote")}</Notice>
     </>
   );
 }

@@ -135,7 +135,10 @@ export const getEtcGuides = () => getGuides("etc");
 /**
  * 가이드 카테고리 정보.
  * 가이드 허브(/guide)의 카드, 각 목록 페이지의 헤더, 상세 페이지의 「목록으로」
- * 링크가 모두 여기를 본다 — 문구를 한 군데서만 고치면 된다.
+ * 링크가 모두 여기를 본다.
+ *
+ * 문구(제목 · 요약 · 설명)는 여기 없다 — messages 의 `guide.<page>.{title,summary,
+ * description}` 에 있다. 화면이 t() 로 꺼내므로 언어별로 갈린다.
  *
  * 아이콘은 여기 두지 않는다. href 로 lib/nav-icons.ts 에서 찾으므로 헤더 ·
  * 모바일 메뉴 · 허브 카드가 저절로 같은 그림을 쓴다.
@@ -143,50 +146,14 @@ export const getEtcGuides = () => getGuides("etc");
 export interface GuidePageInfo {
   page: GuidePage;
   href: string;
-  /** 페이지 제목 (허브 카드 · 헤더 · <title>) */
-  title: string;
-  /** 허브 카드의 한 줄 설명 */
-  summary: string;
-  /** 목록 페이지 헤더의 설명 */
-  description: string;
 }
 
 export const GUIDE_PAGES: GuidePageInfo[] = [
-  {
-    page: "streaming",
-    href: "/guide/streaming",
-    title: "스트리밍 가이드",
-    summary: "멜론·지니·벅스·플로·스포티파이 등 플랫폼별 음원/MV 스트리밍",
-    description: "플랫폼을 고르면 가이드 이미지를 크게 볼 수 있어요.",
-  },
-  {
-    page: "id-generate",
-    href: "/guide/id-generate",
-    title: "아이디 생성 가이드",
-    summary: "멜론·지니·벅스·플로·바이브 등 플랫폼별 계정 만들기",
-    description: "플랫폼별 아이디 만드는 방법입니다. 스밍 전에 계정부터 준비해 주세요.",
-  },
-  {
-    page: "voting",
-    href: "/guide/voting",
-    title: "투표 가이드",
-    summary: "음악방송 · 시상식 투표 앱 가이드",
-    description: "방송사별 음악방송 투표 앱과 시상식 투표 방법을 안내합니다.",
-  },
-  {
-    page: "download",
-    href: "/guide/download",
-    title: "다운로드 가이드",
-    summary: "플랫폼별 음원 · MV 다운로드",
-    description: "플랫폼을 고르면 가이드 이미지를 크게 볼 수 있어요.",
-  },
-  {
-    page: "etc",
-    href: "/guide/etc",
-    title: "기타 가이드",
-    summary: "컬러링·벨 설정, 숏폼 제작, 이용권 추천",
-    description: "컬러링·벨 설정, 숏폼 제작, 이용권 추천 가이드입니다.",
-  },
+  { page: "streaming", href: "/guide/streaming" },
+  { page: "id-generate", href: "/guide/id-generate" },
+  { page: "voting", href: "/guide/voting" },
+  { page: "download", href: "/guide/download" },
+  { page: "etc", href: "/guide/etc" },
 ];
 
 export const getGuidePageInfo = (page: GuidePage): GuidePageInfo =>
@@ -290,32 +257,20 @@ export interface FormLink {
   emoji?: string;
 }
 
-/** 폼 · 헬퍼 페이지의 고정 문구. 두 페이지가 이 값만 바꿔 쓴다 */
+/**
+ * 폼 · 헬퍼 페이지 정보. 두 페이지가 이 값만 바꿔 쓴다.
+ *
+ * 문구(제목 · 설명 · 빈 목록 안내)는 messages 의 `form.<kind>.{title,description,
+ * empty}` 에 있다.
+ */
 export interface FormPageInfo {
   kind: FormKind;
   href: string;
-  /** 페이지 제목 (헤더 · <title>) */
-  title: string;
-  description: string;
-  /** 목록이 비었을 때(아직 없거나 조회 실패) 보여줄 문구 */
-  empty: string;
 }
 
 export const FORM_PAGES: Record<FormKind, FormPageInfo> = {
-  form: {
-    kind: "form",
-    href: "/community/forms",
-    title: "폼 바로가기",
-    description: "스밍팀에서 진행 중인 신청 · 설문 폼을 한곳에 모았어요.",
-    empty: "진행 중인 폼이 없어요",
-  },
-  helper: {
-    kind: "helper",
-    href: "/community/helper",
-    title: "헬퍼 신청하기",
-    description: "총공 · 이벤트를 함께 준비할 헬퍼를 모집하는 폼입니다.",
-    empty: "모집 중인 헬퍼 폼이 없어요",
-  },
+  form: { kind: "form", href: "/community/forms" },
+  helper: { kind: "helper", href: "/community/helper" },
 };
 
 /**
@@ -343,9 +298,16 @@ export interface ChartRow {
   note?: string;
 }
 export function getRealtimeChart(): { updatedAt: string; rows: ChartRow[] } {
-  // 운영 시: 스밍팀 X 계정에 올리는 차트 데이터 소스와 연동
+  /*
+   * 운영 시: 스밍팀 X 계정에 올리는 차트 데이터 소스와 연동.
+   *
+   * 플랫폼 이름은 번역하지 않는다 — 한국 음원 서비스의 브랜드명이고, 아이콘 키
+   * (iconType)와 짝으로 읽히는 값이다. 해외 팬에게도 「Melon」 이 아니라
+   * 앱에 적힌 그대로 보이는 편이 찾기 쉽다.
+   */
   return {
-    updatedAt: "업데이트 대기 중",
+    // 화면 문구는 messages 의 `home.chart.waiting` — 여기 값은 쓰이지 않는다
+    updatedAt: "",
     rows: [
       { platform: "멜론 TOP100", iconType: "melon", rank: "—" },
       { platform: "멜론 HOT100", iconType: "melon", rank: "—" },
@@ -534,7 +496,8 @@ export async function getActiveVotes(): Promise<ActiveVote[]> {
 
 /* ---------------- HOME: 유튜브 MV ---------------- */
 export interface MvStat {
-  title: string;
+  /** 제목 번역 키 (messages 의 `mv.<키>`). 화면이 t() 로 푼다 */
+  titleKey: string;
   /** 전체 URL 이 아니라 영상 id — youtube.com/watch?v= 뒤에 붙는 그 토막 */
   youtubeId: string;
   /** 값이 도착하기 전 · 조회 실패 시의 표시값 */
@@ -552,7 +515,8 @@ export interface MvStat {
 export function getMvStats(): MvStat[] {
   return [
     // https://youtu.be/LFbU0A1-IH8
-    { title: "최신 MV", youtubeId: "LFbU0A1-IH8", views: "—", likes: "—" },
+    // 제목은 messages 의 `mv.latest` — 화면(MvCard)이 t() 로 꺼낸다
+    { titleKey: "latest", youtubeId: "LFbU0A1-IH8", views: "—", likes: "—" },
   ];
 }
 

@@ -1,4 +1,5 @@
 import { ChevronRight, HandHeart } from "lucide-react";
+import { getTranslations } from "next-intl/server";
 import SmartLink from "@/components/SmartLink";
 import { Badge, EmptyState, IconTile } from "@/components/ui";
 import type { GroupOrder } from "@/lib/content";
@@ -14,14 +15,16 @@ import { cn } from "@/lib/utils";
  * 링크가 없는 행도 남긴다. 「누가 공구를 연다」까지는 정해졌고 신청 폼만
  * 기다리는 상태가 실제로 있어서, 그때 자리를 미리 보여주는 편이 낫다.
  */
-export default function GroupOrders({ orders }: { orders: GroupOrder[] }) {
+export default async function GroupOrders({ orders }: { orders: GroupOrder[] }) {
+  const t = await getTranslations("groupOrders");
+
   if (orders.length === 0) {
     return (
       <EmptyState
         icon={HandHeart}
         tone="accent"
-        title="팬덤 공구 준비 중입니다"
-        description="공구주분 컨택 후 추가될 예정입니다."
+        title={t("empty")}
+        description={t("emptyHint")}
       />
     );
   }
@@ -35,7 +38,9 @@ export default function GroupOrders({ orders }: { orders: GroupOrder[] }) {
   );
 }
 
-function GroupOrderRow({ order }: { order: GroupOrder }) {
+async function GroupOrderRow({ order }: { order: GroupOrder }) {
+  const t = await getTranslations("groupOrders");
+
   const body = (
     <>
       <IconTile tone={order.href ? "sky" : "surface"} size="md">
@@ -59,7 +64,7 @@ function GroupOrderRow({ order }: { order: GroupOrder }) {
 
       <span className="ml-1 flex shrink-0 items-center gap-0.5 self-center">
         <Badge variant={order.href ? "accent" : "muted"} size="lg">
-          {order.href ? "신청" : "준비 중"}
+          {order.href ? t("apply") : t("upcoming")}
         </Badge>
         <ChevronRight
           aria-hidden

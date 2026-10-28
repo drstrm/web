@@ -398,6 +398,15 @@ body {
   to { opacity: 1; transform: translateY(0) scale(1); }
 }
 
+/*
+ * 헤더 드롭다운(언어 스위치). 트리거 쪽에서 솟아오르듯 보이게 위에서 살짝
+ * 내려온다 — Radix 가 메뉴를 위로 뒤집을 때도 어색하지 않은 방향이다.
+ */
+@keyframes dropdown-in {
+  from { opacity: 0; transform: translateY(-4px) scale(0.97); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+
 @keyframes accordion-down {
   from { height: 0; opacity: 0; }
   to { height: var(--radix-accordion-content-height); opacity: 1; }

@@ -1,0 +1,278 @@
+{
+  "meta": {
+    "siteName": "NCT DREAM Streaming Team",
+    "title": "NCT DREAM Streaming Team — Official Site",
+    "description": "Streaming, voting and download guides for NCT DREAM, plus one-click links. The official site of the DREAM streaming team."
+  },
+  "layout": {
+    "skipToContent": "Skip to content"
+  },
+  "a11y": {
+    "openMenu": "Open menu",
+    "closeMenu": "Close menu"
+  },
+  "common": {
+    "close": "Close",
+    "imageLoading": "Loading image"
+  },
+  "locale": {
+    "label": "Select language"
+  },
+  "theme": {
+    "toggleTheme": "Change theme",
+    "lightHint": "Light mode — tap to switch to dark mode",
+    "darkHint": "Dark mode — tap to switch to light mode"
+  },
+  "banner": {
+    "prev": "Previous banner",
+    "next": "Next banner",
+    "imageAlt": "Banner"
+  },
+  "nav": {
+    "voting": "Voting",
+    "streamingList": "Streaming playlists",
+    "votingOneclick": "One-click voting",
+    "radio": "Radio",
+    "notice": "Notices",
+    "faq": "FAQ",
+    "album": "Album pre-order"
+  },
+  "social": {
+    "daumCafe": "Daum Cafe"
+  },
+  "contact": {
+    "streamingTeam": "Streaming team",
+    "eventTeam": "Event team"
+  },
+  "home": {
+    "shortcuts": "Shortcuts",
+    "youtubeMv": "YouTube MV",
+    "realtimeChart": "Live charts",
+    "chartWaiting": "Waiting for update",
+    "calendar": "Calendar",
+    "preorder": "Album pre-order & group orders",
+    "preorderCard": "Pre-order period {period} — inclusions by version, store links and fandom group orders, all in one place.",
+    "profileAlt": "NCT DREAM group photo"
+  },
+  "mv": {
+    "latest": "Latest MV",
+    "embedSoon": "MV embed coming soon"
+  },
+  "calendar": {
+    "prevMonth": "Previous month",
+    "nextMonth": "Next month",
+    "today": "Today",
+    "noEvents": "No events scheduled.",
+    "noEventsInMonth": "No events scheduled this month.",
+    "eventCount": "{count} events"
+  },
+  "todo": {
+    "empty": "Nothing to do right now",
+    "emptyHint": "Voting and streaming tasks will show up here once they start.",
+    "footnote": "Daily voting and streaming tasks for the comeback period.",
+    "guide": "Guide",
+    "deadline": {
+      "daily": "Daily",
+      "always": "Anytime",
+      "due": "Due {due}"
+    }
+  },
+  "voteApps": {
+    "ongoing": "Open votes",
+    "count": "{count}",
+    "empty": "No votes are open right now",
+    "emptyHint": "Shortcut buttons will appear here when voting opens.",
+    "appShortcuts": "App shortcuts",
+    "vote": "Vote now"
+  },
+  "guideHub": {
+    "navTitle": "Guides",
+    "title": "Streaming guides",
+    "description": "New to streaming? Every guide is screenshot-by-screenshot so you can just follow along."
+  },
+  "guide": {
+    "streaming": {
+      "title": "Streaming guide",
+      "summary": "Audio and MV streaming on Melon, Genie, Bugs, FLO, Spotify and more",
+      "description": "Pick a platform to see its guide images full width."
+    },
+    "id-generate": {
+      "title": "Account setup guide",
+      "summary": "Creating an account on Melon, Genie, Bugs, FLO, VIBE and more",
+      "description": "How to create an account on each platform. Get your account ready before you start streaming."
+    },
+    "voting": {
+      "title": "Voting guide",
+      "summary": "Music show and awards show voting apps",
+      "description": "How to vote on each broadcaster's music show app and at awards shows."
+    },
+    "download": {
+      "title": "Download guide",
+      "summary": "Audio and MV downloads by platform",
+      "description": "Pick a platform to see its guide images full width."
+    },
+    "etc": {
+      "title": "Other guides",
+      "summary": "Ringtones and ringback tones, short-form editing, subscription pass picks",
+      "description": "Guides for ringtones and ringback tones, short-form editing and choosing a subscription pass."
+    }
+  },
+  "guideList": {
+    "empty": "Guides are on the way",
+    "emptyHint": "We'll post them here as soon as they're ready.",
+    "comingSoon": "Coming soon",
+    "view": "View guide",
+    "pages": "{count} images"
+  },
+  "guideDetail": {
+    "noImages": "No guide images yet",
+    "noImagesHint": "They'll be posted here as soon as they're ready.",
+    "saveImage": "Save image",
+    "backToList": "Back to {category}"
+  },
+  "oneclickHub": {
+    "title": "One-click",
+    "description": "Streaming, voting and radio requests in a single tap. Just open a link and it runs.",
+    "streamingDesc": "Open streaming playlists for each platform in one click",
+    "votingDesc": "Voting app shortcuts and one-click SMS votes",
+    "radioDesc": "Radio schedules by broadcaster and one-click requests"
+  },
+  "oneclickStreaming": {
+    "metaTitle": "One-click streaming playlists",
+    "description": "Pick your platform and device and the one-click streaming link opens right away.",
+    "noticeDevice": "One-click links differ by platform and device (Android / iOS / PC). Tap <strong>the link that matches your device</strong>.",
+    "noticeOrder": "If there are several playlists, run them in order from 1 to 4.",
+    "noticeUpdate": "Links are updated to the latest release at each comeback."
+  },
+  "oneclickVoting": {
+    "description": "Voting app shortcuts and SMS voting in one place.",
+    "appVote": "App voting",
+    "smsVote": "SMS voting"
+  },
+  "oneclickRadio": {
+    "metaTitle": "One-click radio",
+    "description": "We'll write you a radio message that fits whatever is on air right now — and send it by SMS in one tap.",
+    "oneclickTitle": "One-click radio requests",
+    "oneclickHint": "Tap a station to get a message written for the show that's on air.",
+    "scheduleTitle": "Schedules by broadcaster",
+    "scheduleHint": "Full schedules for each broadcaster are available as posted images."
+  },
+  "streamingLists": {
+    "empty": "No streaming playlists yet",
+    "emptyHint": "One-click links for each platform will be posted for the comeback.",
+    "shortcut": "Open one-click streaming",
+    "list": "Playlist"
+  },
+  "smsVote": {
+    "title": "One-click SMS voting",
+    "currentShow": "Music show in this time slot",
+    "checking": "Checking…",
+    "noShow": "No show on air",
+    "oneclick": "One-click SMS vote",
+    "hintReady": "Opens your messaging app on mobile.",
+    "hintWaiting": "The button turns on once live SMS voting opens."
+  },
+  "radio": {
+    "noProgram": "Nothing scheduled",
+    "noSchedule": "No schedule info",
+    "noScheduleInfo": "No schedule info",
+    "checking": "Checking…",
+    "editNotice": "Please add a line or two about the day's radio topic before you send",
+    "editHint": "Tap the box below to edit it however you like — whatever you write is what gets sent.",
+    "messageLabel": "Your message",
+    "loading": "Writing your message…",
+    "placeholder": "Write the message you want to send.",
+    "chars": "{count} characters",
+    "refresh": "Write a new one",
+    "send": "Send",
+    "guideImage": "Radio request guide image",
+    "guideAlt": "{broadcaster} radio request guide",
+    "saveImage": "Save image",
+    "possibility": {
+      "2": "Good chance",
+      "1": "Possible",
+      "0": "Unlikely"
+    }
+  },
+  "community": {
+    "title": "Community",
+    "description": "Notices, FAQs and forms are managed directly in Notion by the team, so they're always up to date.",
+    "noticeDesc": "Official team notices and event announcements",
+    "faqDesc": "FAQs on account donations, streaming and events"
+  },
+  "notice": {
+    "title": "Notices",
+    "description": "Official team notices. The content is managed in Notion by the team.",
+    "cardTitle": "Read official notices",
+    "cardHint": "Opens in Notion.",
+    "open": "Open notices",
+    "giftTitle": "About gift-card events",
+    "giftHint": "For anything about gift cards, please reach out on the KakaoTalk channels below."
+  },
+  "faq": {
+    "metaTitle": "FAQ",
+    "title": "Frequently asked questions",
+    "description": "The questions we get most. The full FAQ is managed in Notion.",
+    "cardTitle": "Read the full FAQ",
+    "cardHint": "Find answers about account donations, streaming and events.",
+    "open": "Open FAQ",
+    "topics": {
+      "idDonation": "Account donations",
+      "streaming": "Streaming",
+      "event": "Events"
+    }
+  },
+  "form": {
+    "form": {
+      "title": "Forms",
+      "description": "Sign-up and survey forms the streaming team is running, all in one place.",
+      "empty": "No forms are open right now"
+    },
+    "helper": {
+      "title": "Apply as a helper",
+      "description": "Forms for recruiting helpers to prepare organized fan pushes and events with us.",
+      "empty": "No helper forms are open right now"
+    }
+  },
+  "formLinks": {
+    "emptyHint": "New forms will be posted here as they open.",
+    "apply": "Apply",
+    "closed": "Closed",
+    "upcoming": "Coming soon"
+  },
+  "groupOrders": {
+    "empty": "Fandom group orders are on the way",
+    "emptyHint": "They'll be added once we've reached the group order hosts.",
+    "apply": "Apply",
+    "upcoming": "Coming soon"
+  },
+  "album": {
+    "title": "DREAM AFTER DREAM pre-order",
+    "description": "Inclusions by version for the 6th full album «DREAM AFTER DREAM», store pre-order links and fandom group orders, all in one place.",
+    "period": "Pre-order period",
+    "benefitsTitle": "Versions & inclusions",
+    "benefitsEmpty": "Versions and inclusions are being put together",
+    "benefitsEmptyHint": "We'll post inclusions for each version as soon as the stores announce them.",
+    "colVersion": "Version",
+    "colBenefits": "Extra inclusions",
+    "shopsTitle": "Store pre-order links",
+    "groupOrdersTitle": "Fandom group orders",
+    "noticeBenefits": "Inclusions <strong>differ from store to store</strong>, and a store may close early once it sells out.",
+    "noticeGroupOrders": "Fandom group orders are <strong>run by the hosts themselves</strong>. For questions about ordering or shipping, check each group order's page.",
+    "noticeUpdate": "Links are updated as the stores announce them."
+  },
+  "albumShops": {
+    "empty": "Store links are on the way",
+    "emptyHint": "Links for each store will appear here as soon as pre-orders open."
+  },
+  "guideSection": {
+    "audio": "Audio streaming",
+    "mv": "MV streaming",
+    "id-generate": "Creating an account",
+    "music-show": "Music show voting",
+    "awards": "Awards show voting",
+    "audio-dl": "Audio downloads",
+    "mv-dl": "MV downloads",
+    "etc": "Other guides"
+  }
+}

@@ -1,4 +1,5 @@
 import { ChevronRight, Images } from "lucide-react";
+import { getTranslations } from "next-intl/server";
 import PlatformIcon from "@/components/PlatformIcon";
 import SmartLink from "@/components/SmartLink";
 import { Badge, ComingSoon, IconTile } from "@/components/ui";
@@ -12,7 +13,7 @@ import { cn } from "@/lib/utils";
  * 화면 폭에 꽉 차게 보여준다. 목록 화면에서 썸네일 수십 장을 내려받지 않으므로
  * 첫 진입이 가볍고, 가이드 하나하나가 공유 가능한 주소를 갖는다.
  */
-export default function GuideList({
+export default async function GuideList({
   sections,
   basePath,
 }: {
@@ -20,8 +21,11 @@ export default function GuideList({
   basePath: string;
 }) {
   // 노션 조회에 실패했거나 아직 아무것도 공개되지 않은 경우
+  const t = await getTranslations("guideList");
+  const tSection = await getTranslations();
+
   if (sections.length === 0) {
-    return <ComingSoon label="가이드를 준비하고 있어요" />;
+    return <ComingSoon label={t("empty")} description={t("emptyHint")} />;
   }
 
   return (
@@ -30,7 +34,14 @@ export default function GuideList({
         <section key={section.id}>
           <h2 className="mb-4 flex items-center gap-2">
             <span aria-hidden className="brand-gradient-y h-[18px] w-1 shrink-0 rounded-full" />
-            <span className="text-lg font-extrabold tracking-tight">{section.title}</span>
+            <span className="text-lg font-extrabold tracking-tight">
+              {/*
+               * 섹션 이름은 `section.id`(audio · mv · id-generate …)로 번역한다.
+               * `section.title` 은 노션 `섹션` 선택지와 글자까지 같아야 하는
+               * **매칭용 값**이라(lib/notion.ts 의 SECTIONS) 번역하면 안 된다.
+               */}
+              {tSection(`guideSection.${section.id}`)}
+            </span>
           </h2>
 
           <div className="grid gap-3 sm:grid-cols-2">
@@ -44,7 +55,9 @@ export default function GuideList({
   );
 }
 
-function GuideRow({ item, basePath }: { item: GuideItem; basePath: string }) {
+async function GuideRow({ item, basePath }: { item: GuideItem; basePath: string }) {
+  const t = await getTranslations("guideList");
+
   // 오픈 예정이거나 이미지가 없는 항목은 열어봐야 볼 게 없으므로 링크로 만들지 않는다.
   const openable = item.status === "ready" && (item.images?.length ?? 0) > 0;
 
@@ -65,7 +78,7 @@ function GuideRow({ item, basePath }: { item: GuideItem; basePath: string }) {
         <div className="flex items-start justify-between gap-2">
           <h3 className="font-bold transition-colors group-hover:text-sky-700">{item.title}</h3>
           {item.status === "coming-soon" && (
-            <Badge variant="accent">오픈 예정</Badge>
+            <Badge variant="accent">{t("comingSoon")}</Badge>
           )}
         </div>
         {item.summary && (
@@ -74,8 +87,8 @@ function GuideRow({ item, basePath }: { item: GuideItem; basePath: string }) {
         {openable && (
           <p className="mt-2 inline-flex items-center gap-1 text-xs font-bold text-sky-600">
             <Images className="size-3 shrink-0" strokeWidth={2.4} />
-            가이드 보기
-            {item.images!.length > 1 && ` · ${item.images!.length}장`}
+            {t("view")}
+            {item.images!.length > 1 && ` · ${t("pages", { count: item.images!.length })}`}
           </p>
         )}
       </div>

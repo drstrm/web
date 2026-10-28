@@ -1,6 +1,7 @@
 "use client";
 
 import { Heart, Play } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { useEffect, useState } from "react";
 import { Card } from "@/components/ui";
 import type { MvStat } from "@/lib/content";
@@ -17,6 +18,7 @@ import { fetchMvLiveStats, type MvLiveStats } from "@/lib/mv";
  * 클라이언트 이동에서도 다시 마운트되므로 그때마다 최신값이 들어온다.
  */
 export default function MvCard({ mv }: { mv: MvStat[] }) {
+  const t = useTranslations("mv");
   const [live, setLive] = useState<Record<string, MvLiveStats>>({});
 
   useEffect(() => {
@@ -40,24 +42,24 @@ export default function MvCard({ mv }: { mv: MvStat[] }) {
         const stats = live[m.youtubeId];
 
         return (
-          <div key={m.title}>
+          <div key={m.youtubeId}>
             <div className="grid aspect-video place-items-center bg-sky-50 text-sm text-muted">
               {m.youtubeId ? (
                 <iframe
                   className="h-full w-full"
                   src={`https://www.youtube.com/embed/${m.youtubeId}`}
-                  title={m.title}
+                  title={t(m.titleKey)}
                   allowFullScreen
                 />
               ) : (
                 <span className="flex flex-col items-center gap-2 text-xs">
                   <Play className="size-6 text-sky-300" strokeWidth={2} />
-                  MV 임베드 연동 예정
+                  {t("embedSoon")}
                 </span>
               )}
             </div>
             <div className="flex items-center justify-between gap-3 px-5 py-4">
-              <span className="min-w-0 truncate font-bold">{m.title}</span>
+              <span className="min-w-0 truncate font-bold">{t(m.titleKey)}</span>
               <span className="flex shrink-0 items-center gap-3 text-xs font-semibold text-muted">
                 <span className="inline-flex items-center gap-1">
                   <Play className="size-3 shrink-0" strokeWidth={2.5} />

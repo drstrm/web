@@ -1,6 +1,7 @@
 "use client";
 
 import { Store } from "lucide-react";
+import { useTranslations } from "next-intl";
 import PlatformIcon from "@/components/PlatformIcon";
 import SmartLink from "@/components/SmartLink";
 import {
@@ -29,12 +30,13 @@ import type { AlbumShop } from "@/lib/content";
  * 가리기만 했다. 첫 번째 판매처는 펼쳐 둬서 「펼치면 버전이 나온다」가 바로 보인다.
  */
 export default function AlbumShops({ shops }: { shops: AlbumShop[] }) {
+  const t = useTranslations("albumShops");
   // 노션 조회에 실패했거나(로그: [album-shops]) 아직 DB · 행이 없는 경우
   if (shops.length === 0) {
     return (
       <ComingSoon
-        label="앨범사 링크 준비 중입니다"
-        description="예약판매가 열리면 앨범사별 링크가 이곳에 바로 올라옵니다."
+        label={t("empty")}
+        description={t("emptyHint")}
         icon={Store}
       />
     );

@@ -714,7 +714,12 @@ export async function getBanners(revalidate = 300): Promise<NotionBanner[]> {
                   `&i=0&v=${versionToken(url)}`,
               }
             : { background }),
-          alt: title ?? "배너",
+          /*
+           * 문구가 없으면 비워 둔다. 「배너」 같은 기본값을 여기서 넣으면 그
+           * 한국어가 어느 언어에서도 그대로 나간다 — 폴백은 화면이 번역해서
+           * 넣는다 (components/BannerSlider.tsx).
+           */
+          alt: title ?? "",
           ...(linkValue(p["링크"]) ? { href: linkValue(p["링크"]) } : {}),
           ...(title ? { title } : {}),
           ...(subtitle ? { subtitle } : {}),

@@ -1,6 +1,7 @@
 "use client";
 
 import { Moon, Sun } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { DARK_QUERY, THEME_COLOR, THEME_KEY, type Theme } from "@/lib/theme";
 
 /**
@@ -20,6 +21,7 @@ import { DARK_QUERY, THEME_COLOR, THEME_KEY, type Theme } from "@/lib/theme";
  * 1.75rem 과 맞물려 있다. 한쪽만 바꾸면 손잡이가 끝까지 가지 않는다.
  */
 export default function ThemeToggle() {
+  const tr = useTranslations("theme");
   const toggle = () => {
     const root = document.documentElement;
     const prefersDark = window.matchMedia(DARK_QUERY).matches;
@@ -49,7 +51,7 @@ export default function ThemeToggle() {
     <button
       type="button"
       onClick={toggle}
-      title="화면 테마 바꾸기"
+      title={tr("toggleTheme")}
       className="relative grid h-9 w-16 shrink-0 grid-cols-2 items-center rounded-full border border-border bg-surface-soft p-[3px] transition-colors hover:border-border-strong"
     >
       {/*
@@ -74,10 +76,10 @@ export default function ThemeToggle() {
        * aria-label 을 달면 이 문장이 가려지니 달지 않는다.
        */}
       <span className="theme-when-light sr-only">
-        라이트 모드 — 누르면 다크 모드로 바뀝니다
+        {tr("lightHint")}
       </span>
       <span className="theme-when-dark sr-only">
-        다크 모드 — 누르면 라이트 모드로 바뀝니다
+        {tr("darkHint")}
       </span>
     </button>
   );

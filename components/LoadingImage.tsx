@@ -1,6 +1,7 @@
 "use client";
 
 import Image, { type ImageProps } from "next/image";
+import { useTranslations } from "next-intl";
 import { useState } from "react";
 
 type LoadingImageProps = ImageProps & {
@@ -23,7 +24,7 @@ export default function LoadingImage({
 
 function LoadingImageWithState({
   wrapperClassName = "",
-  loadingLabel = "이미지 불러오는 중",
+  loadingLabel,
   className = "",
   alt,
   onLoad,
@@ -31,6 +32,7 @@ function LoadingImageWithState({
   src,
   ...props
 }: LoadingImageProps) {
+  const t = useTranslations("common");
   const [loaded, setLoaded] = useState(false);
   const [failed, setFailed] = useState(false);
 
@@ -45,7 +47,7 @@ function LoadingImageWithState({
       {busy && (
         <div
           role="status"
-          aria-label={loadingLabel}
+          aria-label={loadingLabel ?? t("imageLoading")}
           className="pointer-events-none absolute inset-x-0 top-0 z-10 h-1 overflow-hidden bg-sky-100"
         >
           <span className="image-loading-bar block h-full w-2/3 rounded-full bg-sky-500" />

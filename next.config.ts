@@ -1,3 +1,4 @@
+import createNextIntlPlugin from "next-intl/plugin";
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
@@ -30,4 +31,10 @@ const nextConfig: NextConfig = {
   },
 };
 
-export default nextConfig;
+/*
+ * next-intl 플러그인. i18n/request.ts (기본 경로)를 빌드에 엮어서
+ * 서버 컴포넌트가 요청마다 알맞은 메시지를 받게 한다.
+ */
+const withNextIntl = createNextIntlPlugin();
+
+export default withNextIntl(nextConfig);

@@ -2,8 +2,10 @@
 
 import { ChevronDown, Menu, X } from "lucide-react";
 import Image from "next/image";
+import { useTranslations } from "next-intl";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
+import LocaleSwitcher from "@/components/LocaleSwitcher";
 import SmartLink from "@/components/SmartLink";
 import ThemeToggle from "@/components/ThemeToggle";
 import { iconForRoute } from "@/lib/nav-icons";
@@ -11,6 +13,11 @@ import { NAV, SITE } from "@/lib/site";
 import { cn } from "@/lib/utils";
 
 export default function Header() {
+  /*
+   * 묶음을 지정하지 않는다. 내비게이션 라벨이 nav · guide · form 세 묶음에
+   * 흩어져 있어서(lib/site.ts 의 labelKey), 루트에서 꺼내야 한 번에 닿는다.
+   */
+  const t = useTranslations();
   const pathname = usePathname();
   const [open, setOpen] = useState(false);
 
@@ -61,8 +68,10 @@ export default function Header() {
           </span>
         </SmartLink>
 
-        {/* 오른쪽 묶음: 테마 토글 · 데스크톱 내비 · 모바일 메뉴 버튼 */}
+        {/* 오른쪽 묶음: 언어 · 테마 토글 · 데스크톱 내비 · 모바일 메뉴 버튼 */}
         <div className="flex items-center gap-2">
+          {/* 언어 → 테마 순. 둘 다 「보기 설정」이라 나란히 둔다 */}
+          <LocaleSwitcher />
           {/* 라이트 ↔ 다크. 데스크톱 내비 · 모바일 햄버거 모두의 왼쪽에 둔다 */}
           <ThemeToggle />
 
@@ -115,7 +124,7 @@ export default function Header() {
                               )}
                             >
                               <Icon className="size-3.5 shrink-0 text-sky-500" strokeWidth={2.2} />
-                              {c.label}
+                              {t(c.labelKey)}
                             </SmartLink>
                           );
                         })}
@@ -130,7 +139,7 @@ export default function Header() {
           {/* 모바일 토글 */}
           <button
             type="button"
-            aria-label={open ? "메뉴 닫기" : "메뉴 열기"}
+            aria-label={open ? t("a11y.closeMenu") : t("a11y.openMenu")}
             aria-expanded={open}
             aria-controls="mobile-nav"
             onClick={() => setOpen((v) => !v)}
@@ -195,7 +204,7 @@ export default function Header() {
                             )}
                           >
                             <ChildIcon className="size-3.5 shrink-0" strokeWidth={2} />
-                            {c.label}
+                            {t(c.labelKey)}
                           </SmartLink>
                         );
                       })}

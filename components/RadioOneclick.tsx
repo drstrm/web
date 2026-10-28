@@ -1,6 +1,7 @@
 "use client";
 
 import { Pencil, Radio, RefreshCw, SendHorizontal } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { useCallback, useEffect, useState, type MouseEvent } from "react";
 import RadioPossibility from "@/components/RadioPossibility";
 import SmartLink from "@/components/SmartLink";
@@ -14,7 +15,6 @@ import {
 } from "@/components/ui";
 import {
   RADIO_DEFAULT_MESSAGE,
-  RADIO_MESSAGE_NOTICE,
   RADIO_STATIONS,
   type RadioNow,
   type RadioStation,
@@ -153,11 +153,12 @@ function StationButton({
   ready: boolean;
   onOpen: () => void;
 }) {
+  const tr = useTranslations("radio");
   const onAir = info?.program
     ? info.djName
       ? `${info.program} · ${info.djName}`
       : info.program
-    : "편성 없음";
+    : tr("noProgram");
 
   return (
     <button
@@ -181,7 +182,7 @@ function StationButton({
 
       <span className="mt-2.5 flex items-center gap-1.5 rounded-xl bg-sky-50 px-3 py-2 text-xs font-bold text-sky-700">
         <Radio className="size-3 shrink-0" strokeWidth={2.4} />
-        <span className="truncate">{ready ? onAir : "확인 중..."}</span>
+        <span className="truncate">{ready ? onAir : tr("checking")}</span>
       </span>
     </button>
   );
@@ -200,6 +201,7 @@ function MessageModal({
   onRefresh: () => void;
   onSend: () => void;
 }) {
+  const tr = useTranslations("radio");
   const generated = info?.message ?? RADIO_DEFAULT_MESSAGE;
 
   /*
@@ -217,7 +219,7 @@ function MessageModal({
     ? info.djName
       ? `${info.program} · ${info.djName}`
       : info.program
-    : "편성 없음";
+    : tr("noProgram");
 
   /*
    * 새 사연을 받는 동안에는 이전 문장을 보여주지 않는다 — 팝업을 열자마자 읽던
@@ -267,7 +269,7 @@ function MessageModal({
         <div className="mt-3 flex items-center gap-2 rounded-xl bg-sky-50 px-3 py-2.5 text-xs font-bold text-sky-700">
           <span aria-hidden className="pulse-dot size-2 shrink-0 rounded-full bg-champagne-400" />
           <span className="font-display shrink-0 tracking-wide">ON AIR</span>
-          <span className="min-w-0 truncate font-sans">{loading ? "확인 중..." : onAir}</span>
+          <span className="min-w-0 truncate font-sans">{loading ? tr("checking") : onAir}</span>
         </div>
       </header>
 
@@ -275,14 +277,14 @@ function MessageModal({
         <p className="mb-3 flex gap-2.5 rounded-xl border border-champagne-200 bg-champagne-50 px-3.5 py-3 text-xs leading-6 text-champagne-800">
           <Pencil className="mt-0.5 size-3.5 shrink-0" strokeWidth={2.3} />
           <span>
-            <b>{RADIO_MESSAGE_NOTICE}.</b>
+            <b>{tr("editNotice")}.</b>
             <br />
-            아래 칸을 눌러 자유롭게 고칠 수 있고, 고친 그대로 문자에 담깁니다.
+            {tr("editHint")}
           </span>
         </p>
 
         <label htmlFor="radio-message" className="sr-only">
-          보낼 사연
+          {tr("messageLabel")}
         </label>
         <textarea
           id="radio-message"
@@ -290,11 +292,11 @@ function MessageModal({
           onChange={(e) => setDraft(e.target.value)}
           disabled={pending}
           rows={7}
-          placeholder={pending ? "사연을 불러오는 중입니다." : "보낼 사연을 적어주세요."}
+          placeholder={pending ? tr("loading") : tr("placeholder")}
           className="w-full resize-y rounded-2xl border border-border bg-background p-4 text-sm leading-7 text-foreground outline-none transition-colors focus:border-sky-300 focus:ring-4 focus:ring-sky-100 disabled:text-muted"
         />
         <p className="mt-1.5 text-right text-xs font-semibold text-muted">
-          {pending ? " " : `${message.length}자`}
+          {pending ? " " : tr("chars", { count: message.length })}
         </p>
       </div>
 
@@ -302,19 +304,19 @@ function MessageModal({
         {/* 고쳐 쓴 내용은 여기서 버려지고 자동 생성 문장이 새로 들어온다 */}
         <Button variant="outline" size="lg" onClick={handleRefresh}>
           <RefreshCw strokeWidth={2.4} />
-          사연 새로 받기
+          {tr("refresh")}
         </Button>
         {canSend ? (
           <Button asChild variant="accent" size="lg">
             <SmartLink href={smsHref(station.number, message, false)} onClick={handleSend}>
               <SendHorizontal strokeWidth={2.4} />
-              보내기
+              {tr("send")}
             </SmartLink>
           </Button>
         ) : (
           <Button variant="accent" size="lg" disabled>
             <SendHorizontal strokeWidth={2.4} />
-            보내기
+            {tr("send")}
           </Button>
         )}
       </footer>

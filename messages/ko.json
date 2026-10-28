@@ -1,0 +1,278 @@
+{
+  "meta": {
+    "siteName": "NCT DREAM 스트리밍팀",
+    "title": "NCT DREAM 스트리밍팀 공식 웹사이트",
+    "description": "NCT DREAM 스트리밍 · 투표 · 다운로드 가이드와 원클릭을 한곳에. 스밍팀 공식 웹사이트."
+  },
+  "layout": {
+    "skipToContent": "본문으로 건너뛰기"
+  },
+  "a11y": {
+    "openMenu": "메뉴 열기",
+    "closeMenu": "메뉴 닫기"
+  },
+  "common": {
+    "close": "닫기",
+    "imageLoading": "이미지 불러오는 중"
+  },
+  "locale": {
+    "label": "언어 선택"
+  },
+  "theme": {
+    "toggleTheme": "화면 테마 바꾸기",
+    "lightHint": "라이트 모드 — 누르면 다크 모드로 바뀝니다",
+    "darkHint": "다크 모드 — 누르면 라이트 모드로 바뀝니다"
+  },
+  "banner": {
+    "prev": "이전 배너",
+    "next": "다음 배너",
+    "imageAlt": "배너"
+  },
+  "nav": {
+    "voting": "투표",
+    "streamingList": "스밍리스트",
+    "votingOneclick": "투표 원클릭",
+    "radio": "라디오",
+    "notice": "공지사항",
+    "faq": "FAQ",
+    "album": "앨범 예약판매"
+  },
+  "social": {
+    "daumCafe": "다음 카페"
+  },
+  "contact": {
+    "streamingTeam": "스트리밍팀 문의",
+    "eventTeam": "이벤트팀 문의"
+  },
+  "home": {
+    "shortcuts": "바로가기",
+    "youtubeMv": "유튜브 MV",
+    "realtimeChart": "실시간 차트",
+    "chartWaiting": "업데이트 대기 중",
+    "calendar": "캘린더",
+    "preorder": "앨범 예약판매 · 공구",
+    "preorderCard": "예약판매 기간 {period} · 버전별 특전과 앨범사 링크, 팬덤 공구를 한곳에 모았어요.",
+    "profileAlt": "NCT DREAM 단체 이미지"
+  },
+  "mv": {
+    "latest": "최신 MV",
+    "embedSoon": "MV 임베드 연동 예정"
+  },
+  "calendar": {
+    "prevMonth": "이전 달",
+    "nextMonth": "다음 달",
+    "today": "오늘",
+    "noEvents": "등록된 일정이 없습니다.",
+    "noEventsInMonth": "이 달에는 등록된 일정이 없습니다.",
+    "eventCount": "일정 {count}건"
+  },
+  "todo": {
+    "empty": "지금 진행중인 할일이 없습니다",
+    "emptyHint": "투표 · 스밍 일정이 시작되면 여기에 표시됩니다.",
+    "footnote": "컴백 기간 동안 매일 해야 하는 투표 · 스밍 리스트입니다.",
+    "guide": "가이드",
+    "deadline": {
+      "daily": "매일",
+      "always": "상시",
+      "due": "마감 {due}"
+    }
+  },
+  "voteApps": {
+    "ongoing": "진행중 투표",
+    "count": "{count}건",
+    "empty": "지금 진행중인 투표가 없습니다",
+    "emptyHint": "투표가 열리면 여기에 바로가기 버튼이 나옵니다.",
+    "appShortcuts": "앱 바로가기",
+    "vote": "투표하기"
+  },
+  "guideHub": {
+    "navTitle": "가이드",
+    "title": "스트리밍 가이드",
+    "description": "스밍이 처음이어도 괜찮아요. 캡처 화면 위주로 쉽게 따라 할 수 있게 정리했어요."
+  },
+  "guide": {
+    "streaming": {
+      "title": "스트리밍 가이드",
+      "summary": "멜론·지니·벅스·플로·스포티파이 등 플랫폼별 음원/MV 스트리밍",
+      "description": "플랫폼을 고르면 가이드 이미지를 크게 볼 수 있어요."
+    },
+    "id-generate": {
+      "title": "아이디 생성 가이드",
+      "summary": "멜론·지니·벅스·플로·바이브 등 플랫폼별 계정 만들기",
+      "description": "플랫폼별 아이디 만드는 방법입니다. 스밍 전에 계정부터 준비해 주세요."
+    },
+    "voting": {
+      "title": "투표 가이드",
+      "summary": "음악방송 · 시상식 투표 앱 가이드",
+      "description": "방송사별 음악방송 투표 앱과 시상식 투표 방법을 안내합니다."
+    },
+    "download": {
+      "title": "다운로드 가이드",
+      "summary": "플랫폼별 음원 · MV 다운로드",
+      "description": "플랫폼을 고르면 가이드 이미지를 크게 볼 수 있어요."
+    },
+    "etc": {
+      "title": "기타 가이드",
+      "summary": "컬러링·벨 설정, 숏폼 제작, 이용권 추천",
+      "description": "컬러링·벨 설정, 숏폼 제작, 이용권 추천 가이드입니다."
+    }
+  },
+  "guideList": {
+    "empty": "가이드를 준비하고 있어요",
+    "emptyHint": "가이드가 준비되는 대로 업데이트됩니다.",
+    "comingSoon": "오픈 예정",
+    "view": "가이드 보기",
+    "pages": "{count}장"
+  },
+  "guideDetail": {
+    "noImages": "아직 등록된 가이드 이미지가 없어요",
+    "noImagesHint": "가이드가 준비되는 대로 이곳에 올라옵니다.",
+    "saveImage": "이미지 저장",
+    "backToList": "{category} 목록으로"
+  },
+  "oneclickHub": {
+    "title": "원클릭",
+    "description": "한 번의 터치로 스밍·투표·라디오 신청까지. 링크만 누르면 바로 실행돼요.",
+    "streamingDesc": "플랫폼별 스트리밍 재생목록 원클릭 바로 실행",
+    "votingDesc": "앱 투표 바로가기 · 문자 투표 원클릭 생성",
+    "radioDesc": "방송사별 라디오 시간표 · 신청 원클릭"
+  },
+  "oneclickStreaming": {
+    "metaTitle": "스밍리스트 원클릭",
+    "description": "플랫폼과 사용 중인 기기를 고르면 원클릭 스밍 링크가 바로 열립니다.",
+    "noticeDevice": "원클릭 링크는 플랫폼 · 기기(안드로이드 / iOS / PC)마다 다릅니다. <strong>본인 기기에 맞는 링크</strong>를 눌러주세요.",
+    "noticeOrder": "리스트가 여러 개인 경우 1~4번을 순서대로 돌려주시면 됩니다.",
+    "noticeUpdate": "링크는 컴백 시 최신 음원 기준으로 업데이트됩니다."
+  },
+  "oneclickVoting": {
+    "description": "투표 앱 바로가기와 문자 투표를 한 번에.",
+    "appVote": "앱 투표",
+    "smsVote": "문자 투표"
+  },
+  "oneclickRadio": {
+    "metaTitle": "라디오 원클릭",
+    "description": "지금 방송 중인 프로그램에 맞춰 사연을 만들어 드려요. 버튼 하나로 문자 신청까지.",
+    "oneclickTitle": "라디오 신청 원클릭",
+    "oneclickHint": "채널을 누르면 지금 방송에 맞춘 사연이 뜹니다.",
+    "scheduleTitle": "방송사별 편성표",
+    "scheduleHint": "방송사별 전체 편성은 등록된 이미지 기준으로 확인할 수 있어요."
+  },
+  "streamingLists": {
+    "empty": "스밍리스트가 아직 등록되지 않았습니다",
+    "emptyHint": "컴백에 맞춰 플랫폼별 원클릭 링크가 올라옵니다.",
+    "shortcut": "원클릭 스밍 바로가기",
+    "list": "리스트"
+  },
+  "smsVote": {
+    "title": "문자 투표 원클릭",
+    "currentShow": "현재 시간대 음악방송",
+    "checking": "확인 중...",
+    "noShow": "방송 없음",
+    "oneclick": "원클릭 문자투표",
+    "hintReady": "모바일에서 문자 앱이 열립니다.",
+    "hintWaiting": "실시간 문자투표 시간이 되면 버튼이 활성화됩니다."
+  },
+  "radio": {
+    "noProgram": "편성 없음",
+    "noSchedule": "편성 정보 없음",
+    "noScheduleInfo": "편성 정보 없음",
+    "checking": "확인 중...",
+    "editNotice": "당일 라디오 주제에 맞게 사연을 추가로 작성한 후 신청해주세요",
+    "editHint": "아래 칸을 눌러 자유롭게 고칠 수 있고, 고친 그대로 문자에 담깁니다.",
+    "messageLabel": "보낼 사연",
+    "loading": "사연을 불러오는 중입니다.",
+    "placeholder": "보낼 사연을 적어주세요.",
+    "chars": "{count}자",
+    "refresh": "사연 새로 받기",
+    "send": "보내기",
+    "guideImage": "라디오 신청 가이드 이미지",
+    "guideAlt": "{broadcaster} 라디오 신청 가이드",
+    "saveImage": "이미지 저장",
+    "possibility": {
+      "2": "가능성 높음",
+      "1": "가능성 있음",
+      "0": "신청 어려움"
+    }
+  },
+  "community": {
+    "title": "커뮤니티",
+    "description": "공지 · FAQ · 신청 폼은 운영진이 Notion에서 직접 관리해 항상 최신 상태로 유지됩니다.",
+    "noticeDesc": "팀 공식 공지 · 이벤트 안내",
+    "faqDesc": "아이디 기부 · 스트리밍 · 이벤트 관련 FAQ"
+  },
+  "notice": {
+    "title": "공지사항",
+    "description": "팀 공식 공지입니다. 내용은 운영진이 Notion에서 관리합니다.",
+    "cardTitle": "공식 공지 보기",
+    "cardHint": "Notion 페이지로 이동합니다.",
+    "open": "공지사항 열기",
+    "giftTitle": "기프티콘 이벤트 안내",
+    "giftHint": "기프티콘 관련 공지는 아래 카카오 채널에서 문의해 주세요."
+  },
+  "faq": {
+    "metaTitle": "FAQ",
+    "title": "자주 묻는 질문",
+    "description": "궁금한 점을 모았습니다. 전체 FAQ는 Notion에서 관리됩니다.",
+    "cardTitle": "전체 FAQ 보기",
+    "cardHint": "아이디 기부·스트리밍·이벤트 관련 자주 묻는 질문을 확인하세요.",
+    "open": "FAQ 열기",
+    "topics": {
+      "idDonation": "아이디 기부 관련",
+      "streaming": "스트리밍 관련",
+      "event": "이벤트 관련"
+    }
+  },
+  "form": {
+    "form": {
+      "title": "폼 바로가기",
+      "description": "스밍팀에서 진행 중인 신청 · 설문 폼을 한곳에 모았어요.",
+      "empty": "진행 중인 폼이 없어요"
+    },
+    "helper": {
+      "title": "헬퍼 신청하기",
+      "description": "총공 · 이벤트를 함께 준비할 헬퍼를 모집하는 폼입니다.",
+      "empty": "모집 중인 헬퍼 폼이 없어요"
+    }
+  },
+  "formLinks": {
+    "emptyHint": "새 폼이 열리면 이곳에 바로 올라옵니다.",
+    "apply": "신청",
+    "closed": "마감",
+    "upcoming": "준비 중"
+  },
+  "groupOrders": {
+    "empty": "팬덤 공구 준비 중입니다",
+    "emptyHint": "공구주분 컨택 후 추가될 예정입니다.",
+    "apply": "신청",
+    "upcoming": "준비 중"
+  },
+  "album": {
+    "title": "DREAM AFTER DREAM 예약판매",
+    "description": "정규 6집 「DREAM AFTER DREAM」 버전별 특전과 앨범사 예약판매 링크, 팬덤 공구를 한곳에 모았어요.",
+    "period": "예약판매 기간",
+    "benefitsTitle": "앨범 버전 · 특전",
+    "benefitsEmpty": "버전 · 특전 정리 중입니다",
+    "benefitsEmptyHint": "앨범사 공지가 나오는 대로 버전별 특전을 올려드릴게요.",
+    "colVersion": "버전",
+    "colBenefits": "추가 특전",
+    "shopsTitle": "앨범사 예약판매 링크",
+    "groupOrdersTitle": "팬덤 공구",
+    "noticeBenefits": "특전은 <strong>앨범사별로 이미지가 다르며</strong>, 재고가 소진되면 조기에 마감될 수 있습니다.",
+    "noticeGroupOrders": "팬덤 공구는 <strong>공구주분이 직접 진행</strong>합니다. 신청 · 배송 문의는 각 공구 페이지를 확인해 주세요.",
+    "noticeUpdate": "링크는 앨범사 공지에 맞춰 업데이트됩니다."
+  },
+  "albumShops": {
+    "empty": "앨범사 링크 준비 중입니다",
+    "emptyHint": "예약판매가 열리면 앨범사별 링크가 이곳에 바로 올라옵니다."
+  },
+  "guideSection": {
+    "audio": "음원 스트리밍",
+    "mv": "MV 스트리밍",
+    "id-generate": "아이디 생성",
+    "music-show": "음악방송 투표",
+    "awards": "시상식 투표",
+    "audio-dl": "음원 다운로드",
+    "mv-dl": "MV 다운로드",
+    "etc": "기타 가이드"
+  }
+}

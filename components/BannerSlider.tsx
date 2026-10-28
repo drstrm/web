@@ -1,6 +1,7 @@
 "use client";
 
 import { ChevronLeft, ChevronRight } from "lucide-react";
+import { useTranslations } from "next-intl";
 import LoadingImage from "@/components/LoadingImage";
 import SmartLink from "@/components/SmartLink";
 import { useCallback, useEffect, useRef, useState } from "react";
@@ -50,6 +51,7 @@ function isLightColor(color?: string): boolean {
  * - 페이지네이션 → 현재 위치 표시 전용 (클릭 동작 없음)
  */
 export default function BannerSlider({ banners }: { banners: Banner[] }) {
+  const tr = useTranslations("banner");
   const n = banners.length;
   const loop = n > 1;
   const slides = loop ? [banners[n - 1], ...banners, banners[0]] : banners;
@@ -188,7 +190,7 @@ export default function BannerSlider({ banners }: { banners: Banner[] }) {
               {b.image && (
                 <LoadingImage
                   src={b.image}
-                  alt={b.alt}
+                  alt={b.alt || tr("imageAlt")}
                   fill
                   sizes={SIZES}
                   // 첫 장은 화면 최상단에 바로 보이므로 지연 없이 받는다.
@@ -252,7 +254,7 @@ export default function BannerSlider({ banners }: { banners: Banner[] }) {
           {/* 좌우 화살표 */}
           <button
             type="button"
-            aria-label="이전 배너"
+            aria-label={tr("prev")}
             onClick={() => go(-1)}
             className="absolute left-2 top-1/2 z-10 grid size-9 -translate-y-1/2 place-items-center rounded-full bg-surface/75 text-foreground shadow-card backdrop-blur transition hover:bg-surface active:scale-95 sm:left-4 sm:size-11"
           >
@@ -260,7 +262,7 @@ export default function BannerSlider({ banners }: { banners: Banner[] }) {
           </button>
           <button
             type="button"
-            aria-label="다음 배너"
+            aria-label={tr("next")}
             onClick={() => go(1)}
             className="absolute right-2 top-1/2 z-10 grid size-9 -translate-y-1/2 place-items-center rounded-full bg-surface/75 text-foreground shadow-card backdrop-blur transition hover:bg-surface active:scale-95 sm:right-4 sm:size-11"
           >

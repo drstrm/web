@@ -1,6 +1,7 @@
 "use client";
 
 import { ChevronRight, Vote } from "lucide-react";
+import { useTranslations } from "next-intl";
 import { useEffect, useState } from "react";
 import PlatformIcon from "@/components/PlatformIcon";
 import SmartLink from "@/components/SmartLink";
@@ -31,6 +32,7 @@ const KEYS = VOTE_APPS.map((app) => app.key);
 const APP_BY_KEY = new Map(VOTE_APPS.map((app) => [app.key, app]));
 
 export default function VoteApps({ initialVotes = [] }: { initialVotes?: ActiveVote[] }) {
+  const t = useTranslations("voteApps");
   // 서버가 준 목록으로 시작한다 — 첫 렌더가 서버와 같아야 하이드레이션이 맞는다
   const [votes, setVotes] = useState(() => votesForApps(initialVotes, KEYS));
 
@@ -60,8 +62,10 @@ export default function VoteApps({ initialVotes = [] }: { initialVotes?: ActiveV
           {votes.length > 0 && (
             <span aria-hidden className="pulse-dot size-1.5 shrink-0 rounded-full bg-champagne-500" />
           )}
-          진행중 투표
-          {votes.length > 0 && <span className="text-champagne-800">{votes.length}건</span>}
+          {t("ongoing")}
+          {votes.length > 0 && (
+            <span className="text-champagne-800">{t("count", { count: votes.length })}</span>
+          )}
         </p>
 
         {votes.length > 0 ? (
@@ -73,14 +77,14 @@ export default function VoteApps({ initialVotes = [] }: { initialVotes?: ActiveV
         ) : (
           <EmptyState
             icon={Vote}
-            title="지금 진행중인 투표가 없습니다"
-            description="투표가 열리면 여기에 바로가기 버튼이 나옵니다."
+            title={t("empty")}
+            description={t("emptyHint")}
           />
         )}
       </div>
 
       <div>
-        <p className="mb-2.5 text-[11px] font-bold tracking-wide text-muted">앱 바로가기</p>
+        <p className="mb-2.5 text-[11px] font-bold tracking-wide text-muted">{t("appShortcuts")}</p>
         {/* 투표가 열려 있든 아니든 여섯 개 그대로. 이 칸은 움직이지 않는다 */}
         <div className="grid grid-cols-3 gap-2 sm:grid-cols-6">
           {VOTE_APPS.map((app) => (
@@ -94,6 +98,7 @@ export default function VoteApps({ initialVotes = [] }: { initialVotes?: ActiveV
 
 /** 진행중 투표 한 건. 카드 전체가 투표 URL 로 가는 링크다 */
 function VoteCard({ vote }: { vote: ActiveVote }) {
+  const t = useTranslations("voteApps");
   const app = APP_BY_KEY.get(vote.iconType);
 
   return (
@@ -119,7 +124,7 @@ function VoteCard({ vote }: { vote: ActiveVote }) {
       </div>
 
       <Badge variant="accent" size="lg" className="shrink-0">
-        투표하기
+        {t("vote")}
         <ChevronRight strokeWidth={2.6} />
       </Badge>
     </SmartLink>

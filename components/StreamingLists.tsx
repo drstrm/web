@@ -1,6 +1,7 @@
 "use client";
 
 import { Music4, Play } from "lucide-react";
+import { useTranslations } from "next-intl";
 import PlatformIcon from "@/components/PlatformIcon";
 import SmartLink from "@/components/SmartLink";
 import {
@@ -28,12 +29,13 @@ import { OS_ICON } from "@/lib/oneclick";
  * 따라오므로 직접 useState 로 관리하지 않는다.
  */
 export default function StreamingLists({ lists }: { lists: StreamingList[] }) {
+  const tr = useTranslations("streamingLists");
   if (lists.length === 0) {
     return (
       <EmptyState
         icon={Music4}
-        title="스밍리스트가 아직 등록되지 않았습니다"
-        description="컴백에 맞춰 플랫폼별 원클릭 링크가 올라옵니다."
+        title={tr("empty")}
+        description={tr("emptyHint")}
       />
     );
   }
@@ -78,7 +80,7 @@ export default function StreamingLists({ lists }: { lists: StreamingList[] }) {
                   <Button asChild variant="primary" size="lg" block>
                     <SmartLink href={t.links[0]}>
                       <Play strokeWidth={2.6} />
-                      원클릭 스밍 바로가기
+                      {tr("shortcut")}
                     </SmartLink>
                   </Button>
                 ) : (
@@ -89,7 +91,7 @@ export default function StreamingLists({ lists }: { lists: StreamingList[] }) {
                           <span className="grid size-5 shrink-0 place-items-center rounded-full bg-white/25 text-[11px] font-extrabold leading-none">
                             {i + 1}
                           </span>
-                          리스트
+                          {tr("list")}
                         </SmartLink>
                       </Button>
                     ))}

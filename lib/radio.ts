@@ -164,11 +164,10 @@ export const DAY_TYPE_LABEL: Record<DayType, string> = {
   thuFri: "목·금",
 };
 
-export const POSSIBILITY_LABEL: Record<Possibility, string> = {
-  2: "가능성 높음",
-  1: "가능성 있음",
-  0: "신청 어려움",
-};
+/*
+ * 신청 가능성 표기는 여기 없다 — messages 의 `radio.possibility.{0,1,2}` 다
+ * (화면에 보이는 글이라 언어별로 갈린다. components/RadioPossibility.tsx).
+ */
 
 /** 요일 번호(0=일) → 편성 구분 */
 export function dayTypeOf(day: number): DayType {
@@ -248,12 +247,10 @@ export type RadioNow = {
  */
 export const RADIO_DEFAULT_MESSAGE = "NCT DREAM의 BoogieWoogie 신청합니다!";
 
-/**
- * 사연 팝업 · 라디오 페이지에 함께 띄우는 안내 문구.
+/*
+ * 사연 팝업 · 라디오 페이지의 안내 문구는 여기 없다 —
+ * messages 의 `radio.editNotice` 다 (화면에 보이는 글이라 언어별로 갈린다).
  *
- * 자동 생성 문장은 시간대와 DJ 호칭까지만 맞춘다 — 그날 방송에서 무슨 이야기를
- * 다루는지는 알 수 없다. 주제에 얹은 한두 줄이 붙어야 실제로 읽히므로,
- * 보내기 전에 손보도록 화면에서 먼저 말해 준다.
+ * RADIO_DEFAULT_MESSAGE 는 반대로 **번역하지 않는다.** 한국 라디오 방송국에
+ * 보내는 문자 본문이라 영어로 바뀌면 신청이 성립하지 않는다.
  */
-export const RADIO_MESSAGE_NOTICE =
-  "당일 라디오 주제에 맞게 사연을 추가로 작성한 후 신청해주세요";

@@ -1,4 +1,5 @@
 import { CalendarRange, ChevronRight, type LucideIcon } from "lucide-react";
+import { getTranslations } from "next-intl/server";
 import SmartLink from "@/components/SmartLink";
 import { Badge, ComingSoon, IconTile } from "@/components/ui";
 import type { FormLink, FormPageInfo } from "@/lib/content";
@@ -15,19 +16,24 @@ import { cn } from "@/lib/utils";
  * 「이 폼은 이미 끝났다」를 보여주는 편이 「사라져서 못 찾겠다」보다 낫기 때문이다
  * (가이드 목록의 오픈 예정 항목과 같은 방침 — components/GuideList.tsx).
  */
-export default function FormLinks({
+export default async function FormLinks({
   links,
   info,
+  empty,
 }: {
   links: FormLink[];
   info: FormPageInfo;
+  /** 목록이 비었을 때 보여줄 문구. 페이지가 번역해서 넘긴다 */
+  empty: string;
 }) {
+  const t = await getTranslations("formLinks");
+
   // 노션 조회에 실패했거나(로그: [form-links]) 아직 등록된 폼이 없는 경우
   if (links.length === 0) {
     return (
       <ComingSoon
-        label={info.empty}
-        description="새 폼이 열리면 이곳에 바로 올라옵니다."
+        label={empty}
+        description={t("emptyHint")}
         icon={iconForRoute(info.href)}
       />
     );
@@ -57,16 +63,20 @@ export default function FormLinks({
   );
 }
 
+/*
+ * 상태별 뱃지. 라벨 문구가 아니라 **번역 키**를 들고 있다 — 모듈 레벨 상수는
+ * 요청의 언어를 모르므로 t() 를 여기서 부를 수 없다.
+ */
 const BADGE: Record<
   FormLink["status"],
-  { label: string; variant: "muted" | "accent" } | null
+  { labelKey: string; variant: "muted" | "accent" } | null
 > = {
   open: null,
-  closed: { label: "마감", variant: "muted" },
-  upcoming: { label: "준비 중", variant: "accent" },
+  closed: { labelKey: "closed", variant: "muted" },
+  upcoming: { labelKey: "upcoming", variant: "accent" },
 };
 
-function FormRow({
+async function FormRow({
   link,
   rows,
   fallbackIcon,
@@ -76,6 +86,7 @@ function FormRow({
   rows: { summary: boolean; period: boolean };
   fallbackIcon: LucideIcon;
 }) {
+  const t = await getTranslations("formLinks");
   const badge = BADGE[link.status];
   const FallbackIcon = fallbackIcon;
 
@@ -135,12 +146,12 @@ function FormRow({
       <span className="ml-1 flex shrink-0 items-center gap-0.5 self-center">
         {link.href ? (
           <Badge variant="accent" size="lg">
-            신청
+            {t("apply")}
           </Badge>
         ) : (
           badge && (
             <Badge variant={badge.variant} size="lg">
-              {badge.label}
+              {t(badge.labelKey)}
             </Badge>
           )
         )}

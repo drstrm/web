@@ -51,13 +51,18 @@ export function EmptyState({
   );
 }
 
-/** 「오픈 예정입니다」 — 가이드 · 폼 목록이 비었을 때 */
+/**
+ * 「오픈 예정입니다」 — 가이드 · 폼 목록이 비었을 때.
+ *
+ * 문구에 기본값을 두지 않는다. 기본값을 두면 그 한국어가 어느 언어에서도
+ * 그대로 나오고, 번역 추출 도구에도 안 잡힌다 — 호출하는 화면이 t() 로 넘긴다.
+ */
 export function ComingSoon({
-  label = "오픈 예정입니다",
-  description = "가이드가 준비되는 대로 업데이트됩니다.",
+  label,
+  description,
   icon,
 }: {
-  label?: string;
+  label: string;
   description?: string;
   icon?: LucideIcon;
 }) {

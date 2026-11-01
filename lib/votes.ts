@@ -35,9 +35,20 @@ export interface ActiveVote {
 export const votesForApps = (votes: ActiveVote[], keys: string[]) =>
   votes.filter((vote) => keys.includes(vote.iconType));
 
-/** 지금 진행중인 투표를 마감 임박 순으로 */
-export async function fetchActiveVotes(keys: string[]): Promise<ActiveVote[]> {
-  const res = await fetch("/api/votes", { cache: "no-store" });
+/**
+ * 지금 진행중인 투표를 마감 임박 순으로.
+ *
+ * 언어를 쿼리로 같이 보낸다. `/api/votes` 주소에는 로케일 접두어가 없어서
+ * (proxy.ts 가 /api 를 제외한다) 서버가 이 요청의 언어를 알 길이 없다 —
+ * 안 보내면 영어판 화면의 투표 제목만 한국어로 돌아온다.
+ */
+export async function fetchActiveVotes(
+  keys: string[],
+  locale: string,
+): Promise<ActiveVote[]> {
+  const res = await fetch(`/api/votes?locale=${encodeURIComponent(locale)}`, {
+    cache: "no-store",
+  });
   if (!res.ok) throw new Error(`votes ${res.status}`);
   return votesForApps((await res.json()) as ActiveVote[], keys);
 }

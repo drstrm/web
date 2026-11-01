@@ -1,7 +1,7 @@
 "use client";
 
 import { ChevronRight, Vote } from "lucide-react";
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import { useEffect, useState } from "react";
 import PlatformIcon from "@/components/PlatformIcon";
 import SmartLink from "@/components/SmartLink";
@@ -33,6 +33,8 @@ const APP_BY_KEY = new Map(VOTE_APPS.map((app) => [app.key, app]));
 
 export default function VoteApps({ initialVotes = [] }: { initialVotes?: ActiveVote[] }) {
   const t = useTranslations("voteApps");
+  // 노션 콘텐츠(투표 제목)도 언어별로 오므로 조회에 언어를 같이 보낸다
+  const locale = useLocale();
   // 서버가 준 목록으로 시작한다 — 첫 렌더가 서버와 같아야 하이드레이션이 맞는다
   const [votes, setVotes] = useState(() => votesForApps(initialVotes, KEYS));
 
@@ -40,7 +42,7 @@ export default function VoteApps({ initialVotes = [] }: { initialVotes?: ActiveV
     let alive = true;
     const sync = async () => {
       try {
-        const data = await fetchActiveVotes(KEYS);
+        const data = await fetchActiveVotes(KEYS, locale);
         if (alive) setVotes(data);
       } catch (e) {
         console.error(e); // 조회 실패 시 서버가 준 목록을 그대로 둔다
@@ -53,7 +55,7 @@ export default function VoteApps({ initialVotes = [] }: { initialVotes?: ActiveV
       alive = false;
       clearInterval(id);
     };
-  }, []);
+  }, [locale]);
 
   return (
     <div className="space-y-6">

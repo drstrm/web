@@ -1,7 +1,7 @@
 "use client";
 
 import { Store } from "lucide-react";
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import PlatformIcon from "@/components/PlatformIcon";
 import SmartLink from "@/components/SmartLink";
 import {
@@ -14,6 +14,7 @@ import {
   IconTile,
 } from "@/components/ui";
 import type { AlbumShop } from "@/lib/content";
+import { properNoun } from "@/lib/proper-nouns";
 
 /**
  * 앨범사 예약판매 링크 (판매처 > 버전)
@@ -31,6 +32,14 @@ import type { AlbumShop } from "@/lib/content";
  */
 export default function AlbumShops({ shops }: { shops: AlbumShop[] }) {
   const t = useTranslations("albumShops");
+  /*
+   * 판매처 이름은 고유명사라 **한국어판만 한국어**다 (lib/proper-nouns.ts).
+   * `"shop"` 을 넘기는 이유: `애플뮤직` 이 음원 플랫폼 이름과 글자가 같은데
+   * **다른 회사**다 (applemusic.co.kr — 한국 음반 쇼핑몰).
+   * `shop.name` 자체는 노션 `판매처` 값이자 로고 매칭 키라 건드리지 않는다 —
+   * Accordion 의 key · value 도 그 값을 그대로 쓴다.
+   */
+  const locale = useLocale();
   // 노션 조회에 실패했거나(로그: [album-shops]) 아직 DB · 행이 없는 경우
   if (shops.length === 0) {
     return (
@@ -60,12 +69,14 @@ export default function AlbumShops({ shops }: { shops: AlbumShop[] }) {
             <IconTile tone="sky" size="lg">
               <PlatformIcon
                 iconType={shop.iconType}
-                label={shop.name}
+                label={properNoun(shop.name, locale, "shop")}
                 size={48}
                 fallback={<Store strokeWidth={2.2} />}
               />
             </IconTile>
-            <span className="min-w-0 truncate font-bold">{shop.name}</span>
+            <span className="min-w-0 truncate font-bold">
+              {properNoun(shop.name, locale, "shop")}
+            </span>
           </AccordionTrigger>
 
           <AccordionContent className="p-4">

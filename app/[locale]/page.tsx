@@ -18,6 +18,7 @@ import {
   getTodoList,
   type QuickLink,
 } from "@/lib/content";
+import { properNoun } from "@/lib/proper-nouns";
 import { DREAM_OFFICIAL } from "@/lib/site";
 
 // ISR: PLAVE 레퍼런스와 동일하게 300초 재검증 (A안)
@@ -78,8 +79,13 @@ export default async function Home({ params }: Props) {
                   <IconTile tone="sky" size="sm" className="size-5 [&>svg]:size-3">
                     <PlatformIcon iconType={r.iconType} size={28} fallback={<Music4 />} />
                   </IconTile>
+                  {/*
+                   * 플랫폼 이름은 고유명사라 **한국어판만 한국어**다. 그 외 언어는
+                   * 영어 표기로 보여준다 (lib/proper-nouns.ts). `r.platform` 자체는
+                   * iconType 과 짝인 매칭 값이라 건드리지 않는다.
+                   */}
                   <span className="min-w-0 flex-1 truncate text-sm font-semibold">
-                    {r.platform}
+                    {properNoun(r.platform, locale)}
                   </span>
                   {/*
                    * 순위가 들어오면 샴페인으로 강조한다. 아직 값이 없는 "—" 는

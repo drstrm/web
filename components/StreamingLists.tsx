@@ -1,7 +1,7 @@
 "use client";
 
 import { Music4, Play } from "lucide-react";
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import PlatformIcon from "@/components/PlatformIcon";
 import SmartLink from "@/components/SmartLink";
 import {
@@ -15,6 +15,7 @@ import {
 } from "@/components/ui";
 import type { StreamingList } from "@/lib/content";
 import { OS_ICON } from "@/lib/oneclick";
+import { properNoun } from "@/lib/proper-nouns";
 
 /**
  * 스밍리스트 원클릭 (플랫폼 > 운영체제 > 링크)
@@ -30,6 +31,8 @@ import { OS_ICON } from "@/lib/oneclick";
  */
 export default function StreamingLists({ lists }: { lists: StreamingList[] }) {
   const tr = useTranslations("streamingLists");
+  // 플랫폼 이름은 고유명사라 한국어판만 한국어다 (차트 · 판매처와 같은 규칙)
+  const locale = useLocale();
   if (lists.length === 0) {
     return (
       <EmptyState
@@ -56,7 +59,7 @@ export default function StreamingLists({ lists }: { lists: StreamingList[] }) {
               <PlatformIcon iconType={s.iconType} size={48} fallback={<Music4 />} />
             </IconTile>
             <span className="min-w-0">
-              <span className="block font-bold">{s.platform}</span>
+              <span className="block font-bold">{properNoun(s.platform, locale)}</span>
               <span className="block truncate text-xs text-muted">
                 {s.targets.flatMap((t) => t.os).join(" · ")}
               </span>

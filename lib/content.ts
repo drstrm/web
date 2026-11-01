@@ -8,6 +8,14 @@
  * 가이드가 잠깐 안 보이는 것이, 사이트가 500 을 뱉는 것보다 낫다.
  *
  * ISR: 각 페이지에서 `export const revalidate = 300;` (PLAVE 레퍼런스와 동일)
+ *
+ * ── 언어 ───────────────────────────────────────────────────────
+ * 노션 콘텐츠도 언어별로 나간다 (`설명` / `설명_EN`). 어느 언어인지는 **페이지가
+ * 넘겨주지 않는다** — 각 페이지가 이미 `setRequestLocale(locale)` 을 부르고 있어서
+ * next-intl 의 getLocale() 이 같은 값을 준다. 호출부를 하나도 고치지 않고(=
+ * 새 화면이 규칙을 하나 더 외우지 않고) 언어가 흘러가는 지점이다.
+ *
+ * 번역이 비어 있으면 한국어가 나온다 (lib/notion.ts 의 localized()).
  */
 
 import {
@@ -25,9 +33,27 @@ import {
   type NotionBanner,
   type NotionSchedule,
 } from "@/lib/notion";
+import { getLocale } from "next-intl/server";
+import { routing } from "@/i18n/routing";
 import type { ActiveVote } from "@/lib/votes";
 
 export type { GuidePage };
+
+/**
+ * 이 요청의 언어. 노션 조회에 그대로 넘긴다.
+ *
+ * 서버 컴포넌트에서는 페이지가 부른 setRequestLocale() 값이 그대로 온다 (정적
+ * 렌더가 유지된다 — 헤더를 읽지 않기 때문이다). 라우트 핸들러처럼 그 문맥이
+ * 없는 곳에서는 던지므로 한국어로 떨어뜨린다 — 그쪽은 언어를 인자로 받는다
+ * (getActiveVotes).
+ */
+async function requestLocale(): Promise<string> {
+  try {
+    return await getLocale();
+  } catch {
+    return routing.defaultLocale;
+  }
+}
 
 /* ---------------- HOME: 슬라이드 배너 (노션 DB) ---------------- */
 
@@ -41,7 +67,7 @@ export type Banner = NotionBanner;
  */
 export async function getBanners(): Promise<Banner[]> {
   try {
-    return await getNotionBanners();
+    return await getNotionBanners(await requestLocale());
   } catch (e) {
     console.error("[banners] 노션 조회 실패:", e);
     return [];
@@ -67,7 +93,7 @@ export interface QuickLink {
  */
 export async function getQuickLinks(): Promise<QuickLink[]> {
   try {
-    return await getNotionQuickLinks();
+    return await getNotionQuickLinks(await requestLocale());
   } catch (e) {
     console.error("[quick-links] 노션 조회 실패:", e);
     return [];
@@ -118,7 +144,7 @@ export interface GuideSection {
  */
 async function getGuides(page: GuidePage): Promise<GuideSection[]> {
   try {
-    return await getGuideSections(page);
+    return await getGuideSections(page, await requestLocale());
   } catch (e) {
     // 조회 실패 시 해당 페이지의 목록만 비우고 페이지는 정상 렌더한다.
     console.error(`[guides] 노션 조회 실패 (page=${page}):`, e);
@@ -220,6 +246,9 @@ export interface StreamingList {
 /**
  * 스밍리스트 원클릭 조회 (스키마는 docs/notion-streaming-db.md).
  * 조회에 실패하면 목록만 비운다 — 페이지가 500 이 되는 것보다 낫다.
+ *
+ * 번역 대상이 없다 — 이 DB 는 `플랫폼` · `운영체제` Select 와 링크뿐이고,
+ * 그 값들은 코드가 아이콘 · 표기에 쓰는 **매칭 키**다 (docs/i18n.md).
  */
 export async function getStreamingLists(): Promise<StreamingList[]> {
   try {
@@ -282,7 +311,7 @@ export const FORM_PAGES: Record<FormKind, FormPageInfo> = {
  */
 export async function getFormLinks(kind: FormKind): Promise<FormLink[]> {
   try {
-    return await getNotionFormLinks(kind);
+    return await getNotionFormLinks(kind, await requestLocale());
   } catch (e) {
     console.error(`[form-links] 노션 조회 실패 (kind=${kind}):`, e);
     return [];
@@ -301,9 +330,9 @@ export function getRealtimeChart(): { updatedAt: string; rows: ChartRow[] } {
   /*
    * 운영 시: 스밍팀 X 계정에 올리는 차트 데이터 소스와 연동.
    *
-   * 플랫폼 이름은 번역하지 않는다 — 한국 음원 서비스의 브랜드명이고, 아이콘 키
-   * (iconType)와 짝으로 읽히는 값이다. 해외 팬에게도 「Melon」 이 아니라
-   * 앱에 적힌 그대로 보이는 편이 찾기 쉽다.
+   * 플랫폼 이름은 **한국어 그대로 둔다** — 아이콘 키(iconType)와 짝으로 읽히는
+   * 매칭 값이다. 화면 표기는 렌더 지점에서 고른다(lib/proper-nouns.ts 의
+   * properNoun) — 한국어판은 「멜론」, 그 외 언어는 `Melon` 이다.
    */
   return {
     // 화면 문구는 messages 의 `home.chart.waiting` — 여기 값은 쓰이지 않는다
@@ -331,10 +360,11 @@ export function getRealtimeChart(): { updatedAt: string; rows: ChartRow[] } {
  */
 async function getSchedules(
   surface: string,
-  revalidate?: number,
+  opts: { locale?: string; revalidate?: number } = {},
 ): Promise<NotionSchedule[]> {
   try {
-    const rows = await getNotionSchedules(revalidate);
+    const locale = opts.locale ?? (await requestLocale());
+    const rows = await getNotionSchedules(locale, opts.revalidate);
     return rows.filter((r) => r.surfaces.includes(surface));
   } catch (e) {
     // 조회 실패 시 해당 섹션만 비우고 페이지는 정상 렌더한다.
@@ -463,10 +493,17 @@ export async function getTodoList(): Promise<TodoItem[]> {
  *
  * **서버에서만 부른다** (app/api/votes). 노션 토큰은 서버 전용이라 투표 버튼
  * (components/VoteApps.tsx)이 노션을 직접 부를 수 없어서, 라우트가 한 겹 선다.
+ *
+ * 언어를 **인자로 받는다.** 라우트 핸들러에는 `[locale]` 세그먼트가 없어서
+ * (proxy.ts 가 /api 를 접두어에서 제외한다) getLocale() 이 한국어로 떨어진다 —
+ * 그러면 영어판 화면의 투표 카드만 한국어가 된다. 브라우저가 `?locale=` 로 알려준다.
  */
-export async function getActiveVotes(): Promise<ActiveVote[]> {
+export async function getActiveVotes(locale?: string): Promise<ActiveVote[]> {
   // 투표는 열리고 닫히는 순간이 중요하다. 홈(300초)보다 짧게 잡는다.
-  const rows = await getSchedules("vote", 60);
+  const rows = await getSchedules("vote", {
+    ...(locale ? { locale } : {}),
+    revalidate: 60,
+  });
   const now = Date.now();
 
   const open = rows.flatMap((r) => {
@@ -540,7 +577,7 @@ export interface AlbumBenefit {
  */
 export async function getAlbumBenefits(): Promise<AlbumBenefit[]> {
   try {
-    return await getNotionAlbumBenefits();
+    return await getNotionAlbumBenefits(await requestLocale());
   } catch (e) {
     console.error("[album-benefits] 노션 조회 실패:", e);
     return [];
@@ -603,7 +640,7 @@ export interface GroupOrder {
  */
 export async function getGroupOrders(): Promise<GroupOrder[]> {
   try {
-    return await getNotionGroupOrders();
+    return await getNotionGroupOrders(await requestLocale());
   } catch (e) {
     console.error("[group-orders] 노션 조회 실패:", e);
     return [];

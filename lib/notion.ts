@@ -341,6 +341,168 @@ function titleOf(props: Record<string, NotionProperty>): string {
   return text(Object.values(props).find((v) => v.type === "title")?.title);
 }
 
+/* ---------------- 번역 열 (`_EN`) 읽기 ---------------- */
+
+/*
+ * 운영진이 노션에 쓴 글을 언어별로 읽는다.
+ * ------------------------------------------------------------------
+ * 규칙 하나다 — **번역할 열 이름 뒤에 `_EN` 을 붙인 텍스트 열을 만든다.**
+ *
+ *     배너 DB
+ *       타이틀        타이틀_EN        설명            설명_EN
+ *       컴백 D-7      Comeback D-7    스밍 준비됐나요?  Ready to stream?
+ *
+ * 왜 노션에 두나: 번역문이 노션 칸에 **보이고 운영진이 고칠 수 있다.** 스밍 · 총공 ·
+ * 공구 · 특전은 기계번역이 특히 틀리는 말들이라, 안 보이는 캐시(KV 같은 것)에 넣으면
+ * 오역을 영원히 모른다. 덤으로 인프라가 한 개도 늘지 않는다.
+ *
+ * 왜 왕복이 늘지 않나: queryRows() 가 캐시한 **같은 응답에서 열만 골라 읽는다.**
+ * 6개 언어든 1개든 노션 요청 수는 그대로다. 번역을 별도 DB(관계형)로 빼면 이 장점이
+ * 사라진다 — 노션 relation 은 id 만 주고 내용은 안 준다.
+ *
+ * 비어 있으면 **한국어가 나온다.** 「아직 번역되지 않았다」는 정직한 상태이고 깨진
+ * 화면이 아니다 (i18n/request.ts 의 메시지 폴백과 같은 규칙).
+ *
+ * 채우는 쪽은 **노션 AI 자동 채우기**다. 운영진이 한국어를 고치면 노션이 그 칸을
+ * 스스로 다시 번역한다 — 코드는 **읽기만 한다.** 번역에 쓰는 프롬프트(용어집 ·
+ * 번역 금지 목록)는 docs/notion-ai-translate-prompt.md 에 있다.
+ *
+ * ⚠ 그래서 이 파일에 노션 **쓰기는 없다.** 번역 품질은 노션 프롬프트가 쥐고 있고,
+ *   오역은 운영진이 그 칸에서 직접 고친다. 자세한 설계는 docs/i18n.md.
+ */
+
+/** 번역의 원문 언어. 이 언어에는 접미어가 없다 (한국어 열이 곧 원문이다) */
+const SOURCE_LOCALE = "ko";
+
+/**
+ * 번역이 없는 언어가 떨어지는 곳. **한국어가 아니면 영어를 보여준다.**
+ *
+ * 화면 문구(messages/*.json)는 6개 언어를 다 채워 두지만, 노션 콘텐츠는 운영진이
+ * 칸을 채워야 늘어난다. 그래서 `설명_JA` 가 없을 때 고를 수 있는 것이 둘이다 —
+ * 한국어를 보여주거나, 영어를 보여주거나.
+ *
+ * 영어로 둔다. 일본어판을 보는 사람은 **한국어보다 영어를 읽을 가능성이 훨씬 높고**,
+ * 노션 콘텐츠를 영어 한 벌만 유지해도 비한국어 사용자 전체가 읽을 수 있게 된다
+ * (언어마다 칸을 채우는 부담이 1/5 이 된다).
+ *
+ * 그 결과 일본어판은 「화면 문구는 일본어 · 노션 콘텐츠는 영어」가 된다. 섞이지만,
+ * 「일본어 화면에 한국어 콘텐츠」보다는 읽을 수 있는 상태다.
+ */
+const FALLBACK_LOCALE = "en";
+
+/**
+ * 제목(Title) 열의 번역을 담는 **고정된 열 이름.**
+ *
+ * 노션 DB 에는 제목 열이 **딱 하나만** 있을 수 있어서 `이름` / `이름_EN` 같은 짝을
+ * 만들 수 없고, 코드는 제목을 이름이 아니라 **타입으로** 찾는다(titleOf). 즉 짝이 될
+ * 「원래 이름」이 DB 마다 다르다 (`이름` · `Name` · `버튼 이름` · `판매처` · `공구주 서명`).
+ * 그래서 제목 번역만은 원래 열 이름이 무엇이든 이 이름 하나로 못박는다.
+ */
+const TITLE_ALIAS = "제목";
+
+/**
+ * 제목 열의 번역을 담는 열 이름으로 **받아 주는** 별칭들.
+ *
+ * 문서는 `제목_EN` 하나만 안내하지만, 실제로 열을 만드는 사람은 `title_EN` 이라고
+ * 쓰기도 한다 (코드가 영어라 자연스러운 선택이다). 둘을 다 받는다 —
+ * **이름을 못 맞춰 번역이 조용히 안 나오는 것**이 가장 나쁜 실패다.
+ *
+ * 원래 제목 열 이름 + 접미어(`버튼 이름_EN` · `이름_EN`)도 읽는다 — 별칭이 아니라
+ * **실제로 그 이름의 열을 찾는** 경로라 아래 배열에는 적지 않는다 (localizedTitle).
+ */
+const TITLE_ALIASES = [TITLE_ALIAS, "title"];
+
+/**
+ * 번역 열 접미어 (`설명` → `설명_EN`). 언어 코드는 messages/ 파일명과 같다.
+ * 원문 언어(또는 모르는 값)면 null — 그때는 한국어 열을 그대로 읽는다.
+ */
+function localeSuffix(locale?: string): string | null {
+  const code = (locale ?? "").trim().toLowerCase();
+  if (!code || code === SOURCE_LOCALE) return null;
+  return `_${code.toUpperCase()}`;
+}
+
+/**
+ * 찾아볼 접미어를 **순서대로**. 그 언어 → 영어 → (빈 배열이면 한국어 원문).
+ * 한국어는 빈 배열이다 — 원문 열을 그대로 읽는다.
+ */
+function localeSuffixes(locale?: string): string[] {
+  const own = localeSuffix(locale);
+  if (!own) return [];
+  const fallback = localeSuffix(FALLBACK_LOCALE);
+  return fallback && fallback !== own ? [own, fallback] : [own];
+}
+
+/**
+ * 열 이름을 **대소문자 구분 없이** 찾는다 (`설명_EN` · `설명_en` · `설명_En`).
+ *
+ * docs/notion-guide-db.md 의 설계 원칙 2 — 「운영진이 지켜야 할 규칙을 만들지
+ * 않는다」 — 와 같은 결이고, normalized() 가 이름의 앞뒤 공백을 터는 것과 같은
+ * 이유다. 열 이름을 소문자로 적었다고 번역이 조용히 사라지면 원인을 짚을 수 없다.
+ */
+function propLoose(
+  props: Record<string, NotionProperty>,
+  name: string,
+): NotionProperty | undefined {
+  const direct = props[name];
+  if (direct) return direct;
+  const wanted = name.toLowerCase();
+  for (const [key, value] of Object.entries(props)) {
+    if (key.toLowerCase() === wanted) return value;
+  }
+  return undefined;
+}
+
+/** 제목 열이든 텍스트 열이든 같은 방식으로 읽는다 (운영진이 어느 타입으로 만들든) */
+const textOf = (prop?: NotionProperty): string =>
+  text(prop?.rich_text ?? prop?.title);
+
+/** 제목(Title) 열의 **이름**. `제목_EN` 말고 `버튼 이름_EN` 도 받으려고 쓴다 */
+function titleName(props: Record<string, NotionProperty>): string | undefined {
+  return Object.entries(props).find(([, v]) => v.type === "title")?.[0];
+}
+
+/**
+ * 이름으로 찾는 텍스트 열의 **그 언어 값.** 비면 한국어 원문.
+ *
+ *     localized(p, "설명", locale)   // 설명_EN 먼저, 비면 설명
+ */
+export function localized(
+  props: Record<string, NotionProperty>,
+  name: string,
+  locale?: string,
+): string {
+  for (const suffix of localeSuffixes(locale)) {
+    const value = textOf(propLoose(props, `${name}${suffix}`));
+    if (value) return value;
+  }
+  return textOf(props[name]);
+}
+
+/**
+ * 제목(Title) 열의 **그 언어 값.** 비면 한국어 원문.
+ *
+ * `제목_EN` 을 먼저 보고, 없으면 원래 제목 열 이름 + 접미어(`버튼 이름_EN`)도 받는다.
+ * 운영진이 어느 쪽으로 만들어도 동작하게 두되, 문서는 `제목_EN` 하나만 안내한다.
+ */
+export function localizedTitle(
+  props: Record<string, NotionProperty>,
+  locale?: string,
+): string {
+  const own = titleName(props);
+
+  // 언어가 먼저다 — `title_JA` 가 있으면 `제목_EN` 보다 그쪽을 쓴다
+  for (const suffix of localeSuffixes(locale)) {
+    // `제목_JA` · `title_JA`, 그리고 원래 제목 열 이름 + 접미어 (`이름_JA`)
+    for (const alias of [...TITLE_ALIASES, ...(own ? [own] : [])]) {
+      const value = textOf(propLoose(props, `${alias}${suffix}`));
+      if (value) return value;
+    }
+  }
+
+  return titleOf(props);
+}
+
 /**
  * 선택지 열 값 목록.
  *
@@ -420,16 +582,22 @@ interface MappedRow {
   item: GuideItem;
 }
 
-function toRow(page: NotionPage): MappedRow | null {
+function toRow(page: NotionPage, locale?: string): MappedRow | null {
   const p = normalized(page);
 
+  /*
+   * ⚠ 가이드 **제목은 번역하지 않는다.** 제목이 슬러그의 재료라서
+   *   (toSlug) 언어마다 주소가 갈라진다 — 이미 공유된 `/guide/download/멜론-xxxxxxx`
+   *   링크가 영어판에서 다른 주소가 되고, 언어 스위치가 같은 글로 못 간다.
+   *   번역 대상은 `설명` 뿐이다 (docs/i18n.md).
+   */
   const title = text(p["제목"]?.title);
   const sectionLabel = p["섹션"]?.select?.name?.trim() ?? "";
   // 제목이나 섹션이 비면 어디에도 놓을 수 없다 (노션 기본 빈 행이 여기서 걸러진다)
   if (!title || !sectionLabel) return null;
 
   const status = STATUS_MAP[p["상태"]?.select?.name?.trim() ?? ""] ?? "coming-soon";
-  const summary = text(p["설명"]?.rich_text) || undefined;
+  const summary = localized(p, "설명", locale) || undefined;
 
   const iconTypes = (p["플랫폼"]?.multi_select ?? [])
     .map((o) => PLATFORM_KEY_BY_LABEL[o.name.trim()])
@@ -474,10 +642,13 @@ function toRow(page: NotionPage): MappedRow | null {
  */
 export async function getGuideSections(
   target: GuidePage,
+  locale?: string,
   revalidate = 300,
 ): Promise<GuideSection[]> {
   const rows = queryRows("guide", revalidate)
-    .then((pages) => pages.map(toRow).filter((r): r is MappedRow => r !== null));
+    .then((pages) =>
+      pages.map((page) => toRow(page, locale)).filter((r): r is MappedRow => r !== null),
+    );
 
   const mapped = await rows;
 
@@ -686,7 +857,10 @@ function colorValue(prop?: NotionProperty): string | undefined {
  * 없으면 노션에 추가한 순서(queryRows 의 BY_CREATED). 이 DB 는 원래 「행을 끌어
  * 옮긴 순서」에 기대고 있었는데, 노션 API 가 그 순서를 알려주지 않는다.
  */
-export async function getBanners(revalidate = 300): Promise<NotionBanner[]> {
+export async function getBanners(
+  locale?: string,
+  revalidate = 300,
+): Promise<NotionBanner[]> {
   const pages = await queryRows("banner", revalidate);
 
   const rows = pages.flatMap((page) => {
@@ -698,8 +872,8 @@ export async function getBanners(revalidate = 300): Promise<NotionBanner[]> {
     if (!url && !background) return [];
 
     // `타이틀` 이 제목(Title) 열이든 텍스트 열이든 똑같이 읽는다.
-    const title = text(p["타이틀"]?.title ?? p["타이틀"]?.rich_text) || undefined;
-    const subtitle = text(p["설명"]?.rich_text) || undefined;
+    const title = localized(p, "타이틀", locale) || undefined;
+    const subtitle = localized(p, "설명", locale) || undefined;
 
     return [
       {
@@ -743,12 +917,17 @@ export async function getBanners(revalidate = 300): Promise<NotionBanner[]> {
  * 순서다(queryRows 의 BY_CREATED). `순서` 값이 전부 같으면 정렬이 입력 순서를
  * 흩뜨리지 않으므로(JS sort 는 안정 정렬) 열을 안 만들어도 그대로 동작한다.
  */
-export async function getQuickLinks(revalidate = 300): Promise<QuickLink[]> {
+export async function getQuickLinks(
+  locale?: string,
+  revalidate = 300,
+): Promise<QuickLink[]> {
   const pages = await queryRows("links", revalidate);
 
   const rows = pages.flatMap((page) => {
     const p = normalized(page);
-    const label = text(p["버튼 이름"]?.title);
+    // 제목 열을 **타입으로** 찾는다 — 운영진이 `버튼 이름` 을 고쳐 써도 버티고,
+    // 번역은 `제목_EN` 한 곳에서 온다 (localizedTitle).
+    const label = localizedTitle(p, locale);
     const href = toHref(p["URL"]?.url);
     // 이름이나 링크가 비면 버튼을 만들 수 없다 (노션 기본 빈 행이 여기서 걸러진다)
     if (!label || !href) return [];
@@ -806,6 +985,7 @@ const FORM_STATUS_BY_LABEL: Record<string, FormStatus> = {
  */
 export async function getFormLinks(
   kind: FormKind,
+  locale?: string,
   revalidate = 300,
 ): Promise<FormLink[]> {
   const pages = await queryRows("forms", revalidate);
@@ -813,7 +993,7 @@ export async function getFormLinks(
   const rows = pages.flatMap((page) => {
     const p = normalized(page);
 
-    const title = titleOf(p);
+    const title = localizedTitle(p, locale);
     const rowKind = FORM_KIND_BY_LABEL[p["구분"]?.select?.name?.trim() ?? ""];
     // 제목이 비었거나(노션 기본 빈 행) 다른 페이지의 행이면 건너뛴다
     if (!title || rowKind !== kind) return [];
@@ -835,8 +1015,8 @@ export async function getFormLinks(
           status,
           // 마감 · 준비 중이면 주소를 아예 내보내지 않는다 (화면에서 링크가 안 생긴다)
           ...(status === "open" && href ? { href } : {}),
-          ...(text(p["설명"]?.rich_text) ? { summary: text(p["설명"]?.rich_text) } : {}),
-          ...(text(p["기간"]?.rich_text) ? { period: text(p["기간"]?.rich_text) } : {}),
+          ...(localized(p, "설명", locale) ? { summary: localized(p, "설명", locale) } : {}),
+          ...(localized(p, "기간", locale) ? { period: localized(p, "기간", locale) } : {}),
           ...(text(p["emoji"]?.rich_text) ? { emoji: text(p["emoji"]?.rich_text) } : {}),
         } satisfies FormLink,
       },
@@ -963,13 +1143,16 @@ function platformKey(name: string): string | undefined {
  * 표시 순서는 노션이 쥔다. `순서` 숫자 열이 있으면 그 값, 없으면 행을 추가한
  * 순서다(queryRows 의 BY_CREATED). 화면이 여기에 2차 키를 더 붙이기도 한다.
  */
-export async function getSchedules(revalidate = 300): Promise<NotionSchedule[]> {
+export async function getSchedules(
+  locale?: string,
+  revalidate = 300,
+): Promise<NotionSchedule[]> {
   const pages = await queryRows("schedule", revalidate);
 
   const rows = pages.flatMap((page) => {
     const p = normalized(page);
 
-    const title = titleOf(p);
+    const title = localizedTitle(p, locale);
     const surfaces = (p["노출 위치"]?.multi_select ?? [])
       .map((o) => o.name.trim())
       .filter(Boolean);
@@ -984,7 +1167,7 @@ export async function getSchedules(revalidate = 300): Promise<NotionSchedule[]> 
     // 열 이름을 `url` 로 적은 DB 도, `URL` 로 적은 DB 도 있다 (다른 DB 와 맞춤)
     const url = linkValue(p["url"] ?? p["URL"]);
     const guideUrl = linkValue(p["guide_url"] ?? p["가이드"]);
-    const description = text(p["설명"]?.rich_text);
+    const description = localized(p, "설명", locale);
     const emoji = text(p["emoji"]?.rich_text);
 
     return [
@@ -1031,18 +1214,25 @@ const toBenefitItems = (raw: string): string[] =>
  * 예약판매 DB 는 버전이 열로 누워 있는데 노션 API 가 열 순서를 알려주지 않아서,
  * 순서를 쥘 곳이 필요하다. 같은 버전 목록을 두 군데 적지 않도록 여기를 기준으로 삼는다.
  */
-export async function getAlbumBenefits(revalidate = 300): Promise<AlbumBenefit[]> {
+export async function getAlbumBenefits(
+  locale?: string,
+  revalidate = 300,
+): Promise<AlbumBenefit[]> {
   const pages = await queryRows("albumBenefit", revalidate);
 
   const rows = pages.flatMap((page) => {
     const p = normalized(page);
 
+    /*
+     * ⚠ 버전 이름은 **번역하지 않는다** — 예약판매 DB 의 열 이름과 맞춰야 하는
+     *   매칭 키다(versionMatcher). `제목_EN` 을 만들어도 여기서는 읽지 않는다.
+     */
     const version = titleOf(p);
     // 버전 이름이 비면 표에 놓을 자리가 없다 (노션 기본 빈 행이 여기서 걸러진다)
     if (!version) return [];
 
-    const benefits = toBenefitItems(text(p["추가 특전"]?.rich_text));
-    const note = text(p["비고"]?.rich_text);
+    const benefits = toBenefitItems(localized(p, "추가 특전", locale));
+    const note = localized(p, "비고", locale);
 
     return [
       {
@@ -1111,8 +1301,12 @@ function versionMatcher(benefits: AlbumBenefit[]) {
 export async function getAlbumShops(revalidate = 300): Promise<AlbumShop[]> {
   const [pages, benefits] = await Promise.all([
     queryRows("album", revalidate),
-    // 같은 조회를 페이지에서도 하지만 Next 의 fetch 캐시가 한 번으로 합친다
-    getAlbumBenefits(revalidate).catch((e) => {
+    /*
+     * 같은 조회를 페이지에서도 하지만 Next 의 fetch 캐시가 한 번으로 합친다.
+     * 언어는 넘기지 않는다 — 여기서 쓰는 것은 **버전 이름을 예약판매 DB 의 열
+     * 이름과 맞추는 매칭 키**다 (versionMatcher). 번역된 이름으로는 못 맞춘다.
+     */
+    getAlbumBenefits(undefined, revalidate).catch((e) => {
       console.error("[album-shops] 버전 순서를 못 읽었다 (열 이름 그대로 쓴다):", e);
       return [] as AlbumBenefit[];
     }),
@@ -1178,7 +1372,10 @@ export async function getAlbumShops(revalidate = 300): Promise<AlbumShop[]> {
  *
  * 표시 순서는 `순서` 숫자 열, 없거나 비면 노션에 행을 추가한 순서(BY_CREATED).
  */
-export async function getGroupOrders(revalidate = 300): Promise<GroupOrder[]> {
+export async function getGroupOrders(
+  locale?: string,
+  revalidate = 300,
+): Promise<GroupOrder[]> {
   const pages = await queryRows("groupOrder", revalidate);
 
   const rows = pages.flatMap((page) => {
@@ -1192,7 +1389,8 @@ export async function getGroupOrders(revalidate = 300): Promise<GroupOrder[]> {
     // 공구 사이트를 텍스트로 적어도, 선택지로 만들어도 읽는다
     const site = text(p["공구 사이트"]?.rich_text) || selectValues(p["공구 사이트"])[0] || "";
     const href = linkValue(p["공구 URL"] ?? p["URL"] ?? p["url"]);
-    const note = text(p["비고"]?.rich_text);
+    // 공구주명 · 공구 사이트는 고유명사라 그대로 두고, 자유 서술인 `비고` 만 번역한다
+    const note = localized(p, "비고", locale);
 
     return [
       {

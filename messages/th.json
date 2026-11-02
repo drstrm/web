@@ -2,7 +2,8 @@
   "meta": {
     "siteName": "NCT DREAM Streaming Team",
     "title": "NCT DREAM Streaming Team — เว็บไซต์ทางการ",
-    "description": "ไกด์สตรีมมิง โหวต และดาวน์โหลดสำหรับ NCT DREAM พร้อมลิงก์ one-click รวมไว้ที่เดียว เว็บไซต์ทางการของทีมสตรีมมิง"
+    "description": "ไกด์สตรีมมิง โหวต และดาวน์โหลดสำหรับ NCT DREAM พร้อมลิงก์ one-click รวมไว้ที่เดียว เว็บไซต์ทางการของทีมสตรีมมิง",
+    "ogImageAlt": "รูปหมู่สมาชิก NCT DREAM ทั้งหกคน · เว็บไซต์ทางการของ NCT DREAM Streaming Team"
   },
   "layout": {
     "skipToContent": "ข้ามไปที่เนื้อหา"

@@ -44,8 +44,8 @@ export async function generateMetadata({
   const t = await getTranslations({ locale, namespace: "meta" });
 
   return {
-    // 탭 아이콘(app/favicon.ico · icon.png · apple-icon.png)과 공유 카드
-    // (app/opengraph-image.jpg)는 파일 이름으로 자동 연결된다.
+    // 탭 아이콘(app/favicon.ico · icon.png · apple-icon.png)은 파일 이름으로
+    // 자동 연결된다. 공유 카드 이미지는 아래 openGraph.images 에 손으로 적는다.
     // 공유 이미지는 절대경로여야 해서 metadataBase 가 반드시 있어야 한다.
     metadataBase: new URL(SITE.url),
     title: {
@@ -78,6 +78,21 @@ export async function generateMetadata({
       url: "./", // 현재 경로 기준으로 풀린다 (고정하면 전 페이지가 홈 주소로 공유된다)
       locale,
       type: "website",
+      /*
+       * 공유 카드 이미지. app/opengraph-image.jpg 는 파일 이름만으로 연결되지만,
+       * 그 자동 연결은 **파일이 놓인 세그먼트의 메타데이터**에 꽂힌다. 이
+       * openGraph 는 한 단 아래(app/[locale]/)에 있고, Next 는 openGraph 를
+       * 통째로 덮어쓰기 때문에 루트에서 붙은 og:image 가 사라진다.
+       * → 이 images 를 지우면 공유 카드의 이미지가 없어진다 (i18n 전환 때 그랬다).
+       */
+      images: [
+        {
+          url: "/opengraph-image.jpg", // app/opengraph-image.jpg 가 이 주소로 서빙된다
+          width: 1200,
+          height: 630,
+          alt: t("ogImageAlt"),
+        },
+      ],
     },
     // 카카오톡·X 는 큰 이미지 카드로 펼쳐 보여준다
     twitter: { card: "summary_large_image" },

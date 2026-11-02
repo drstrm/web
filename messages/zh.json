@@ -2,7 +2,8 @@
   "meta": {
     "siteName": "NCT DREAM 打榜组",
     "title": "NCT DREAM 打榜组官方网站",
-    "description": "NCT DREAM 的打榜、投票、下载教程和一键链接，全部集中在这里。打榜组官方网站。"
+    "description": "NCT DREAM 的打榜、投票、下载教程和一键链接，全部集中在这里。打榜组官方网站。",
+    "ogImageAlt": "NCT DREAM 六位成员合照 · NCT DREAM 打榜组官方网站"
   },
   "layout": {
     "skipToContent": "跳至正文"

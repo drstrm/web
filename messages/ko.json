@@ -2,7 +2,8 @@
   "meta": {
     "siteName": "NCT DREAM 스트리밍팀",
     "title": "NCT DREAM 스트리밍팀 공식 웹사이트",
-    "description": "NCT DREAM 스트리밍 · 투표 · 다운로드 가이드와 원클릭을 한곳에. 스밍팀 공식 웹사이트."
+    "description": "NCT DREAM 스트리밍 · 투표 · 다운로드 가이드와 원클릭을 한곳에. 스밍팀 공식 웹사이트.",
+    "ogImageAlt": "NCT DREAM 여섯 멤버 단체 사진 · NCT DREAM 스트리밍팀 공식 웹사이트"
   },
   "layout": {
     "skipToContent": "본문으로 건너뛰기"

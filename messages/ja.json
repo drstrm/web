@@ -2,7 +2,8 @@
   "meta": {
     "siteName": "NCT DREAM ストリーミングチーム",
     "title": "NCT DREAM ストリーミングチーム 公式サイト",
-    "description": "NCT DREAM のストリーミング・投票・ダウンロードガイドとワンクリックをまとめて。ストリーミングチーム公式サイトです。"
+    "description": "NCT DREAM のストリーミング・投票・ダウンロードガイドとワンクリックをまとめて。ストリーミングチーム公式サイトです。",
+    "ogImageAlt": "NCT DREAM メンバー6人の集合写真 · NCT DREAM ストリーミングチーム 公式サイト"
   },
   "layout": {
     "skipToContent": "本文へスキップ"

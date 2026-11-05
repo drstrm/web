@@ -586,15 +586,21 @@ function toRow(page: NotionPage, locale?: string): MappedRow | null {
   const p = normalized(page);
 
   /*
-   * ⚠ 가이드 **제목은 번역하지 않는다.** 제목이 슬러그의 재료라서
-   *   (toSlug) 언어마다 주소가 갈라진다 — 이미 공유된 `/guide/download/멜론-xxxxxxx`
-   *   링크가 영어판에서 다른 주소가 되고, 언어 스위치가 같은 글로 못 간다.
-   *   번역 대상은 `설명` 뿐이다 (docs/i18n.md).
+   * 제목은 두 몫을 한다 — **화면에 보이는 이름**과 **슬러그의 재료**다. 갈라 둔다.
+   *
+   *   slugTitle  언제나 한국어 제목. 번역문으로 슬러그를 만들면 언어마다 주소가
+   *              갈라져서, 이미 공유된 `/guide/download/멜론-xxxxxxx` 링크가
+   *              영어판에서 다른 주소가 되고 언어 스위치가 같은 글로 못 간다.
+   *   title      그 언어의 제목 (`제목_EN`). 비면 한국어가 그대로 나온다.
+   *
+   * ⚠ slugTitle 은 **절대 번역하지 않는다.** 여기 localizedTitle 을 넣으면
+   *   언어마다 주소가 생기고 이미 공유된 링크가 죽는다 (docs/i18n.md).
    */
-  const title = text(p["제목"]?.title);
+  const slugTitle = titleOf(p);
+  const title = localizedTitle(p, locale);
   const sectionLabel = p["섹션"]?.select?.name?.trim() ?? "";
   // 제목이나 섹션이 비면 어디에도 놓을 수 없다 (노션 기본 빈 행이 여기서 걸러진다)
-  if (!title || !sectionLabel) return null;
+  if (!slugTitle || !sectionLabel) return null;
 
   const status = STATUS_MAP[p["상태"]?.select?.name?.trim() ?? ""] ?? "coming-soon";
   const summary = localized(p, "설명", locale) || undefined;
@@ -612,7 +618,9 @@ function toRow(page: NotionPage, locale?: string): MappedRow | null {
         src:
           `/api/guide-image?p=${encodeURIComponent(page.id)}` +
           `&i=${i}&v=${versionToken(url)}`,
-        alt: files.length > 1 ? `${title} 가이드 ${i + 1}` : `${title} 가이드`,
+        // 노션 제목이 이미 「… 가이드」 · 「… Guide」 로 끝난다. 말을 덧붙이면
+        // 번역 제목에서 언어가 섞인다 (`Melon Gift Guide 가이드`).
+        alt: files.length > 1 ? `${title} ${i + 1}` : title,
       },
     ];
   });
@@ -622,7 +630,7 @@ function toRow(page: NotionPage, locale?: string): MappedRow | null {
     // 비어 있으면 맨 뒤로
     order: p["순서"]?.number ?? Number.MAX_SAFE_INTEGER,
     item: {
-      slug: toSlug(title, page.id),
+      slug: toSlug(slugTitle, page.id),
       title,
       status,
       ...(summary ? { summary } : {}),
@@ -658,7 +666,15 @@ export async function getGuideSections(
       title: section.label,
       items: mapped
         .filter((r) => r.sectionLabel === section.label)
-        .sort((a, b) => a.order - b.order || a.item.title.localeCompare(b.item.title, "ko"))
+        /*
+         * `순서` 가 비었거나 같으면 제목순이다. 보는 언어의 정렬 규칙으로 비교한다 —
+         * 영어판 목록이 영어 제목 기준으로 A→Z 가 된다 (`제목_EN`).
+         */
+        .sort(
+          (a, b) =>
+            a.order - b.order ||
+            a.item.title.localeCompare(b.item.title, locale ?? SOURCE_LOCALE),
+        )
         .map((r) => r.item),
     }))
     .filter((section) => section.items.length > 0);

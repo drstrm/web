@@ -141,8 +141,9 @@ export async function guideDetailMetadata(
 
   /*
    * 노션 제목이 이미 "멜론 다운로드 가이드" 처럼 카테고리를 품고 있으면
-   * 덧붙이지 않는다. 노션 제목은 운영진이 쓴 한국어라 카테고리명이 번역된
-   * 언어에서는 이 비교가 걸리지 않고 둘 다 붙는데, 그래도 틀린 제목은 아니다.
+   * 덧붙이지 않는다. 번역 제목(`제목_EN`)도 같은 비교를 거치지만, 노션의 번역문과
+   * 카테고리명(messages)의 표기가 꼭 맞지는 않아서 둘 다 붙는 쪽으로 기울기 쉽다
+   * (`Melon Download Guide · Download guide`) — 길어질 뿐 틀린 제목은 아니다.
    */
   const { title } = entry.item;
   return { title: title.includes(category) ? title : `${title} · ${category}` };

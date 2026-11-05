@@ -7,6 +7,7 @@ import PlatformIcon from "@/components/PlatformIcon";
 import SmartLink from "@/components/SmartLink";
 import { Badge, EmptyState, IconTile } from "@/components/ui";
 import { VOTE_APPS, type VoteAppSlot } from "@/lib/oneclick";
+import { properNoun } from "@/lib/proper-nouns";
 import { fetchActiveVotes, formatVotePeriod, votesForApps, type ActiveVote } from "@/lib/votes";
 import { cn } from "@/lib/utils";
 
@@ -101,6 +102,7 @@ export default function VoteApps({ initialVotes = [] }: { initialVotes?: ActiveV
 /** 진행중 투표 한 건. 카드 전체가 투표 URL 로 가는 링크다 */
 function VoteCard({ vote }: { vote: ActiveVote }) {
   const t = useTranslations("voteApps");
+  const locale = useLocale();
   const app = APP_BY_KEY.get(vote.iconType);
 
   return (
@@ -119,7 +121,11 @@ function VoteCard({ vote }: { vote: ActiveVote }) {
       <div className="min-w-0 flex-1">
         {/* 같은 앱에 두 건이 열리면 아이콘이 같다 — 제목이 둘을 가르므로 두 줄까지 살린다 */}
         <p className="line-clamp-2 font-bold leading-snug">{vote.title}</p>
-        {app && <p className="mt-0.5 truncate text-xs text-muted">{app.name}</p>}
+        {app && (
+          <p className="mt-0.5 truncate text-xs text-muted">
+            {properNoun(app.name, locale)}
+          </p>
+        )}
         <p className="mt-0.5 truncate text-[11px] font-semibold text-champagne-800">
           {formatVotePeriod(vote)}
         </p>
@@ -138,6 +144,13 @@ function VoteCard({ vote }: { vote: ActiveVote }) {
  * 투표로 가는 길은 위 카드가 맡고, 이 칸은 하트 적립 · 예열용 고정 통로다.
  */
 function AppTile({ app }: { app: VoteAppSlot }) {
+  /*
+   * 앱 이름 · 방송 이름은 번역이 아니라 **표기**다 (lib/proper-nouns.ts) —
+   * 일본어판에도 「ミュビット」이 아니라 `Mubeat` 를 보여준다. 앱스토어에서
+   * 검색해서 찾아야 하는 글자라서다. `app.key` 는 그대로 둔다 (아이콘 매칭).
+   */
+  const locale = useLocale();
+
   return (
     <SmartLink
       href={app.href}
@@ -149,8 +162,12 @@ function AppTile({ app }: { app: VoteAppSlot }) {
       <IconTile tone="sky" size="md">
         <PlatformIcon iconType={app.key} size={40} />
       </IconTile>
-      <span className="mt-2 w-full truncate text-center text-xs font-bold">{app.name}</span>
-      <span className="w-full truncate text-center text-[11px] text-muted">{app.show}</span>
+      <span className="mt-2 w-full truncate text-center text-xs font-bold">
+        {properNoun(app.name, locale)}
+      </span>
+      <span className="w-full truncate text-center text-[11px] text-muted">
+        {properNoun(app.show, locale)}
+      </span>
     </SmartLink>
   );
 }

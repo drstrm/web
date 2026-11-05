@@ -1,11 +1,12 @@
 "use client";
 
 import { MessageSquareText, Radio, Send } from "lucide-react";
-import { useTranslations } from "next-intl";
+import { useLocale, useTranslations } from "next-intl";
 import { useEffect, useState, type MouseEvent } from "react";
 import SmartLink from "@/components/SmartLink";
 import { Button, Card, IconTile, Notice } from "@/components/ui";
 import { findSmsVoteSlot, type SmsVoteSlot } from "@/lib/oneclick";
+import { properNoun } from "@/lib/proper-nouns";
 import { isIosDevice, smsHref } from "@/lib/sms";
 
 /**
@@ -18,6 +19,8 @@ import { isIosDevice, smsHref } from "@/lib/sms";
  */
 export default function SmsVote() {
   const tr = useTranslations("smsVote");
+  // 방송 이름은 방송사의 영문 표기로 (앱 타일의 연동 방송과 같은 글자여야 한다)
+  const locale = useLocale();
   const [slot, setSlot] = useState<SmsVoteSlot | null>(null);
   const [ready, setReady] = useState(false);
 
@@ -68,7 +71,11 @@ export default function SmsVote() {
             <span aria-hidden className="pulse-dot size-2 shrink-0 rounded-full bg-champagne-400" />
           )}
           <span className="min-w-0 truncate">
-            {!ready ? tr("checking") : (slot?.show ?? tr("noShow"))}
+            {!ready
+              ? tr("checking")
+              : slot
+                ? properNoun(slot.show, locale)
+                : tr("noShow")}
           </span>
         </p>
       </div>

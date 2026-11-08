@@ -168,7 +168,8 @@ export default function Header() {
         >
           <div className="mx-auto max-w-5xl space-y-1 px-4 py-3">
             {NAV.map((item) => {
-              const Icon = iconForRoute(item.href);
+              // 묶음이 제 아이콘을 들고 있으면 그것을 쓴다 (lib/site.ts 의 NAV.icon)
+              const Icon = item.icon ?? iconForRoute(item.href);
               const active = isActive(item.href);
               return (
                 <div key={item.href}>

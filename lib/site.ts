@@ -7,6 +7,8 @@
  * 교체하면 됩니다. (개발자 배포 없이 관리인이 Notion에서 수정 → ISR 재검증)
  */
 
+import { LayoutGrid, type LucideIcon } from "lucide-react";
+
 export const SITE = {
   /*
    * 팀 이름(「NCT DREAM 스트리밍팀」)은 여기 없다 — messages 의 `meta.siteName`.
@@ -76,6 +78,13 @@ export const NOTION = {
 export const NAV: {
   label: string;
   href: string;
+  /**
+   * 모바일 메뉴의 1단 아이콘. 보통은 적지 않는다 — 경로로 찾는다
+   * (lib/nav-icons.ts 의 iconForRoute). **허브 페이지가 없어서 href 를 하위
+   * 항목에서 빌려 쓰는 묶음만** 여기에 적는다. 안 적으면 빌려 온 그 항목과
+   * 같은 그림이 되어, 묶음과 그 안의 한 줄이 똑같이 보인다.
+   */
+  icon?: LucideIcon;
   children?: { labelKey: string; href: string }[];
 }[] = [
   { label: "HOME", href: "/" },
@@ -133,6 +142,12 @@ export const NAV: {
   {
     label: "ETC",
     href: "/todo",
+    /*
+     * 아이콘은 「여러 칸」이다. href 를 /todo 에서 빌려 왔다고 체크리스트
+     * 아이콘을 쓰면 모바일 메뉴에서 묶음과 그 안의 「To Do List」가 똑같이
+     * 보이고, 이것저것 들어올 자리라는 것도 안 보인다.
+     */
+    icon: LayoutGrid,
     children: [{ labelKey: "todo.title", href: "/todo" }],
   },
 ];

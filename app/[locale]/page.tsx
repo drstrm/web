@@ -1,4 +1,4 @@
-import { ArrowUpRight, Link2, Music4, TrendingUp } from "lucide-react";
+import { ArrowUpRight, ChevronRight, Link2, Music4, TrendingUp } from "lucide-react";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import BannerSlider from "@/components/BannerSlider";
 import Calendar from "@/components/Calendar";
@@ -7,7 +7,7 @@ import MvCard from "@/components/MvCard";
 import PlatformIcon from "@/components/PlatformIcon";
 import SmartLink from "@/components/SmartLink";
 import TodoList from "@/components/TodoList";
-import { Card, HubCard, IconTile, SectionTitle } from "@/components/ui";
+import { Button, Card, HubCard, IconTile, SectionTitle } from "@/components/ui";
 import { ALBUM } from "@/lib/album";
 import {
   getBanners,
@@ -20,6 +20,7 @@ import {
 } from "@/lib/content";
 import { properNoun } from "@/lib/proper-nouns";
 import { DREAM_OFFICIAL } from "@/lib/site";
+import { HOME_TODO_LIMIT } from "@/lib/todo";
 
 // ISR: PLAVE 레퍼런스와 동일하게 300초 재검증 (A안)
 export const revalidate = 300;
@@ -31,6 +32,7 @@ export default async function Home({ params }: Props) {
   setRequestLocale(locale);
   const t = await getTranslations("home");
   const tAlbum = await getTranslations("album");
+  const tTodo = await getTranslations("todo");
   const chart = getRealtimeChart();
   // 배너 · 바로가기 · 캘린더 · 할일(공용 일정 DB) — 전부 노션이고 한 번에 병렬 조회
   const [banners, quickLinks, events, todos] = await Promise.all([
@@ -117,9 +119,33 @@ export default async function Home({ params }: Props) {
         </div>
 
         <div>
-          <SectionTitle>To Do List</SectionTitle>
+          {/*
+           * 홈은 앞 5개(HOME_TODO_LIMIT)까지만 보여주고, 넘치는 개수를 「전체보기」
+           * 옆에 `+N` 으로 적는다 — 목록이 잘렸다는 사실이 링크를 누르기 전에
+           * 보여야 「오늘 할 일이 이게 다」로 읽히지 않는다. 체크박스가 달린
+           * 전체 목록은 /todo 에 있다.
+           */}
+          <SectionTitle
+            action={
+              todos.length > 0 && (
+                <Button asChild variant="ghost" size="sm">
+                  <SmartLink href="/todo">
+                    {tTodo("viewAll")}
+                    {todos.length > HOME_TODO_LIMIT && (
+                      <span className="font-extrabold text-sky-700">
+                        +{todos.length - HOME_TODO_LIMIT}
+                      </span>
+                    )}
+                    <ChevronRight strokeWidth={2.5} />
+                  </SmartLink>
+                </Button>
+              )
+            }
+          >
+            {tTodo("title")}
+          </SectionTitle>
           <Card>
-            <TodoList todos={todos} />
+            <TodoList todos={todos.slice(0, HOME_TODO_LIMIT)} />
           </Card>
         </div>
       </section>

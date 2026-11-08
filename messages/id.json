@@ -68,10 +68,16 @@
     "eventCount": "{count} jadwal"
   },
   "todo": {
+    "title": "To Do List",
+    "description": "Semua voting dan streaming harian selama periode comeback dalam satu halaman. Centang yang sudah selesai.",
+    "viewAll": "Lihat semua",
     "empty": "Belum ada yang perlu dikerjakan",
     "emptyHint": "Jadwal voting dan streaming akan muncul di sini begitu dimulai.",
     "footnote": "Daftar voting dan streaming harian selama periode comeback.",
     "guide": "Panduan",
+    "progress": "{done} / {total} selesai",
+    "allDone": "Semua selesai hari ini",
+    "checkHint": "Centang hanya tersimpan di browser yang kamu pakai, dan direset saat tanggal di Korea berganti.",
     "deadline": {
       "daily": "Setiap hari",
       "always": "Kapan saja",

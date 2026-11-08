@@ -1,43 +1,21 @@
-import { CalendarClock, CircleCheckBig, Infinity as InfinityIcon, Repeat } from "lucide-react";
+import { CircleCheckBig } from "lucide-react";
 import { getTranslations } from "next-intl/server";
 import KindIcon from "@/components/KindIcon";
 import SmartLink from "@/components/SmartLink";
 import { Badge, EmptyState, IconTile, Notice } from "@/components/ui";
 import type { TodoItem } from "@/lib/content";
-import { formatKstDate, formatKstDateTime } from "@/lib/datetime";
+import { deadline } from "@/lib/todo";
 
 /**
- * 홈 To Do List
+ * 홈 To Do List (요약)
  * ------------------------------------------------------------------
  * 공용 일정 DB(노션)에서 `노출 위치` 에 todo 가 있고 지금 기간 안에 있는 일정만
  * 내려온다(lib/content.ts getTodoList). 정렬은 `순서` 열 → 마감 임박 순.
+ *
+ * 홈은 **앞 몇 개만** 보여준다 (lib/todo.ts 의 HOME_TODO_LIMIT — 자르는 건
+ * app/[locale]/page.tsx). 체크박스가 달린 전체 목록은 /todo 에 있다
+ * (components/TodoChecklist.tsx).
  */
-
-/**
- * 마감 표시.
- * · 매일 반복 할일은 마감이 의미가 없다 — 오늘 하면 내일 또 해야 한다.
- * · 하루 종일 일정은 시각을 떼고, 기간을 안 적었으면 상시 할일.
- */
-/*
- * 마감 표시. 문구가 아니라 **번역 키와 값**을 돌려준다 — 순수 함수라
- * 요청의 언어를 모른다. 화면(TodoList)이 t() 로 푼다.
- */
-function deadline(t: TodoItem): {
-  icon: typeof Repeat;
-  key: "daily" | "always" | "due";
-  due?: string;
-} {
-  if (t.daily) return { icon: Repeat, key: "daily" };
-  if (!t.endsAt) return { icon: InfinityIcon, key: "always" };
-  return {
-    icon: CalendarClock,
-    key: "due",
-    due: t.allDay ? formatKstDate(t.endsAt) : formatKstDateTime(t.endsAt),
-  };
-}
-
-
-
 export default async function TodoList({ todos }: { todos: TodoItem[] }) {
   // 목록 콜백의 `t`(TodoItem)와 겹치지 않게 번역기는 tr 로 둔다
   const tr = await getTranslations("todo");

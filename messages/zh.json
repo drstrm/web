@@ -68,10 +68,16 @@
     "eventCount": "{count} 项日程"
   },
   "todo": {
+    "title": "To Do List",
+    "description": "回归期间每天要做的投票和打榜都集中在这里。完成的项目记得打勾。",
+    "viewAll": "查看全部",
     "empty": "目前没有待办事项",
     "emptyHint": "投票和打榜日程开始后会显示在这里。",
     "footnote": "回归期间每天都要完成的投票和打榜清单。",
     "guide": "教程",
+    "progress": "{done} / {total} 已完成",
+    "allDone": "今天已全部完成",
+    "checkHint": "打勾只保存在你正在使用的浏览器，韩国时间跨入新的一天后会重置。",
     "deadline": {
       "daily": "每天",
       "always": "长期",

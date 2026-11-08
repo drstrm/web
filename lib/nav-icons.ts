@@ -17,6 +17,7 @@ import {
   Headphones,
   Home,
   IdCard,
+  ListChecks,
   ListMusic,
   Megaphone,
   MessagesSquare,
@@ -30,6 +31,8 @@ import {
 
 export const ROUTE_ICON: Record<string, LucideIcon> = {
   "/": Home,
+  /* 홈 To Do 카드의 「전체보기」가 가는 곳 (헤더 메뉴에는 없다) */
+  "/todo": ListChecks,
 
   "/guide": BookOpen,
   "/guide/streaming": Headphones,

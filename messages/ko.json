@@ -68,10 +68,16 @@
     "eventCount": "일정 {count}건"
   },
   "todo": {
+    "title": "To Do List",
+    "description": "컴백 기간 동안 매일 해야 하는 투표 · 스밍을 한곳에 모았습니다. 끝낸 것은 체크해 두세요.",
+    "viewAll": "전체보기",
     "empty": "지금 진행중인 할일이 없습니다",
     "emptyHint": "투표 · 스밍 일정이 시작되면 여기에 표시됩니다.",
     "footnote": "컴백 기간 동안 매일 해야 하는 투표 · 스밍 리스트입니다.",
     "guide": "가이드",
+    "progress": "{done} / {total} 완료",
+    "allDone": "오늘 할 일 완료",
+    "checkHint": "체크 표시는 보고 있는 브라우저에만 저장되고, 한국 시간으로 날짜가 바뀌면 초기화됩니다.",
     "deadline": {
       "daily": "매일",
       "always": "상시",

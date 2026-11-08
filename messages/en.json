@@ -68,10 +68,16 @@
     "eventCount": "{count} events"
   },
   "todo": {
+    "title": "To Do List",
+    "description": "Every voting and streaming task for each day of the comeback, in one place. Check off what you finish.",
+    "viewAll": "View all",
     "empty": "Nothing to do right now",
     "emptyHint": "Voting and streaming tasks will show up here once they start.",
     "footnote": "Daily voting and streaming tasks for the comeback period.",
     "guide": "Guide",
+    "progress": "{done} / {total} done",
+    "allDone": "All done today",
+    "checkHint": "Checkmarks are saved in the browser you are using, and reset when the date changes in Korea.",
     "deadline": {
       "daily": "Daily",
       "always": "Anytime",

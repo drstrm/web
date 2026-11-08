@@ -60,6 +60,21 @@ export const DREAM_OFFICIAL: { label: string; href: string }[] = [
  * 조회에 실패하면 섹션째 감춘다 (헤더 내비게이션으로 같은 곳에 갈 수 있다).
  */
 
+/**
+ * 홈 실시간 차트에서 추적하는 곡.
+ *
+ * 수파베이스 `chart_entries` 를 이 값으로 거른다. 비교는 **부분 일치**(ilike)라
+ * `NCT DREAM (엔시티 드림)` 처럼 꼬리가 붙은 값도 걸린다 — 수집기가 차트 사이트의
+ * 표기를 그대로 저장하기 때문이다(lib/supabase.ts 의 songFilter).
+ *
+ * 한 테이블에 여러 팀이 쌓이므로 이 값이 곧 「누구를 보여줄지」다.
+ * 컴백하면 여기만 고친다. 표시 로직은 lib/content.ts 의 getRealtimeChart().
+ */
+export const CHART_TRACK = {
+  artist: "NCT DREAM",
+  title: "Boogie Woogie",
+};
+
 /** COMMUNITY - Notion 공개 페이지 링크 (기획안 IA) */
 export const NOTION = {
   notice: "https://app.notion.com/p/nctdreamstrm/393dec8e2bf080b4b0f1deb2ac946d5a",

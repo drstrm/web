@@ -50,6 +50,7 @@
     "youtubeMv": "MV บน YouTube",
     "realtimeChart": "ชาร์ตเรียลไทม์",
     "chartWaiting": "รออัปเดต",
+    "chartUpdated": "ข้อมูล ณ {time}",
     "calendar": "ปฏิทิน",
     "preorder": "พรีออเดอร์อัลบั้ม・group order",
     "preorderCard": "ช่วงพรีออเดอร์ {period} — ของแถมแต่ละเวอร์ชัน ลิงก์ร้านอัลบั้ม และ group order ของแฟนด้อม รวมไว้ที่เดียว",

@@ -50,6 +50,7 @@
     "youtubeMv": "YouTube MV",
     "realtimeChart": "リアルタイムチャート",
     "chartWaiting": "更新待ち",
+    "chartUpdated": "{time} 時点",
     "calendar": "カレンダー",
     "preorder": "アルバム予約販売・共同購入",
     "preorderCard": "予約販売期間 {period} — バージョンごとの特典、アルバムショップのリンク、ファン共同購入をまとめました。",

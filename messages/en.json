@@ -50,6 +50,7 @@
     "youtubeMv": "YouTube MV",
     "realtimeChart": "Live charts",
     "chartWaiting": "Waiting for update",
+    "chartUpdated": "As of {time}",
     "calendar": "Calendar",
     "preorder": "Album pre-order & group orders",
     "preorderCard": "Pre-order period {period} — inclusions by version, store links and fandom group orders, all in one place.",

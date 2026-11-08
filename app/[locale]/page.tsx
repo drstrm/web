@@ -9,6 +9,7 @@ import SmartLink from "@/components/SmartLink";
 import TodoList from "@/components/TodoList";
 import { Button, Card, HubCard, IconTile, SectionTitle } from "@/components/ui";
 import { ALBUM } from "@/lib/album";
+import { formatChartHour } from "@/lib/datetime";
 import {
   getBanners,
   getCalendarEvents,
@@ -33,13 +34,16 @@ export default async function Home({ params }: Props) {
   const t = await getTranslations("home");
   const tAlbum = await getTranslations("album");
   const tTodo = await getTranslations("todo");
-  const chart = getRealtimeChart();
-  // 배너 · 바로가기 · 캘린더 · 할일(공용 일정 DB) — 전부 노션이고 한 번에 병렬 조회
-  const [banners, quickLinks, events, todos] = await Promise.all([
+  /*
+   * 배너 · 바로가기 · 캘린더 · 할일(공용 일정 DB)은 노션, 실시간 차트는 수파베이스다.
+   * 서로 기다릴 이유가 없어 한 번에 병렬로 조회한다 — 느린 쪽 하나만큼만 걸린다.
+   */
+  const [banners, quickLinks, events, todos, chart] = await Promise.all([
     getBanners(),
     getQuickLinks(),
     getCalendarEvents(),
     getTodoList(),
+    getRealtimeChart(),
   ]);
   const mv = getMvStats();
 
@@ -72,7 +76,13 @@ export default async function Home({ params }: Props) {
           <Card>
             <p className="mb-3 inline-flex items-center gap-1.5 rounded-full bg-surface-soft px-2.5 py-1 text-[11px] font-semibold text-muted">
               <TrendingUp className="size-3 shrink-0 text-sky-500" strokeWidth={2.5} />
-              {t("chartWaiting")}
+              {/*
+               * 「실시간」이라고 적힌 자리라, 순위보다 **언제 기준인지**가 먼저
+               * 의심받는다. 수집 기록이 있으면 그 시각을, 아직 없으면 대기 문구를.
+               */}
+              {chart.updatedAt
+                ? t("chartUpdated", { time: formatChartHour(chart.updatedAt) })
+                : t("chartWaiting")}
             </p>
             <ul className="divide-y divide-border">
               {chart.rows.map((r) => (

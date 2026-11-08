@@ -50,6 +50,7 @@
     "youtubeMv": "유튜브 MV",
     "realtimeChart": "실시간 차트",
     "chartWaiting": "업데이트 대기 중",
+    "chartUpdated": "{time} 기준",
     "calendar": "캘린더",
     "preorder": "앨범 예약판매 · 공구",
     "preorderCard": "예약판매 기간 {period} · 버전별 특전과 앨범사 링크, 팬덤 공구를 한곳에 모았어요.",

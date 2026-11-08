@@ -50,6 +50,7 @@
     "youtubeMv": "YouTube MV",
     "realtimeChart": "实时榜单",
     "chartWaiting": "等待更新",
+    "chartUpdated": "截至 {time}",
     "calendar": "日历",
     "preorder": "专辑预售・团购",
     "preorderCard": "预售时间 {period} — 各版本特典、专辑店链接和粉丝团购，全部集中在这里。",

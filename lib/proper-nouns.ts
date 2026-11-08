@@ -39,6 +39,11 @@ const ENGLISH_NAMES: Record<string, string> = {
   멜론: "Melon",
   "멜론 TOP100": "Melon TOP100",
   "멜론 HOT100": "Melon HOT100",
+  /* 수집기가 차트를 쪼개서 보낸다 (chart-bot 의 SOURCE_NAMES) */
+  "멜론 HOT100(100일)": "Melon HOT100 (100d)",
+  "멜론 HOT100(30일)": "Melon HOT100 (30d)",
+  "멜론 실시간": "Melon Realtime",
+  "바이브 일간": "VIBE Daily",
   지니: "Genie",
   벅스: "Bugs",
   플로: "FLO",

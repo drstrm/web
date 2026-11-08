@@ -1,8 +1,9 @@
 /*
  * 콘텐츠 데이터 레이어 (A안 CMS 시임)
  * ------------------------------------------------------------------
- * 가이드 · 일정 · 할일 모두 노션 DB 에서 읽는다(lib/notion.ts).
- * 페이지 컴포넌트는 이 파일의 함수 시그니처만 바라본다.
+ * 가이드 · 일정 · 할일은 노션 DB(lib/notion.ts), 실시간 차트는 수집기가 쌓는
+ * 수파베이스(lib/supabase.ts)에서 읽는다. 페이지 컴포넌트는 이 파일의 함수
+ * 시그니처만 바라본다 — 어느 저장소에서 오는지는 여기서 끝난다.
  *
  * 조회에 실패해도 페이지 전체를 죽이지 않고 해당 섹션만 비운다.
  * 가이드가 잠깐 안 보이는 것이, 사이트가 500 을 뱉는 것보다 낫다.
@@ -35,6 +36,8 @@ import {
 } from "@/lib/notion";
 import { getLocale } from "next-intl/server";
 import { routing } from "@/i18n/routing";
+import { CHART_TRACK } from "@/lib/site";
+import { type ChartRun, getLatestChart } from "@/lib/supabase";
 import type { ActiveVote } from "@/lib/votes";
 
 export type { GuidePage };
@@ -318,7 +321,7 @@ export async function getFormLinks(kind: FormKind): Promise<FormLink[]> {
   }
 }
 
-/* ---------------- HOME: 실시간 차트 (X 계정과 동일) ---------------- */
+/* ---------------- HOME: 실시간 차트 (수파베이스) ---------------- */
 export interface ChartRow {
   platform: string;
   /** public/icons/<key>.png 의 key. 아이콘이 없는 플랫폼은 비어 있다 */
@@ -326,26 +329,87 @@ export interface ChartRow {
   rank: number | string;
   note?: string;
 }
-export function getRealtimeChart(): { updatedAt: string; rows: ChartRow[] } {
+
+/** 순위가 아직 없는 자리. 화면이 이 값을 보고 옅게 그린다 (app/[locale]/page.tsx) */
+const NO_RANK = "—";
+
+/**
+ * 차트 조회 캐시(초).
+ *
+ * ⚠ 이 값이 **홈의 ISR 주기까지 끌어내린다** — 라우트의 유효 revalidate 는 세그먼트
+ *   설정과 fetch 들의 최솟값이다. 그래서 홈의 `revalidate` 보다 짧게 두면 안 된다.
+ *   수집기가 매시 4분에 한 번 돌므로(chart-bot 의 `cron_minute`) 분 단위로 조여도
+ *   얻을 것이 없다. 더 자주 갱신해야 하면 투표처럼 라우트 핸들러 + 클라이언트
+ *   폴링으로 빼는 쪽이 맞다 (app/api/votes · components/VoteApps.tsx 가 그 구조다).
+ */
+export const CHART_REVALIDATE = 300;
+
+/**
+ * 화면에 세우는 줄. 키 · 이름 · 순서를 **수집기와 맞춘다**
+ * (chart-bot 의 `formatter.SOURCE_ORDER` · `SOURCE_NAMES`).
+ *
+ * 줄을 DB 에서 만들지 않는 이유: **데이터가 없어도 목록은 보여야** 한다. 무엇을
+ * 추적하는지가 먼저 보이고, 순위 자리의 "—" 로 「아직 안 들어왔다」가 읽힌다.
+ *
+ * 플랫폼 이름은 **한국어 그대로** 둔다 — 화면 표기는 렌더 지점에서 고른다
+ * (lib/proper-nouns.ts 의 properNoun).
+ */
+const CHART_PLATFORMS: { source: string; platform: string; iconType: string }[] = [
+  { source: "melon_top", platform: "멜론 TOP100", iconType: "melon" },
+  { source: "melon_hot100", platform: "멜론 HOT100(100일)", iconType: "melon" },
+  { source: "melon_hot30", platform: "멜론 HOT100(30일)", iconType: "melon" },
+  { source: "melon_realtime", platform: "멜론 실시간", iconType: "melon" },
+  { source: "genie", platform: "지니", iconType: "genie" },
+  { source: "flo", platform: "플로", iconType: "flo" },
+  { source: "bugs", platform: "벅스", iconType: "bugs" },
+  { source: "vibe", platform: "바이브 일간", iconType: "vibe" },
+];
+
+/**
+ * 홈 실시간 차트 — **가장 최근 수집 한 벌**.
+ *
+ * 한 수집(run)이 잡은 줄만 쓴다. 플랫폼별로 최신 줄을 따로 고르면 서로 다른 시각의
+ * 순위가 한 화면에 섞여서 「몇 시 기준 차트」라고 말할 수 없게 된다 (lib/supabase.ts).
+ *
+ * 조회에 실패하면 줄은 그대로 두고 순위만 "—" 가 된다 — 홈이 500 이 되는 것보다 낫다
+ * (노션 조회 함수들과 같은 규칙).
+ */
+export async function getRealtimeChart(): Promise<{ updatedAt: string; rows: ChartRow[] }> {
+  let run: ChartRun | null = null;
+  try {
+    run = await getLatestChart({ ...CHART_TRACK, revalidate: CHART_REVALIDATE });
+  } catch (e) {
+    console.error("[chart] 수파베이스 조회 실패:", e);
+  }
+
+  const entries = run?.entries ?? [];
+  const bySource = new Map(entries.map((entry) => [entry.source, entry]));
+
+  const rows: ChartRow[] = CHART_PLATFORMS.map(({ source, platform, iconType }) => ({
+    platform,
+    iconType,
+    rank: bySource.get(source)?.rank ?? NO_RANK,
+  }));
+
   /*
-   * 운영 시: 스밍팀 X 계정에 올리는 차트 데이터 소스와 연동.
-   *
-   * 플랫폼 이름은 **한국어 그대로 둔다** — 아이콘 키(iconType)와 짝으로 읽히는
-   * 매칭 값이다. 화면 표기는 렌더 지점에서 고른다(lib/proper-nouns.ts 의
-   * properNoun) — 한국어판은 「멜론」, 그 외 언어는 `Melon` 이다.
+   * 목록에 없는 source 는 버리지 않고 뒤에 붙인다. 수집기가 차트를 늘렸을 때 화면에서
+   * 조용히 사라지는 것보다, 이름이 키로 보이더라도 순위가 뜨는 쪽이 낫다 — 경고를
+   * 보고 CHART_PLATFORMS 에 한 줄 추가하면 제자리로 간다.
    */
-  return {
-    // 화면 문구는 messages 의 `home.chart.waiting` — 여기 값은 쓰이지 않는다
-    updatedAt: "",
-    rows: [
-      { platform: "멜론 TOP100", iconType: "melon", rank: "—" },
-      { platform: "멜론 HOT100", iconType: "melon", rank: "—" },
-      { platform: "지니", iconType: "genie", rank: "—" },
-      { platform: "벅스", iconType: "bugs", rank: "—" },
-      { platform: "플로", iconType: "flo", rank: "—" },
-      { platform: "바이브", iconType: "vibe", rank: "—" },
-    ],
-  };
+  for (const entry of entries) {
+    if (CHART_PLATFORMS.some((platform) => platform.source === entry.source)) continue;
+    console.warn(
+      `[chart] 모르는 source "${entry.source}" — 이름 · 아이콘 없이 맨 뒤에 붙입니다 ` +
+        "(lib/content.ts 의 CHART_PLATFORMS 에 추가하세요)",
+    );
+    rows.push({ platform: entry.source, rank: entry.rank });
+  }
+
+  /*
+   * 기준 시각은 그 수집의 chart_hour 를 **그대로** 넘긴다 (표기는 렌더 지점에서 —
+   * lib/datetime.ts 의 formatChartHour). 비어 있으면 화면이 「업데이트 대기 중」을 쓴다.
+   */
+  return { updatedAt: run?.chartHour ?? "", rows };
 }
 
 /* ---------------- 공용 일정 DB (노션) ---------------- */

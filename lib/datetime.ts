@@ -67,6 +67,23 @@ export function formatKstDateTime(iso: string): string {
     .replace(/\.$/, "");
 }
 
+/**
+ * 차트 수집 시각 `"YYYY.MM.DD HH"` → `"MM.DD HH:00"`.
+ *
+ * 수파베이스 `chart_entries.chart_hour` 는 수집기가 **KST 로 찍어 넣은 문자열**이다
+ * (chart-bot 의 `_kst_chart_hour`). 이미 KST 라 시간대 변환을 하지 않는다 — Date 로
+ * 바꿔 다시 포맷하면 시간대를 한 번 더 적용해 한 시간씩 밀 위험만 생긴다.
+ *
+ * 형식이 다르면 **그대로 내보낸다.** 수집기가 형식을 바꿨다는 신호이고, 그때
+ * 「Invalid Date」를 보여주는 것보다 원문이 낫다.
+ */
+export function formatChartHour(chartHour: string): string {
+  const parsed = /^\d{4}\.(\d{2})\.(\d{2})\s+(\d{1,2})$/.exec(chartHour.trim());
+  if (!parsed) return chartHour;
+  const [, month, day, hour] = parsed;
+  return `${month}.${day} ${hour.padStart(2, "0")}:00`;
+}
+
 /** 노션 ISO → KST "03.05" (하루 종일 일정용) */
 export function formatKstDate(iso: string): string {
   return new Intl.DateTimeFormat("ko-KR", {

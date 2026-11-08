@@ -84,7 +84,12 @@ export default function Header() {
                   <SmartLink
                     href={item.href}
                     className={cn(
-                      "relative flex items-center gap-1 rounded-full px-3.5 py-2",
+                      /*
+                       * 1단이 5개라 768~1024px 구간에서는 좌우 여백을 줄여야
+                       * 로고 · 언어 · 테마와 한 줄에 다 들어간다. lg 부터는
+                       * 원래 여백으로 돌아온다.
+                       */
+                      "relative flex items-center gap-1 rounded-full px-2.5 py-2 lg:px-3.5",
                       "font-display text-sm font-bold tracking-wide transition-colors",
                       active ? "text-sky-700" : "text-foreground hover:text-sky-600",
                     )}
@@ -101,7 +106,8 @@ export default function Header() {
                     {active && (
                       <span
                         aria-hidden
-                        className="absolute inset-x-3 -bottom-0.5 h-[3px] rounded-full bg-champagne-400"
+                        /* 밑줄 폭은 위 좌우 여백과 짝이다 — 한쪽만 바꾸면 글자보다 길거나 짧아진다 */
+                        className="absolute inset-x-2 -bottom-0.5 h-[3px] rounded-full bg-champagne-400 lg:inset-x-3"
                       />
                     )}
                   </SmartLink>

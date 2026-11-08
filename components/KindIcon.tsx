@@ -8,7 +8,7 @@ import { cn } from "@/lib/utils";
  * ------------------------------------------------------------------
  * 세 곳에서 올 수 있는 아이콘을 한 규칙으로 정리한다.
  *
- *   1. public/icons/<플랫폼>.png  — 멜론 · 뮤빗 처럼 브랜드가 뚜렷한 것
+ *   1. public/icons/<플랫폼>_<꼬리표>.png — 멜론 · 뮤빗 처럼 브랜드가 뚜렷한 것
  *   2. 노션 `emoji` 열           — 운영진이 직접 골라 적은 값
  *   3. 종류별 lucide 아이콘        — 위 둘이 없을 때의 기본값
  *
@@ -22,7 +22,7 @@ export default function KindIcon({
   size = 24,
   className,
 }: {
-  /** 노션 `플랫폼` 값 = public/icons 파일명 */
+  /** 노션 `플랫폼` 값 = public/icons 파일명(꼬리표 제외) */
   iconType?: string | null;
   /** 노션 `emoji` 열 */
   emoji?: string;

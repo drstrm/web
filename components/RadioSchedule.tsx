@@ -22,19 +22,19 @@ type RadioScheduleImage = {
 const RADIO_SCHEDULE_IMAGES: RadioScheduleImage[] = [
   {
     broadcaster: "SBS",
-    src: "/radio/SBS-2609.png",
+    src: "/radio/SBS-2609_2611.png",
     width: 2700,
     height: 4100,
   },
   {
     broadcaster: "KBS",
-    src: "/radio/KBS-2609.png",
+    src: "/radio/KBS-2609_2611.png",
     width: 2700,
     height: 3500,
   },
   {
     broadcaster: "MBC",
-    src: "/radio/MBC-2609.png",
+    src: "/radio/MBC-2609_2611.png",
     width: 2700,
     height: 3800,
   },

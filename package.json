@@ -3,12 +3,14 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev",
-    "build": "next build",
+    "dev": "node scripts/gen-icon-manifest.mjs && next dev",
+    "build": "node scripts/gen-icon-manifest.mjs && next build",
     "start": "next start",
     "lint": "eslint",
     "webp": "./scripts/to-webp.sh",
-    "notion-check": "./scripts/notion-check.sh"
+    "notion-check": "./scripts/notion-check.sh",
+    "icons": "node scripts/gen-icon-manifest.mjs",
+    "icons:check": "node scripts/gen-icon-manifest.mjs --check"
   },
   "dependencies": {
     "@radix-ui/react-accordion": "^1.2.20",

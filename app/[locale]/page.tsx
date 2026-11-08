@@ -161,7 +161,7 @@ export default async function Home({ params }: Props) {
            */}
           <div className="relative aspect-[16/9] bg-sky-100">
             <LoadingImage
-              src="/profile/dream_profile.jpeg"
+              src="/profile/dream_profile_2611.jpeg"
               alt={t("profileAlt")}
               fill
               sizes="(max-width: 1024px) 100vw, 992px"

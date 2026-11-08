@@ -1,10 +1,13 @@
 import Image from "next/image";
+import { ICON_FILES } from "@/lib/icon-manifest";
 import { PLATFORM_ICONS } from "@/lib/platform-icons";
 
 /**
  * 플랫폼 아이콘 (멜론 · 팬캐스트 · 뮤빗 …)
  * ------------------------------------------------------------------
- * iconType 은 노션 일정 DB 의 `플랫폼` 값이자 public/icons/<key>.png 의 파일명이다.
+ * iconType 은 노션 일정 DB 의 `플랫폼` 값이자 public/icons 의 아이콘 키다. 실제 파일
+ * 이름은 꼬리표가 붙어 있어서(`melon_2611.png`) ICON_FILES 로 찾는다 — 그 맵은
+ * 디렉터리를 훑어 자동 생성된다(scripts/gen-icon-manifest.mjs).
  * 정적 파일이라 CDN 캐시 · next/image 최적화를 그대로 받는다.
  *
  * 이미지는 감싸는 요소(span 등)를 꽉 채운다. 부모에 크기 · 모서리 · overflow-hidden 을
@@ -15,6 +18,8 @@ import { PLATFORM_ICONS } from "@/lib/platform-icons";
  * 1x 기기는 2배, 2x 이상 기기는 4배 소스를 받아 원본(480~512px) 해상도를 살린다.
  *
  * 매칭되는 아이콘이 없으면 fallback(이모지 등)을 그리거나 아무것도 그리지 않는다.
+ * 목록(PLATFORM_ICONS)에만 있고 **파일이 없는** key 도 여기로 떨어진다 — 예전에는
+ * 그런 key 가 404 이미지를 그렸다.
  */
 export default function PlatformIcon({
   iconType,
@@ -35,11 +40,12 @@ export default function PlatformIcon({
   label?: string;
 }) {
   const name = label ?? (iconType ? PLATFORM_ICONS[iconType] : undefined);
-  if (!iconType || !name) return <>{fallback}</>;
+  const file = iconType ? ICON_FILES[iconType] : undefined;
+  if (!iconType || !name || !file) return <>{fallback}</>;
 
   return (
     <Image
-      src={`/icons/${iconType}.png`}
+      src={`/icons/${file}`}
       alt={name}
       width={size * 2}
       height={size * 2}

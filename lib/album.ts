@@ -41,7 +41,8 @@ export const nameKey = (name: string) =>
 /* ---------------- 판매처 로고 ---------------- */
 
 /**
- * 판매처 → 로고 파일 (`public/icons/<값>.png`).
+ * 판매처 → 로고 아이콘 키 (`public/icons` 의 파일. 파일 이름에는 버전 꼬리표가
+ * 붙지만 아래 값에는 적지 않는다 — lib/icon-manifest.ts 가 연결한다).
  *
  * 키는 노션 `판매처` 에 적힌 이름이고, 비교는 `nameKey()` 로 느슨하게 한다
  * (`Weverse shop` · `weverse shop` 이 같은 칸을 찾는다).
@@ -56,7 +57,8 @@ export const nameKey = (name: string) =>
  *
  * ⚠ 여기 없는 판매처는 아이콘 없이 기본 상점 그림으로 나온다 — 그래서 **빠져도
  *   화면이 깨지지 않는다.** 노션에 판매처를 먼저 추가하고 로고는 나중에 채워도 된다.
- *   넣는 법: `public/icons/shop-<이름>.png` (가로세로 같은, 96px 이상) 한 장과
+ *   넣는 법: `public/icons/shop-<이름>_<YYMM>.png` (가로세로 같은, 96px 이상) 한 장과
+ *   (파일과 아래 줄 중 한쪽만 있으면 scripts/gen-icon-manifest.mjs 가 경고한다)
  *   아래 한 줄. 확장자는 반드시 `.png` 다 — <PlatformIcon> 이 `.png` 로만 찾는다.
  */
 export const ALBUM_SHOP_ICONS: Record<string, string> = {

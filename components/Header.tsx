@@ -49,13 +49,16 @@ export default function Header() {
         >
           {/*
            * 로고는 원본(drstrm_logo.jpg · 400×400) 대신 128px 로 줄인 사본을 쓰고
-           * `unoptimized` 로 /_next/image 최적화를 건너뛴다.
+           * `unoptimized` 로 /_next/image 최적화를 건너뛴다. 파일 이름의 `_2611` 은
+           * 교체 시 올리는 버전 꼬리표다 — 이 주소는 1년 immutable 로 나가므로
+           * (next.config.ts 의 headers) 같은 이름으로 덮으면 옛 로고가 남는다.
+           * 아이콘처럼 매니페스트를 두지 않는 이유는 참조가 이 한 곳뿐이어서다.
            * 32px 로 그려지는 이미지라 최적화로 줄어드는 양이 미미한 반면,
            * 개발 서버에서 첫 변환이 끝날 때까지 로고가 계속 빈칸으로 남는
            * 문제가 있었다. public 파일을 그대로 내보내면 그 대기가 없다.
            */}
           <Image
-            src="/drstrm_logo.png"
+            src="/drstrm_logo_2611.png"
             alt={SITE.shortName}
             width={32}
             height={32}

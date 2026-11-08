@@ -127,7 +127,7 @@ const STATUS_MAP: Record<string, GuideStatus> = {
   오픈예정: "coming-soon",
 };
 
-/** 노션 `플랫폼` 표시명(한글) → public/icons/<key>.png 의 key */
+/** 노션 `플랫폼` 표시명(한글) → public/icons 의 key (파일명 꼬리표는 <PlatformIcon> 이 붙인다) */
 const PLATFORM_KEY_BY_LABEL: Record<string, string> = Object.fromEntries(
   Object.entries(PLATFORM_ICONS).map(([key, label]) => [label, key]),
 );
@@ -1078,7 +1078,7 @@ export interface NotionSchedule {
   daily: boolean;
   /** 운영진이 지정한 이모지 (없으면 kind 기본값) */
   emoji?: string;
-  /** public/icons/<key>.png 의 key */
+  /** public/icons 의 key (파일명 꼬리표 제외) */
   iconType?: string;
   url?: string;
   guideUrl?: string;

@@ -82,6 +82,7 @@
     "deadline": {
       "daily": "Daily",
       "starts": "Starts {due}",
+      "started": "Started {due}",
       "today": "Today",
       "always": "Anytime",
       "due": "Due {due}",

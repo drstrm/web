@@ -82,6 +82,7 @@
     "deadline": {
       "daily": "매일",
       "starts": "{due} 시작",
+      "started": "{due} 시작",
       "today": "오늘",
       "always": "상시",
       "due": "마감 {due}",

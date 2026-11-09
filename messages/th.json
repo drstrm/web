@@ -82,9 +82,11 @@
     "deadline": {
       "daily": "ทุกวัน",
       "starts": "เริ่ม {due}",
+      "started": "เริ่ม {due}",
       "today": "วันนี้",
       "always": "ได้ทุกเมื่อ",
-      "due": "ถึง {due}"
+      "due": "ถึง {due}",
+      "period": "{due}"
     }
   },
   "voteApps": {

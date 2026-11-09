@@ -100,7 +100,7 @@ export function visibleTodos(todos: TodoItem[], now: number, timeZone: string): 
 /**
  * 시각 표시.
  * · 매일 반복 할일은 마감이 의미가 없다 — 오늘 하면 내일 또 해야 한다.
- * · 아직 시작 안 한 할일은 **몇 시부터**를 보여준다 (아래).
+ * · 시각을 박아 둔 할일은 시작 **전에도 후에도** 그 시각을 보여준다 (starts · started).
  * · 하루 종일 일정은 한국에서는 날짜만, 해외에서는 **현지 시각 구간**으로 보여준다.
  * · 기간을 안 적었으면 상시 할일.
  *
@@ -116,7 +116,7 @@ export function deadline(
   now: number = Date.now(),
 ): {
   icon: LucideIcon;
-  key: "daily" | "always" | "due" | "starts" | "today" | "period";
+  key: "daily" | "always" | "due" | "starts" | "started" | "today" | "period";
   /** 문구에 끼울 시각 문자열 (`마감 {due}` · `{due} 시작` · `{due}`) */
   due?: string;
 } {
@@ -154,9 +154,20 @@ export function deadline(
    * 여기서 「상시」로 적으면 내일이면 사라질 줄을 기한 없는 할일로 읽히게 만든다.
    */
   if (todo.endMs === undefined) {
-    return todo.startMs !== undefined
+    if (todo.startMs === undefined) return { icon: InfinityIcon, key: "always" };
+    /*
+     * 시각을 박아 둔 할일은 시작이 지나도 **몇 시부터인지**를 계속 적는다.
+     * 「17:00 시작」이 17시가 되는 순간 「오늘」로 바뀌면, 정작 모일 시각을 보려고
+     * 들어온 사람에게서 그 시각을 빼앗는다 — 늦게 본 사람도 몇 시에 시작한 일인지
+     * 알아야 따라붙을 수 있다. 하루 종일 할일은 시각 자체가 없으니 「오늘」이 맞다.
+     */
+    return todo.allDay
       ? { icon: CalendarClock, key: "today" }
-      : { icon: InfinityIcon, key: "always" };
+      : {
+          icon: Clock,
+          key: "started",
+          due: formatTimeIn(iso(todo.startMs), timeZone) + zone(todo.startMs),
+        };
   }
   return {
     icon: CalendarClock,

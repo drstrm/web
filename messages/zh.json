@@ -82,9 +82,11 @@
     "deadline": {
       "daily": "每天",
       "starts": "{due} 开始",
+      "started": "{due} 开始",
       "today": "今天",
       "always": "长期",
-      "due": "截止 {due}"
+      "due": "截止 {due}",
+      "period": "{due}"
     }
   },
   "voteApps": {

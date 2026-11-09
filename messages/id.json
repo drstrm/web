@@ -82,6 +82,7 @@
     "deadline": {
       "daily": "Setiap hari",
       "starts": "Mulai {due}",
+      "started": "Dimulai {due}",
       "today": "Hari ini",
       "always": "Kapan saja",
       "due": "Batas {due}",

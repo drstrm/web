@@ -82,9 +82,11 @@
     "deadline": {
       "daily": "毎日",
       "starts": "{due} 開始",
+      "started": "{due} 開始",
       "today": "今日",
       "always": "随時",
-      "due": "締切 {due}"
+      "due": "締切 {due}",
+      "period": "{due}"
     }
   },
   "voteApps": {

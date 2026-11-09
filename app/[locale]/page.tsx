@@ -1,4 +1,4 @@
-import { ArrowUpRight, ChevronRight, Link2, Music4, TrendingUp } from "lucide-react";
+import { ArrowUpRight, Link2, Music4, TrendingUp } from "lucide-react";
 import { getTranslations, setRequestLocale } from "next-intl/server";
 import BannerSlider from "@/components/BannerSlider";
 import Calendar from "@/components/Calendar";
@@ -6,8 +6,8 @@ import LoadingImage from "@/components/LoadingImage";
 import MvCard from "@/components/MvCard";
 import PlatformIcon from "@/components/PlatformIcon";
 import SmartLink from "@/components/SmartLink";
-import TodoList from "@/components/TodoList";
-import { Button, Card, HubCard, IconTile, SectionTitle } from "@/components/ui";
+import TodoList, { TodoViewAllLink } from "@/components/TodoList";
+import { Card, HubCard, IconTile, SectionTitle } from "@/components/ui";
 import { ALBUM } from "@/lib/album";
 import { formatChartHour } from "@/lib/datetime";
 import {
@@ -21,7 +21,6 @@ import {
 } from "@/lib/content";
 import { properNoun } from "@/lib/proper-nouns";
 import { DREAM_OFFICIAL } from "@/lib/site";
-import { HOME_TODO_LIMIT } from "@/lib/todo";
 
 // ISR: PLAVE 레퍼런스와 동일하게 300초 재검증 (A안)
 export const revalidate = 300;
@@ -135,27 +134,11 @@ export default async function Home({ params }: Props) {
            * 보여야 「오늘 할 일이 이게 다」로 읽히지 않는다. 체크박스가 달린
            * 전체 목록은 /todo 에 있다.
            */}
-          <SectionTitle
-            action={
-              todos.length > 0 && (
-                <Button asChild variant="ghost" size="sm">
-                  <SmartLink href="/todo">
-                    {tTodo("viewAll")}
-                    {todos.length > HOME_TODO_LIMIT && (
-                      <span className="font-extrabold text-sky-700">
-                        +{todos.length - HOME_TODO_LIMIT}
-                      </span>
-                    )}
-                    <ChevronRight strokeWidth={2.5} />
-                  </SmartLink>
-                </Button>
-              )
-            }
-          >
+          <SectionTitle action={<TodoViewAllLink {...todos} />}>
             {tTodo("title")}
           </SectionTitle>
           <Card>
-            <TodoList todos={todos.slice(0, HOME_TODO_LIMIT)} />
+            <TodoList {...todos} />
           </Card>
         </div>
       </section>

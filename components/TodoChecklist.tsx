@@ -7,8 +7,9 @@ import KindIcon from "@/components/KindIcon";
 import SmartLink from "@/components/SmartLink";
 import { Badge, EmptyState, IconTile, Notice } from "@/components/ui";
 import type { TodoItem } from "@/lib/content";
-import { toSeoulDate } from "@/lib/datetime";
-import { deadline } from "@/lib/todo";
+import { dateIn } from "@/lib/datetime";
+import { deadline, visibleTodos } from "@/lib/todo";
+import { useTodoClock } from "@/lib/use-todo-clock";
 import { cn } from "@/lib/utils";
 
 /**
@@ -26,13 +27,6 @@ import { cn } from "@/lib/utils";
 const STORAGE_KEY = "drstrm-todo-checks";
 
 type Saved = { date: string; ids: string[] };
-
-/**
- * 체크가 초기화되는 기준일은 **한국 시간**이다.
- * 마감이 전부 KST 라(투표 자정 마감 · 차트 집계) 보는 사람의 시간대로 끊으면
- * 해외 팬의 체크가 한국의 하루와 어긋난다.
- */
-const seoulToday = () => toSeoulDate(new Date().toISOString());
 
 /*
  * 체크 저장소
@@ -94,16 +88,32 @@ function parseChecks(raw: string, today: string): string[] {
   }
 }
 
-export default function TodoChecklist({ todos }: { todos: TodoItem[] }) {
+/**
+ * `todos` 는 서버가 넓게 고른 **후보**다. 실제로 띄울 것은 보는 사람의 시간대 ·
+ * 지금 시각으로 여기서 거른다 (lib/todo.ts 의 visibleTodos · lib/use-todo-clock.ts).
+ *
+ * 체크가 초기화되는 기준일도 **현지 날짜**다 — 목록이 현지 하루 단위로 바뀌는데
+ * 체크만 한국 날짜로 끊으면 해외에서는 하루 중간에 체크가 사라진다.
+ */
+export default function TodoChecklist({
+  todos: candidates,
+  renderedAt,
+}: {
+  todos: TodoItem[];
+  renderedAt: number;
+}) {
   // 목록 콜백의 `t`(TodoItem)와 겹치지 않게 번역기는 tr 로 둔다
   const tr = useTranslations("todo");
   const saved = useSyncExternalStore(subscribe, getSnapshot, getServerSnapshot);
-  const checked = useMemo(() => parseChecks(saved, seoulToday()), [saved]);
+  const { now, timeZone } = useTodoClock(renderedAt);
+  const today = dateIn(now, timeZone);
+  const todos = useMemo(() => visibleTodos(candidates, now, timeZone), [candidates, now, timeZone]);
+  const checked = useMemo(() => parseChecks(saved, today), [saved, today]);
 
   const toggle = (id: string) => {
     const next = checked.includes(id) ? checked.filter((x) => x !== id) : [...checked, id];
-    // 날짜는 누를 때마다 다시 읽는다 — 자정을 넘겨 열어 둔 탭도 제 날짜로 저장된다
-    saveChecks(seoulToday(), next);
+    // 날짜는 1분마다 넘어가는 시계에서 온다 — 자정을 넘겨 열어 둔 탭도 제 날짜로 저장된다
+    saveChecks(today, next);
   };
 
   /*
@@ -148,7 +158,7 @@ export default function TodoChecklist({ todos }: { todos: TodoItem[] }) {
 
       <ul className="mt-4 space-y-2">
         {todos.map((t) => {
-          const { icon: DeadlineIcon, key, due } = deadline(t);
+          const { icon: DeadlineIcon, key, due } = deadline(t, timeZone, now);
           const isDone = checked.includes(t.id);
           const labelId = `todo-label-${t.id}`;
 

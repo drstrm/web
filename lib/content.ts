@@ -36,7 +36,7 @@ import {
 } from "@/lib/notion";
 import { getLocale } from "next-intl/server";
 import { routing } from "@/i18n/routing";
-import { kstDayRange } from "@/lib/datetime";
+import { mayShowInTodo } from "@/lib/todo";
 import { CHART_TRACK } from "@/lib/site";
 import { type ChartRun, getLatestChart } from "@/lib/supabase";
 import type { ActiveVote } from "@/lib/votes";
@@ -451,43 +451,13 @@ const isOngoing = (r: NotionSchedule, now: number) =>
  */
 const deadlineRank = (r: NotionSchedule) => r.endMs ?? Number.MAX_SAFE_INTEGER;
 
-/**
- * 「오늘 할 일」에 띄울 것인가.
- *
- * 시작과 끝을 **다른 기준으로** 본다.
- *
- *   시작 — **날짜**로 본다. 오늘 안에 시작하면 시각이 안 됐어도 아침부터 띄운다.
- *          컴백 당일 타임라인(17시 총공 · 18시 스밍)을 미리 알려주는 자리라서다.
- *          몇 시부터인지는 화면이 적어 준다 (lib/todo.ts 의 deadline).
- *   끝   — **시각**으로 본다. 끝나면 바로 내린다. 할 수 없게 된 일을 남겨 두면
- *          체크 안 된 줄이 쌓여서 「아직 남은 일」이라는 목록의 뜻이 흐려진다.
- *
- * 끝을 안 적은 할일은 **그날 하루짜리**로 본다. 운영진이 「18시 스밍 시작」처럼 적는
- * 것은 대개 그날 하는 일이고 끝 시각을 일부러 정해 두지는 않는다. 영원히 남겨 두면
- * 다음 날 목록 맨 위가 어제 일로 채워진다.
- *
- * 그래서 기간을 **아예 비운 것**과 **시작만 적은 것**이 다른 뜻이 된다.
- *   비움      → 기한 없는 상시 할일 (`투표권 모으기` 처럼 컴백 내내 하는 일)
- *   시작만    → 그날 하루
- *   시작+끝   → 그 시각까지
+/*
+ * 「오늘 할 일」 노출 규칙은 lib/todo.ts 의 showsInTodo 에 있다. 「오늘」이 보는
+ * 사람의 시간대에 따라 달라서 서버는 후보만 고르고(mayShowInTodo) 화면이 마저 거른다.
  *
  * ⚠ 투표(getActiveVotes)는 이 규칙을 쓰지 않는다. 시작 전 투표를 미리 띄우면
  *   「지금 투표할 수 있다」는 **잘못된 안내**가 된다 — 그쪽은 isOngoing 그대로다.
  */
-const showsInTodo = (
-  r: NotionSchedule,
-  now: number,
-  today: { startMs: number; endMs: number },
-) => {
-  // 기간을 안 적었으면 기한이 없다 — 언제나 보인다
-  if (r.startMs === null) return r.endMs === null || r.endMs > now;
-  // 내일 이후에 시작하는 일은 아직 오늘 할 일이 아니다
-  if (r.startMs >= today.endMs) return false;
-  // 끝을 안 적었으면 그날 하루 — 오늘 시작하는 것만 남는다
-  if (r.endMs === null) return r.startMs >= today.startMs;
-  // 끝을 적었으면 그 시각까지 (며칠짜리 기간도 여기서 걸린다)
-  return r.endMs > now;
-};
 
 /* ---------------- HOME: 캘린더 ---------------- */
 export interface CalendarEvent {
@@ -557,7 +527,13 @@ export interface TodoItem {
    * (lib/todo.ts 의 deadline). 오늘 목록에는 시작 전 할일도 올라오기 때문이다.
    */
   startsAt?: string;
-  /** 노션에 시각 없이 날짜만 적은 일정 — 마감 표시에서 시각을 뗀다 */
+  /**
+   * 기간 판정 · 시각 표시용 절대시각(ms). 없으면 그쪽 끝이 열려 있다.
+   * 하루 종일 일정은 한국 자정 기준이고, 끝은 마지막 날의 **다음 날 자정**이다.
+   */
+  startMs?: number;
+  endMs?: number;
+  /** 노션에 시각 없이 날짜만 적은 일정 (= 한국 날짜 기준 하루 종일) */
   allDay: boolean;
   /** 기간 내내 매일 해야 하는 할일 — 마감 대신 「매일」로 표시 */
   daily: boolean;
@@ -572,13 +548,16 @@ export interface TodoItem {
  * 정렬은 `순서` 열 → 마감 임박 순. `순서` 열이 없으면(현재 상태) 값이 전부 같아서
  * 사실상 마감 임박 순이 된다 — 오늘 안에 해야 하는 일이 위로 올라온다.
  */
-export async function getTodoList(): Promise<TodoItem[]> {
+export async function getTodoList(): Promise<{ todos: TodoItem[]; renderedAt: number }> {
   const rows = await getSchedules("todo");
-  const now = Date.now();
-  const today = kstDayRange();
+  /*
+   * 렌더 시각을 같이 내려 준다. 서버 HTML 과 브라우저의 첫 렌더가 **같은 시각**으로
+   * 걸러야 하이드레이션이 어긋나지 않는다 (붙은 뒤에 브라우저 시각으로 다시 거른다).
+   */
+  const renderedAt = Date.now();
 
-  return rows
-    .filter((r) => showsInTodo(r, now, today))
+  const todos = rows
+    .filter((r) => mayShowInTodo(toRange(r), renderedAt))
     .sort((a, b) => a.order - b.order || deadlineRank(a) - deadlineRank(b))
     .map((r) => ({
       id: r.id,
@@ -591,10 +570,19 @@ export async function getTodoList(): Promise<TodoItem[]> {
       kind: r.kind,
       ...(r.startsAt ? { startsAt: r.startsAt } : {}),
       ...(r.endsAt ? { endsAt: r.endsAt } : {}),
-      allDay: r.allDay,
+      ...toRange(r),
       daily: r.daily,
     }));
+
+  return { todos, renderedAt };
 }
+
+/** 노션 행 → 판정용 범위 (null 은 키째 뺀다 — 화면으로 넘어가는 값이라 짧게) */
+const toRange = (r: NotionSchedule) => ({
+  ...(r.startMs !== null ? { startMs: r.startMs } : {}),
+  ...(r.endMs !== null ? { endMs: r.endMs } : {}),
+  allDay: r.allDay,
+});
 
 /* ---------------- ONECLICK: 진행중 투표 ---------------- */
 

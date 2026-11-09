@@ -78,13 +78,14 @@
     "guide": "Guide",
     "progress": "{done} / {total} done",
     "allDone": "All done today",
-    "checkHint": "Checkmarks are saved in the browser you are using, and reset when the date changes in Korea.",
+    "checkHint": "Checkmarks are saved in the browser you are using, and reset when the date changes on this device.",
     "deadline": {
       "daily": "Daily",
       "starts": "Starts {due}",
       "today": "Today",
       "always": "Anytime",
-      "due": "Due {due}"
+      "due": "Due {due}",
+      "period": "{due}"
     }
   },
   "voteApps": {

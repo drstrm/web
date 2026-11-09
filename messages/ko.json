@@ -78,13 +78,14 @@
     "guide": "가이드",
     "progress": "{done} / {total} 완료",
     "allDone": "오늘 할 일 완료",
-    "checkHint": "체크 표시는 보고 있는 브라우저에만 저장되고, 한국 시간으로 날짜가 바뀌면 초기화됩니다.",
+    "checkHint": "체크 표시는 보고 있는 브라우저에만 저장되고, 이 기기의 날짜가 바뀌면 초기화됩니다.",
     "deadline": {
       "daily": "매일",
       "starts": "{due} 시작",
       "today": "오늘",
       "always": "상시",
-      "due": "마감 {due}"
+      "due": "마감 {due}",
+      "period": "{due}"
     }
   },
   "voteApps": {

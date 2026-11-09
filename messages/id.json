@@ -78,13 +78,14 @@
     "guide": "Panduan",
     "progress": "{done} / {total} selesai",
     "allDone": "Semua selesai hari ini",
-    "checkHint": "Centang hanya tersimpan di browser yang kamu pakai, dan direset saat tanggal di Korea berganti.",
+    "checkHint": "Centang hanya tersimpan di browser yang kamu pakai, dan direset saat tanggal di perangkat ini berganti.",
     "deadline": {
       "daily": "Setiap hari",
       "starts": "Mulai {due}",
       "today": "Hari ini",
       "always": "Kapan saja",
-      "due": "Batas {due}"
+      "due": "Batas {due}",
+      "period": "{due}"
     }
   },
   "voteApps": {

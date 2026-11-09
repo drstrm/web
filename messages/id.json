@@ -81,6 +81,8 @@
     "checkHint": "Centang hanya tersimpan di browser yang kamu pakai, dan direset saat tanggal di Korea berganti.",
     "deadline": {
       "daily": "Setiap hari",
+      "starts": "Mulai {due}",
+      "today": "Hari ini",
       "always": "Kapan saja",
       "due": "Batas {due}"
     }

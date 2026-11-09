@@ -42,6 +42,28 @@ export function hhmmToMinutes(hhmm: string): number {
   return h * 60 + m;
 }
 
+/**
+ * 오늘(KST) 하루의 절대 시각 범위 `[startMs, endMs)`.
+ *
+ * 「오늘 안에 있는 일정인가」를 묻는 곳에서 쓴다. 서버는 UTC 로 도는데 하루의
+ * 경계는 **KST 자정**이어야 하므로, 날짜를 KST 로 뽑아 거기에 `+09:00` 을 붙여
+ * 되돌린다 (그냥 `setHours(0,0,0,0)` 을 쓰면 서버 시간대의 자정이 된다).
+ */
+export function kstDayRange(now: Date = new Date()): { startMs: number; endMs: number } {
+  const startMs = Date.parse(`${toSeoulDate(now.toISOString())}T00:00:00+09:00`);
+  return { startMs, endMs: startMs + 86_400_000 };
+}
+
+/** 노션 ISO → KST "18:00" (날짜를 아는 자리에서 시각만 보여줄 때) */
+export function formatKstTime(iso: string): string {
+  return new Intl.DateTimeFormat("ko-KR", {
+    timeZone: "Asia/Seoul",
+    hour: "2-digit",
+    minute: "2-digit",
+    hour12: false,
+  }).format(new Date(iso));
+}
+
 /** 노션 ISO → KST 기준 "YYYY-MM-DD" (달력은 날짜 단위로만 다룬다) */
 export function toSeoulDate(iso: string): string {
   return new Intl.DateTimeFormat("en-CA", {

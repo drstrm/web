@@ -81,6 +81,8 @@
     "checkHint": "打勾只保存在你正在使用的浏览器，韩国时间跨入新的一天后会重置。",
     "deadline": {
       "daily": "每天",
+      "starts": "{due} 开始",
+      "today": "今天",
       "always": "长期",
       "due": "截止 {due}"
     }

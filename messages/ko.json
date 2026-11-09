@@ -81,6 +81,8 @@
     "checkHint": "체크 표시는 보고 있는 브라우저에만 저장되고, 한국 시간으로 날짜가 바뀌면 초기화됩니다.",
     "deadline": {
       "daily": "매일",
+      "starts": "{due} 시작",
+      "today": "오늘",
       "always": "상시",
       "due": "마감 {due}"
     }

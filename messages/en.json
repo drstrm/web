@@ -81,6 +81,8 @@
     "checkHint": "Checkmarks are saved in the browser you are using, and reset when the date changes in Korea.",
     "deadline": {
       "daily": "Daily",
+      "starts": "Starts {due}",
+      "today": "Today",
       "always": "Anytime",
       "due": "Due {due}"
     }

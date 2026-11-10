@@ -210,6 +210,11 @@
     "guideImage": "Gambar panduan kirim pesan radio",
     "guideAlt": "Panduan kirim pesan radio {broadcaster}",
     "saveImage": "Simpan gambar",
+    "liveListen": "Dengar live",
+    "homepage": "Situs resmi",
+    "todayCorner": "Segmen hari ini",
+    "played": "Sudah diputar",
+    "playedHint": "Hari ini sudah diputar di channel ini. Coba lagi besok, ya.",
     "possibility": {
       "2": "Peluang besar",
       "1": "Mungkin",

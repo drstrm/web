@@ -120,3 +120,44 @@ export async function getLatestChart(opts: {
 
   return { chartHour: latest.chart_hour, entries };
 }
+
+/* ---------------- 라디오 사연 문장 (radio_messages) ---------------- */
+
+/*
+ * 매일 00시(KST) 예약 작업이 그날 하루치 문장을 넣는다 — 스키마는 sql/radio_messages.sql,
+ * 넣는 쪽은 scripts/radio-daily-insert.mjs, 쓰는 규칙은 docs/radio-message-prompt.md.
+ * 줄이 없으면(작업 실패 · 아직 안 돎) 호출부가 코드에 있는 기본 문장 풀로 돌아간다.
+ */
+
+export interface RadioMessageRow {
+  /** morning · lunch · afternoon · evening · night · all */
+  time_slot: string;
+  text: string;
+}
+
+/** 그날(KST `YYYY-MM-DD`) 문장 전부 */
+export function getRadioMessages(date: string, revalidate: number): Promise<RadioMessageRow[]> {
+  return select<RadioMessageRow>(
+    "radio_messages",
+    `select=time_slot,text&date=eq.${encodeURIComponent(date)}&limit=500`,
+    revalidate,
+  );
+}
+
+/* ---------------- 라디오 선곡 기록 (radio_played) ---------------- */
+
+/*
+ * 신청곡(NCT DREAM의 Boogie Woogie)이 그날 그 채널에서 나왔다는 기록.
+ * 넣는 쪽은 scripts/radio-played-check.mjs(방송사 선곡표를 주기적으로 확인), 스키마는
+ * sql/radio_played.sql. 날짜(KST)가 열에 있으므로 다음 날이 되면 저절로 「안 나옴」으로 돌아간다.
+ */
+
+/** 그날(KST `YYYY-MM-DD`) 신청곡이 나온 채널 번호(`#1077` …) 목록 */
+export async function getRadioPlayedStations(date: string, revalidate: number): Promise<string[]> {
+  const rows = await select<{ station: string }>(
+    "radio_played",
+    `select=station&date=eq.${encodeURIComponent(date)}`,
+    revalidate,
+  );
+  return rows.map((r) => r.station);
+}

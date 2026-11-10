@@ -210,6 +210,11 @@
     "guideImage": "ラジオ投稿ガイドの画像",
     "guideAlt": "{broadcaster} ラジオ投稿ガイド",
     "saveImage": "画像を保存",
+    "liveListen": "ライブで聴く",
+    "homepage": "公式サイト",
+    "todayCorner": "今日のコーナー",
+    "played": "選曲済み",
+    "playedHint": "今日はこのチャンネルですでに流れました。明日またリクエストしてください。",
     "possibility": {
       "2": "可能性が高い",
       "1": "可能性あり",

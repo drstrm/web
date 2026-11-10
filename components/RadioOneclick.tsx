@@ -1,6 +1,6 @@
 "use client";
 
-import { Pencil, Radio, RefreshCw, SendHorizontal } from "lucide-react";
+import { CheckCircle2, ExternalLink, Headphones, Pencil, Radio, RefreshCw, SendHorizontal, Sparkles } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useCallback, useEffect, useState, type MouseEvent } from "react";
 import RadioPossibility from "@/components/RadioPossibility";
@@ -39,6 +39,10 @@ import { isIosDevice, smsHref } from "@/lib/sms";
  *
  * 첫 진입에도 한 번 받는데, 그건 사연 때문이 아니라 버튼에 지금 방송 중인 프로그램을
  * 띄우기 위한 것이다.
+ *
+ * 카드에는 신청 가능성이 있는 편성일 때만 「실시간 듣기」 · 「공식 홈페이지」 · 「오늘의 코너」가
+ * 붙는다(서버가 그때만 채운다). 그날 그 채널에서 신청곡이 이미 나왔으면(played) 카드를
+ * 「선곡완료」로 막는다 — 날짜 기준이라 다음 날 저절로 풀린다.
  *
  * 팝업은 Radix Dialog 라 포커스 가둠 · Esc 닫기 · 배경 스크롤 잠금이 따라온다.
  */
@@ -87,6 +91,7 @@ export default function RadioOneclick() {
   }, [refreshKey]);
 
   const openStation = (number: string) => {
+    if (now[number]?.played) return;
     setSelectedNumber(number);
     // 누를 때마다 새 사연을 받는다 (같은 채널을 다시 눌러도 문장이 달라진다)
     reload();
@@ -159,32 +164,85 @@ function StationButton({
       ? `${info.program} · ${info.djName}`
       : info.program
     : tr("noProgram");
+  const played = ready && info?.played === true;
+  const corners = ready ? (info?.corners ?? []) : [];
+  const links = ready
+    ? [
+        info?.liveUrl && { href: info.liveUrl, label: tr("liveListen"), Icon: Headphones },
+        info?.homepage && { href: info.homepage, label: tr("homepage"), Icon: ExternalLink },
+      ].filter((l): l is { href: string; label: string; Icon: typeof Headphones } => Boolean(l))
+    : [];
 
+  /*
+   * 링크는 버튼 밖에 둔다 — <button> 안에 <a> 를 넣으면 HTML 규칙 위반이고,
+   * 누를 때 사연 팝업과 링크 이동이 같이 일어난다.
+   */
   return (
-    <button
-      type="button"
-      onClick={onOpen}
-      className="block w-full rounded-2xl border border-border bg-surface p-4 text-left shadow-card transition-all hover:-translate-y-0.5 hover:border-sky-200 hover:shadow-lift active:scale-[0.99]"
+    <div
+      className={`overflow-hidden rounded-2xl border bg-surface shadow-card transition-all ${
+        played ? "border-border opacity-70" : "border-border hover:-translate-y-0.5 hover:border-sky-200 hover:shadow-lift"
+      }`}
     >
-      <span className="flex items-center gap-2">
-        <span className="font-bold">{station.name}</span>
-        {/* 확인 전에 뱃지를 띄우면 편성이 있는 채널도 "편성 정보 없음"으로 잠깐 보인다 */}
-        {ready && (
-          <span className="ml-auto">
-            <RadioPossibility value={info?.possibility ?? null} />
+      <button
+        type="button"
+        onClick={onOpen}
+        disabled={played}
+        aria-disabled={played}
+        className="block w-full p-4 text-left active:scale-[0.99] disabled:cursor-not-allowed disabled:active:scale-100"
+      >
+        <span className="flex items-center gap-2">
+          <span className="font-bold">{station.name}</span>
+          {/* 확인 전에 뱃지를 띄우면 편성이 있는 채널도 "편성 정보 없음"으로 잠깐 보인다 */}
+          {ready && (
+            <span className="ml-auto">
+              {played ? (
+                <span className="inline-flex items-center gap-1 rounded-full bg-champagne-100 px-2 py-0.5 text-[11px] font-bold text-champagne-800">
+                  <CheckCircle2 className="size-3" strokeWidth={2.6} />
+                  {tr("played")}
+                </span>
+              ) : (
+                <RadioPossibility value={info?.possibility ?? null} />
+              )}
+            </span>
+          )}
+        </span>
+
+        <span className="mt-1 block font-display text-xs font-semibold text-muted">
+          {station.frequency} · {station.number}
+        </span>
+
+        <span className="mt-2.5 flex items-center gap-1.5 rounded-xl bg-sky-50 px-3 py-2 text-xs font-bold text-sky-700">
+          <Radio className="size-3 shrink-0" strokeWidth={2.4} />
+          <span className="truncate">{ready ? onAir : tr("checking")}</span>
+        </span>
+
+        {corners.length > 0 && (
+          <span className="mt-1.5 flex items-start gap-1.5 px-1 text-xs text-muted">
+            <Sparkles className="mt-0.5 size-3 shrink-0 text-champagne-500" strokeWidth={2.4} />
+            <span>
+              <b className="font-bold text-foreground">{tr("todayCorner")}</b> · {corners.join(" · ")}
+            </span>
           </span>
         )}
-      </span>
 
-      <span className="mt-1 block font-display text-xs font-semibold text-muted">
-        {station.frequency} · {station.number}
-      </span>
+        {played && <span className="mt-2 block px-1 text-xs font-semibold text-muted">{tr("playedHint")}</span>}
+      </button>
 
-      <span className="mt-2.5 flex items-center gap-1.5 rounded-xl bg-sky-50 px-3 py-2 text-xs font-bold text-sky-700">
-        <Radio className="size-3 shrink-0" strokeWidth={2.4} />
-        <span className="truncate">{ready ? onAir : tr("checking")}</span>
-      </span>
-    </button>
+      {links.length > 0 && (
+        <div className="flex flex-wrap gap-2 border-t border-border px-4 py-2.5">
+          {links.map(({ href, label, Icon }) => (
+            <SmartLink
+              key={href}
+              href={href}
+              className="inline-flex items-center gap-1 rounded-full border border-border px-2.5 py-1 text-xs font-bold text-foreground transition-colors hover:border-sky-300 hover:text-sky-700"
+            >
+              <Icon className="size-3" strokeWidth={2.4} />
+              {label}
+            </SmartLink>
+          ))}
+        </div>
+      )}
+    </div>
   );
 }
 
@@ -271,6 +329,16 @@ function MessageModal({
           <span className="font-display shrink-0 tracking-wide">ON AIR</span>
           <span className="min-w-0 truncate font-sans">{loading ? tr("checking") : onAir}</span>
         </div>
+
+        {/* 그날 코너에 맞춰 사연을 고쳐 쓰라는 안내(editNotice)와 같이 본다 */}
+        {!loading && (info?.corners.length ?? 0) > 0 && (
+          <p className="mt-2 flex items-start gap-1.5 px-1 text-xs text-muted">
+            <Sparkles className="mt-0.5 size-3 shrink-0 text-champagne-500" strokeWidth={2.4} />
+            <span>
+              <b className="font-bold text-foreground">{tr("todayCorner")}</b> · {info?.corners.join(" · ")}
+            </span>
+          </p>
+        )}
       </header>
 
       <div className="overflow-y-auto p-4">

@@ -1,5 +1,5 @@
 /*
- * 라디오 편성표 · 문자 신청 번호 (2026.09 기준)
+ * 라디오 편성표 · 문자 신청 번호 (2026.09 기준, 2026.11.11 방송사 공식 편성 정보로 일부 확인)
  * ------------------------------------------------------------------
  * 원클릭 문자 신청(components/RadioOneclick.tsx)과 사연 생성 API가 함께 쓰는
  * 데이터다. 방송사별 전체 편성표 화면은 public/radio 이미지 파일을 보여준다.
@@ -35,15 +35,24 @@ export type RadioStation = {
   group: string;
   name: string;
   frequency: string;
+  /** 방송사 공식 실시간 듣기 페이지 */
+  liveUrl: string;
 };
 
 /** 문자 신청을 받는 채널. 화면의 버튼 순서 = 이 배열 순서 */
 export const RADIO_STATIONS: RadioStation[] = [
-  { number: "#1077", group: "SBS", name: "SBS 파워FM", frequency: "107.7 MHz" },
-  { number: "#1035", group: "SBS", name: "SBS 러브FM", frequency: "103.5 MHz" },
-  { number: "#8910", group: "KBS", name: "KBS COOL FM", frequency: "89.1 MHz" },
-  { number: "#8000", group: "MBC", name: "MBC FM4U", frequency: "91.9 MHz" },
-  { number: "#8001", group: "MBC", name: "MBC 표준FM", frequency: "95.9 MHz" },
+  { number: "#1077", group: "SBS", name: "SBS 파워FM", frequency: "107.7 MHz", liveUrl: "https://www.sbs.co.kr/live/S07" },
+  { number: "#1035", group: "SBS", name: "SBS 러브FM", frequency: "103.5 MHz", liveUrl: "https://www.sbs.co.kr/live/S08" },
+  {
+    number: "#8910",
+    group: "KBS",
+    name: "KBS COOL FM",
+    frequency: "89.1 MHz",
+    liveUrl: "https://onair.kbs.co.kr/index.html?sname=onair&stype=live&ch_code=25&ch_type=radioList",
+  },
+  // mini 웹앱의 채널 값은 MBC 라디오 홈이 쓰는 그대로다 (FM4U = mfm, 표준FM = sfm)
+  { number: "#8000", group: "MBC", name: "MBC FM4U", frequency: "91.9 MHz", liveUrl: "https://miniwebapp.imbc.com/index?channel=mfm" },
+  { number: "#8001", group: "MBC", name: "MBC 표준FM", frequency: "95.9 MHz", liveUrl: "https://miniwebapp.imbc.com/index?channel=sfm" },
 ];
 
 export type RadioSlot = {
@@ -67,7 +76,7 @@ export const RADIO_SCHEDULE: RadioSlot[] = [
   { station: "#1077", start: "05:00", end: "07:00", djName: "이인권님", program: "이인권의 펀펀투데이", possibility: 2 },
   { station: "#1077", start: "07:00", end: "09:00", djName: "철업디", program: "김영철의 파워 FM", possibility: 2 },
   { station: "#1077", start: "09:00", end: "11:00", djName: "봉태규님", program: "아름다운 이 아침, 봉태규입니다", possibility: 2 },
-  { station: "#1077", start: "11:00", end: "12:00", djName: "박하선님", program: "박하선의 씨네타운", possibility: 0 },
+  { station: "#1077", start: "11:00", end: "12:00", djName: "이엘님", program: "이엘의 씨네타운", possibility: 0 },
   { station: "#1077", start: "12:00", end: "14:00", djName: "주디", program: "12시엔 주현영", possibility: 2 },
   { station: "#1077", start: "14:00", end: "16:00", djName: null, program: "두시탈출 컬투쇼", possibility: 1 },
   { station: "#1077", start: "16:00", end: "18:00", djName: "퐝디", program: "황제성의 황제파워", possibility: 2 },
@@ -91,7 +100,7 @@ export const RADIO_SCHEDULE: RadioSlot[] = [
   { station: "#1035", start: "14:20", end: "16:00", djName: "정엽님", program: "그대의 오후, 정엽입니다", possibility: 2 },
   { station: "#1035", start: "16:00", end: "17:00", djName: null, program: "인생은 오디션", dayType: "weekday", possibility: 0 },
   { station: "#1035", start: "16:00", end: "18:00", djName: "DJ래피", program: "DJ래피의 드라이브 뮤직", dayType: "weekend", possibility: 2 },
-  { station: "#1035", start: "17:00", end: "18:00", djName: "편상욱님", program: "편상욱의 뉴스직격", dayType: "weekday", possibility: 0 },
+  { station: "#1035", start: "17:00", end: "18:00", djName: "최선호님", program: "최선호의 뉴스직격", dayType: "weekday", possibility: 0 },
   { station: "#1035", start: "18:05", end: "20:00", djName: "창완님", program: "6시 저녁바람 김창완입니다", possibility: 0 },
   { station: "#1035", start: "20:05", end: "22:00", djName: "윤상님", program: "김윤상의 뮤직투나잇", possibility: 1 },
   { station: "#1035", start: "22:05", end: "24:00", djName: "박은경님", program: "음악이 흐르는 밤, 박은경입니다", possibility: 1 },
@@ -148,10 +157,11 @@ export const RADIO_SCHEDULE: RadioSlot[] = [
   { station: "#8001", start: "14:20", end: "16:00", djName: "손태진님", program: "손태진의 트로트라디오", dayType: "weekday", possibility: 0 },
   { station: "#8001", start: "14:10", end: "16:00", djName: null, program: "손태진의 트로트라디오", dayType: "weekend", possibility: 0 },
   { station: "#8001", start: "16:05", end: "18:00", djName: "정선희님, 문천식님", program: "정선희, 문천식의 지금은 라디오 시대", dayType: "weekday", possibility: 0 },
+  { station: "#8001", start: "18:05", end: "20:00", djName: "조승원님", program: "조승원의 뉴스하이킥", dayType: "weekday", possibility: 0 },
   { station: "#8001", start: "18:05", end: "20:00", djName: "김치형님", program: "김치형의 뉴스 하이킥", dayType: "weekend", possibility: 0 },
   { station: "#8001", start: "20:05", end: "22:00", djName: "이재은님", program: "오늘도 당신 편 이재은입니다", possibility: 1 },
   { station: "#8001", start: "22:05", end: "23:00", djName: "박정호님", program: "박정호의 손에 잡히는 경제 플러스", possibility: 0 },
-  { station: "#8001", start: "23:05", end: "24:00", djName: "신해림님", program: "신해림의 골든디스크", possibility: 0 },
+  { station: "#8001", start: "23:05", end: "24:00", djName: "신혜림님", program: "신혜림의 골든디스크", possibility: 0 },
 ];
 
 /** 편성표에 붙는 요일 꼬리표 */
@@ -237,6 +247,18 @@ export type RadioNow = {
   possibility: Possibility | null;
   /** 문자 본문에 채워질 사연 */
   message: string;
+  /*
+   * 아래 셋은 **신청 가능성이 있는 편성(possibility ≥ 1)일 때만** 채운다 — 가능성 없는
+   * 시간에 들으러 가거나 홈페이지로 보낼 이유가 없다. 출처는 lib/radio-programs.ts.
+   */
+  /** 방송사 실시간 듣기 */
+  liveUrl: string | null;
+  /** 지금 프로그램의 공식 홈페이지 */
+  homepage: string | null;
+  /** 지금 프로그램의 오늘 요일 코너 */
+  corners: string[];
+  /** 오늘(KST) 이 채널에서 이미 신청곡이 나왔는가. 그러면 그날은 신청을 막는다 */
+  played: boolean;
 };
 
 /**

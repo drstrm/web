@@ -210,6 +210,11 @@
     "guideImage": "电台投稿教程图片",
     "guideAlt": "{broadcaster} 电台投稿教程",
     "saveImage": "保存图片",
+    "liveListen": "收听直播",
+    "homepage": "官方网站",
+    "todayCorner": "今日环节",
+    "played": "今日已播出",
+    "playedHint": "今天这个频道已经播过了，明天再来点歌吧。",
     "possibility": {
       "2": "机会较大",
       "1": "有机会",

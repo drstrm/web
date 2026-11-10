@@ -200,6 +200,11 @@
     "guideImage": "라디오 신청 가이드 이미지",
     "guideAlt": "{broadcaster} 라디오 신청 가이드",
     "saveImage": "이미지 저장",
+    "liveListen": "실시간 듣기",
+    "homepage": "공식 홈페이지",
+    "todayCorner": "오늘의 코너",
+    "played": "선곡완료",
+    "playedHint": "오늘 이 채널에서 이미 나왔어요. 내일 다시 신청해 주세요.",
     "possibility": {
       "2": "가능성 높음",
       "1": "가능성 있음",

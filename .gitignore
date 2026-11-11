@@ -40,3 +40,8 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# 수파베이스 운영 코드 (엣지 펑션 · SQL · 선곡 확인 스크립트) — 사이트 실행에 필요 없고, 공개 저장소에 두지 않는다
+/supabase/
+/sql/
+/scripts/radio-played-check.mjs

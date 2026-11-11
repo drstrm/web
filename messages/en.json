@@ -166,6 +166,8 @@
     "description": "We'll write you a radio message that fits whatever is on air right now — and send it by SMS in one tap.",
     "oneclickTitle": "One-click radio requests",
     "oneclickHint": "Tap a station to get a message written for the show that's on air.",
+    "playedTitle": "Radio play log",
+    "playedHint": "We check each broadcaster's official playlist every 2 hours and log the plays. (Dates are in Korea time)",
     "scheduleTitle": "Schedules by broadcaster",
     "scheduleHint": "Full schedules for each broadcaster are available as posted images."
   },
@@ -209,7 +211,14 @@
       "2": "Good chance",
       "1": "Possible",
       "0": "Unlikely"
-    }
+    },
+    "historyEmpty": "Not played yet",
+    "historyLog": "Newest first",
+    "historyTotal": "{count, plural, one {# play} other {# plays}} total",
+    "historyColDate": "Date",
+    "historyColStation": "Station",
+    "historyColProgram": "Program",
+    "historyError": "Couldn't load the play log. Please check back in a moment."
   },
   "community": {
     "title": "Community",

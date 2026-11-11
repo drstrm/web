@@ -176,6 +176,8 @@
     "description": "いま放送中の番組に合わせてメッセージを作ります。ボタン一つで SMS 投稿まで。",
     "oneclickTitle": "ワンクリック ラジオ投稿",
     "oneclickHint": "局を押すと、放送中の番組に合わせたメッセージが表示されます。",
+    "playedTitle": "ラジオ選曲記録",
+    "playedHint": "各放送局の公式選曲リストを2時間ごとに確認して記録します。（日付は韓国時間基準）",
     "scheduleTitle": "放送局別の番組表",
     "scheduleHint": "放送局ごとの番組表は、掲載されている画像でご確認いただけます。"
   },
@@ -219,7 +221,14 @@
       "2": "可能性が高い",
       "1": "可能性あり",
       "0": "採用されにくい"
-    }
+    },
+    "historyEmpty": "まだ選曲された記録はありません",
+    "historyLog": "新しい順",
+    "historyTotal": "計{count}回選曲",
+    "historyColDate": "日付",
+    "historyColStation": "チャンネル",
+    "historyColProgram": "番組",
+    "historyError": "選曲記録を読み込めませんでした。しばらくしてからもう一度ご確認ください。"
   },
   "community": {
     "title": "コミュニティ",

@@ -176,6 +176,8 @@
     "description": "Kami buatkan pesan radio yang cocok dengan acara yang sedang on air — dan kirim lewat SMS dalam satu ketukan.",
     "oneclickTitle": "Kirim pesan radio one-click",
     "oneclickHint": "Ketuk stasiunnya, pesan untuk acara yang sedang on air akan muncul.",
+    "playedTitle": "Riwayat pemutaran radio",
+    "playedHint": "Kami memeriksa daftar lagu resmi tiap stasiun setiap 2 jam dan mencatatnya. (Tanggal mengikuti waktu Korea)",
     "scheduleTitle": "Jadwal per stasiun",
     "scheduleHint": "Jadwal lengkap tiap stasiun bisa dilihat dari gambar yang sudah diunggah."
   },
@@ -219,7 +221,14 @@
       "2": "Peluang besar",
       "1": "Mungkin",
       "0": "Kecil kemungkinan"
-    }
+    },
+    "historyEmpty": "Belum pernah diputar",
+    "historyLog": "Terbaru dulu",
+    "historyTotal": "Total {count}x diputar",
+    "historyColDate": "Tanggal",
+    "historyColStation": "Saluran",
+    "historyColProgram": "Program",
+    "historyError": "Riwayat pemutaran gagal dimuat. Silakan cek lagi sebentar lagi."
   },
   "community": {
     "title": "Komunitas",

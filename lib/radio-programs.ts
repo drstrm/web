@@ -238,7 +238,8 @@ export const RADIO_PROGRAM_INFO: Record<string, RadioProgramInfo> = {
     ],
   },
   "IDOL RADIO 시즌4": { homepage: MBC("idolradio") },
-  // 스포왕 고영배 — 홈페이지 주소를 확인하지 못했다
+  // 요일 코너 없음 (control.imbc.com/Radio/1005429100000100000/Corner 가 비어 있다)
+  "스포왕 고영배": { homepage: MBC("spoking") },
 
   // ── MBC 표준FM ──────────────────────────────────
   "오늘도 당신 편 이재은입니다": {

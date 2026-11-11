@@ -176,6 +176,8 @@
     "description": "我们会根据当前正在播出的节目帮你写好投稿，一键就能用短信发送。",
     "oneclickTitle": "一键电台投稿",
     "oneclickHint": "点击电台，就会显示为当前节目写好的投稿。",
+    "playedTitle": "电台选曲记录",
+    "playedHint": "每 2 小时查看一次各电台官方歌单并记录。（日期以韩国时间为准）",
     "scheduleTitle": "各电台节目表",
     "scheduleHint": "各电台的完整节目表可以通过已发布的图片查看。"
   },
@@ -219,7 +221,14 @@
       "2": "机会较大",
       "1": "有机会",
       "0": "较难被选中"
-    }
+    },
+    "historyEmpty": "还没有被选曲的记录",
+    "historyLog": "按最新排序",
+    "historyTotal": "共选曲{count}次",
+    "historyColDate": "日期",
+    "historyColStation": "频道",
+    "historyColProgram": "节目",
+    "historyError": "无法加载选曲记录，请稍后再查看。"
   },
   "community": {
     "title": "社区",

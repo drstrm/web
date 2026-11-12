@@ -257,8 +257,6 @@ export type RadioNow = {
   homepage: string | null;
   /** 지금 프로그램의 오늘 요일 코너 */
   corners: string[];
-  /** 오늘(KST) 이 채널에서 이미 신청곡이 나왔는가. 그러면 그날은 신청을 막는다 */
-  played: boolean;
 };
 
 /**

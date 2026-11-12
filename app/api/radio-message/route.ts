@@ -17,7 +17,7 @@ import { kstNow, toSeoulDate } from "@/lib/datetime";
 import { buildRadioMessage, toDailyPool, type DailyPool } from "@/lib/radio-message";
 import { cornersOn, RADIO_PROGRAM_INFO } from "@/lib/radio-programs";
 import { findRadioSlot, RADIO_STATIONS, type RadioNow } from "@/lib/radio";
-import { getRadioMessages, getRadioPlayedStations } from "@/lib/supabase";
+import { getRadioMessages } from "@/lib/supabase";
 
 // 응답이 "지금 몇 시인가"에 달려 있다. 캐시되면 지난 프로그램 사연이 나간다.
 // 그날 풀 조회만 캐시한다. 날짜가 주소에 들어가므로 자정이 지나면 저절로 새 조회가 된다.
@@ -25,8 +25,6 @@ import { getRadioMessages, getRadioPlayedStations } from "@/lib/supabase";
 // 길면 그동안 기본 풀이 나간다.
 export const dynamic = "force-dynamic";
 const DAILY_REVALIDATE = 600;
-// 선곡 기록은 나오자마자 버튼을 막아야 하니 짧게 둔다
-const PLAYED_REVALIDATE = 60;
 
 async function loadDailyPool(now: Date): Promise<DailyPool | null> {
   try {
@@ -38,19 +36,9 @@ async function loadDailyPool(now: Date): Promise<DailyPool | null> {
   }
 }
 
-async function loadPlayed(now: Date): Promise<Set<string>> {
-  try {
-    return new Set(await getRadioPlayedStations(toSeoulDate(now.toISOString()), PLAYED_REVALIDATE));
-  } catch (err) {
-    // 조회가 안 되면 「안 나옴」으로 둔다 — 막아야 할 버튼을 못 막는 쪽이 신청을 못 하게 되는 쪽보다 낫다
-    console.error("[radio-message] 선곡 기록 조회 실패:", err);
-    return new Set();
-  }
-}
-
 export async function GET() {
   const now = new Date();
-  const [daily, played] = await Promise.all([loadDailyPool(now), loadPlayed(now)]);
+  const daily = await loadDailyPool(now);
   const { day } = kstNow(now);
 
   const stations: RadioNow[] = RADIO_STATIONS.map((station) => {
@@ -66,7 +54,6 @@ export async function GET() {
       liveUrl: open ? station.liveUrl : null,
       homepage: open ? (RADIO_PROGRAM_INFO[slot.program]?.homepage ?? null) : null,
       corners: open ? cornersOn(slot.program, day) : [],
-      played: played.has(station.number),
     };
   });
 

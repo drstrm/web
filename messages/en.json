@@ -205,8 +205,6 @@
     "liveListen": "Listen live",
     "homepage": "Official site",
     "todayCorner": "Today's corner",
-    "played": "Played today",
-    "playedHint": "It already aired on this channel today. Try again tomorrow.",
     "possibility": {
       "2": "Good chance",
       "1": "Possible",

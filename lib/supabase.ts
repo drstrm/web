@@ -149,18 +149,8 @@ export function getRadioMessages(date: string, revalidate: number): Promise<Radi
 /*
  * 신청곡(NCT DREAM의 Boogie Woogie)이 그날 그 프로그램에서 나왔다는 기록. 한 줄 = 날짜 · 채널 · 프로그램.
  * 넣는 쪽은 scripts/radio-played-check.mjs· 수파베이스 엣지 펑션이 2시간마다 방송사 선곡표를 확인, 스키마는
- * sql/radio_played.sql. 날짜(KST)가 열에 있으므로 다음 날이 되면 저절로 「안 나옴」으로 돌아간다.
+ * sql/radio_played.sql.
  */
-
-/** 그날(KST `YYYY-MM-DD`) 신청곡이 나온 채널 번호(`#1077` …) 목록 */
-export async function getRadioPlayedStations(date: string, revalidate: number): Promise<string[]> {
-  const rows = await select<{ station: string }>(
-    "radio_played",
-    `select=station&date=eq.${encodeURIComponent(date)}`,
-    revalidate,
-  );
-  return [...new Set(rows.map((r) => r.station))];
-}
 
 export interface RadioPlayedRow {
   /** KST `YYYY-MM-DD` */

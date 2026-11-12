@@ -1,6 +1,6 @@
 "use client";
 
-import { CheckCircle2, ExternalLink, Headphones, Pencil, Radio, RefreshCw, SendHorizontal, Sparkles } from "lucide-react";
+import { ExternalLink, Headphones, Pencil, Radio, RefreshCw, SendHorizontal, Sparkles } from "lucide-react";
 import { useTranslations } from "next-intl";
 import { useCallback, useEffect, useState, type MouseEvent } from "react";
 import RadioPossibility from "@/components/RadioPossibility";
@@ -41,8 +41,7 @@ import { isIosDevice, smsHref } from "@/lib/sms";
  * 띄우기 위한 것이다.
  *
  * 카드에는 신청 가능성이 있는 편성일 때만 「실시간 듣기」 · 「공식 홈페이지」 · 「오늘의 코너」가
- * 붙는다(서버가 그때만 채운다). 그날 그 채널에서 신청곡이 이미 나왔으면(played) 카드를
- * 「선곡완료」로 막는다 — 날짜 기준이라 다음 날 저절로 풀린다.
+ * 붙는다(서버가 그때만 채운다). 선곡 여부와 상관없이 사연은 언제든 보낼 수 있다.
  *
  * 팝업은 Radix Dialog 라 포커스 가둠 · Esc 닫기 · 배경 스크롤 잠금이 따라온다.
  */
@@ -91,7 +90,6 @@ export default function RadioOneclick() {
   }, [refreshKey]);
 
   const openStation = (number: string) => {
-    if (now[number]?.played) return;
     setSelectedNumber(number);
     // 누를 때마다 새 사연을 받는다 (같은 채널을 다시 눌러도 문장이 달라진다)
     reload();
@@ -164,7 +162,6 @@ function StationButton({
       ? `${info.program} · ${info.djName}`
       : info.program
     : tr("noProgram");
-  const played = ready && info?.played === true;
   const corners = ready ? (info?.corners ?? []) : [];
   const links = ready
     ? [
@@ -178,31 +175,18 @@ function StationButton({
    * 누를 때 사연 팝업과 링크 이동이 같이 일어난다.
    */
   return (
-    <div
-      className={`overflow-hidden rounded-2xl border bg-surface shadow-card transition-all ${
-        played ? "border-border opacity-70" : "border-border hover:-translate-y-0.5 hover:border-sky-200 hover:shadow-lift"
-      }`}
-    >
+    <div className="overflow-hidden rounded-2xl border border-border bg-surface shadow-card transition-all hover:-translate-y-0.5 hover:border-sky-200 hover:shadow-lift">
       <button
         type="button"
         onClick={onOpen}
-        disabled={played}
-        aria-disabled={played}
-        className="block w-full p-4 text-left active:scale-[0.99] disabled:cursor-not-allowed disabled:active:scale-100"
+        className="block w-full p-4 text-left active:scale-[0.99]"
       >
         <span className="flex items-center gap-2">
           <span className="font-bold">{station.name}</span>
           {/* 확인 전에 뱃지를 띄우면 편성이 있는 채널도 "편성 정보 없음"으로 잠깐 보인다 */}
           {ready && (
             <span className="ml-auto">
-              {played ? (
-                <span className="inline-flex items-center gap-1 rounded-full bg-champagne-100 px-2 py-0.5 text-[11px] font-bold text-champagne-800">
-                  <CheckCircle2 className="size-3" strokeWidth={2.6} />
-                  {tr("played")}
-                </span>
-              ) : (
-                <RadioPossibility value={info?.possibility ?? null} />
-              )}
+              <RadioPossibility value={info?.possibility ?? null} />
             </span>
           )}
         </span>
@@ -224,8 +208,6 @@ function StationButton({
             </span>
           </span>
         )}
-
-        {played && <span className="mt-2 block px-1 text-xs font-semibold text-muted">{tr("playedHint")}</span>}
       </button>
 
       {links.length > 0 && (
